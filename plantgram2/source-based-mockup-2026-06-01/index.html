@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plantgram2 Source-Based Mockup</title>
+  <style>
+    :root {
+      --bg: #f3f5f1;
+      --phone: #101512;
+      --paper: #fff;
+      --ink: #151d18;
+      --muted: #6e7a72;
+      --line: #e0e7e0;
+      --teal: #168f80;
+      --green: #3ead5f;
+      --blue: #4088ff;
+      --chip: #edf4ef;
+      --soft: #f5f7f5;
+      --yellow: #fee500;
+      --shadow: 0 16px 34px rgba(22, 32, 25, .1);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 38px 20px 18px;
+    }
+
+    h1 { margin: 0 0 8px; font-size: 31px; line-height: 1.2; letter-spacing: 0; }
+    header p { margin: 0; color: var(--muted); line-height: 1.65; font-size: 15px; }
+
+    .nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 18px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .nav a {
+      flex: 0 0 auto;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 11px;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 52px;
+    }
+
+    .block {
+      display: grid;
+      grid-template-columns: 356px minmax(0, 1fr);
+      gap: 18px;
+      margin-bottom: 20px;
+      align-items: start;
+    }
+
+    .phone {
+      background: var(--phone);
+      border-radius: 30px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .screen {
+      min-height: 690px;
+      background: var(--paper);
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status {
+      height: 28px;
+      padding: 9px 18px 0;
+      display: flex;
+      justify-content: space-between;
+      color: #334139;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .appbar {
+      height: 54px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+    }
+
+    .appbar strong { font-size: 20px; }
+    .appbar .small { color: var(--muted); font-size: 13px; font-weight: 800; }
+
+    .content {
+      flex: 1;
+      padding: 14px 18px 18px;
+      overflow: hidden;
+    }
+
+    .bottom-nav {
+      height: 64px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: rgba(255,255,255,.98);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #8a958d;
+    }
+
+    .nav-item.active { color: var(--teal); font-weight: 900; }
+    .dot { width: 20px; height: 20px; border-radius: 8px; background: currentColor; opacity: .18; }
+    .active .dot { opacity: .95; }
+
+    .card {
+      border-radius: 8px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      padding: 13px;
+      margin-bottom: 10px;
+    }
+
+    .card.white { background: #fff; }
+    .card.teal { background: #e7f6f3; border-color: #cce8e2; }
+    .card.blue { background: #edf4ff; border-color: #d8e7ff; }
+    .card.yellow { background: var(--yellow); border-color: #ead21c; }
+    .title { margin: 0 0 5px; font-size: 14px; font-weight: 900; }
+    .text { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .row { display: flex; gap: 10px; align-items: center; }
+    .plant-img {
+      width: 62px;
+      height: 62px;
+      flex: 0 0 auto;
+      border-radius: 10px;
+      background:
+        radial-gradient(circle at 63% 30%, #7ed58c 0 17%, transparent 18%),
+        radial-gradient(circle at 36% 56%, #48ad69 0 21%, transparent 22%),
+        linear-gradient(135deg, #e7f8eb, #bddfc5);
+    }
+
+    .hero-img {
+      height: 250px;
+      background:
+        radial-gradient(circle at 58% 34%, #79c88a 0 15%, transparent 16%),
+        radial-gradient(circle at 35% 60%, #339e62 0 19%, transparent 20%),
+        linear-gradient(135deg, #dff5e2, #95cfaa);
+    }
+
+    .search {
+      height: 44px;
+      border-radius: 8px;
+      background: #f1f4f1;
+      display: flex;
+      align-items: center;
+      padding: 0 13px;
+      color: #87928b;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .chips { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; }
+    .chip {
+      flex: 0 0 auto;
+      border-radius: 8px;
+      background: var(--chip);
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #405149;
+    }
+    .chip.active { background: #bde9df; color: #074d43; }
+
+    .button {
+      height: 42px;
+      border-radius: 16px;
+      background: var(--green);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .sheet {
+      border-radius: 24px 24px 0 0;
+      background: #fff;
+      border-top: 1px solid var(--line);
+      box-shadow: 0 -8px 24px rgba(0,0,0,.08);
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .screen-title {
+      margin: 0 0 10px;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .mock-note {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .mock-note h2 { margin: 0 0 7px; font-size: 22px; letter-spacing: 0; }
+    .mock-note p { margin: 0 0 12px; color: var(--muted); line-height: 1.6; font-size: 14px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .box { border: 1px solid var(--line); border-radius: 8px; background: #fbfcfb; padding: 13px; }
+    .box h3 { margin: 0 0 8px; font-size: 15px; }
+    ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    code { background: #eef4ef; border-radius: 5px; padding: 1px 5px; font-size: 12px; }
+    .wide { grid-column: 1 / -1; }
+
+    .memo {
+      min-height: 92px;
+      border: 1px dashed #b9c7bd;
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+      color: #2b3930;
+      font-size: 13px;
+      line-height: 1.6;
+      outline: none;
+      white-space: pre-wrap;
+    }
+    .memo:empty::before { content: attr(data-placeholder); color: #9ba69e; }
+
+    .list-row {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: flex-start;
+    }
+
+    .iconbox {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #e7f5f1;
+      color: var(--teal);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .fab {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      margin-left: auto;
+      font-size: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 920px) {
+      .block { grid-template-columns: 1fr; }
+      .phone { max-width: 380px; width: 100%; margin: 0 auto; }
+    }
+
+    @media (max-width: 640px) {
+      header, .nav, main { padding-left: 14px; padding-right: 14px; }
+      h1 { font-size: 25px; }
+      .grid { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+      .mock-note { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Plantgram2 실제 Flutter 소스 기반 목업</h1>
+    <p>
+      `lib/presentation`과 `lib/controller` 파일을 직접 읽고, 현재 앱에 실제로 있는 화면과 상태 흐름을 기준으로 만든 확인용 HTML입니다.
+      기능 구현은 하지 않고, 모바일에서 화면 구조와 AI 삽입 지점을 빠르게 볼 수 있게 정리했습니다.
+    </p>
+  </header>
+
+  <nav class="nav">
+    <a href="#login">로그인</a>
+    <a href="#myplant">내 식물</a>
+    <a href="#add">등록</a>
+    <a href="#detail">상세/기록</a>
+    <a href="#record">기록</a>
+    <a href="#dictionary">사전</a>
+    <a href="#community">커뮤니티</a>
+    <a href="#account">계정</a>
+  </nav>
+
+  <main>
+    <section class="block" id="login">
+      <div class="phone">
+        <div class="screen">
+          <div class="status"><span>9:41</span><span>Plantgram</span></div>
+          <div class="content" style="display:flex; flex-direction:column; justify-content:center;">
+            <div style="height:90px; display:grid; place-items:center; color:var(--green); font-size:42px;">🪴</div>
+            <h2 class="screen-title" style="text-align:center;">Plantgram</h2>
+            <p class="text" style="text-align:center; font-size:16px;">식물을 기록하고 관리해보세요</p>
+            <div style="height:120px"></div>
+            <div class="card yellow">
+              <p class="title" style="text-align:center;">카카오로 시작하기</p>
+            </div>
+            <p class="text" style="text-align:center;">처음 로그인하면 식집사 이름으로 프로필이 생성됩니다.</p>
+          </div>
+        </div>
+      </div>
+      <div class="mock-note">
+        <h2>로그인</h2>
+        <p>실제 소스: <code>Signin</code>, <code>AuthController</code></p>
+        <div class="grid">
+          <div class="box">
+            <h3>실제 구현</h3>
+            <ul>
+              <li>카카오 단일 로그인 버튼</li>
+              <li>로그인 중 spinner</li>
+              <li>Firebase auth state에 따라 화면 이동</li>
+              <li>로그인 성공 시 `InitBinding` 후 홈 탭 이동</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h3>AI 후보</h3>
+            <ul>
+              <li>첫 로그인 후 식물 등록 가이드 문구 생성</li>
+              <li>초기 온보딩 질문 기반 추천 식물 제안</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="myplant">
+      <div class="phone">
+        <div class="screen">
+          <div class="status"><span>9:41</span><span>내 식물</span></div>
+          <div class="content">
+            <div style="display:flex; gap:10px; overflow:hidden; margin-top:28px;">
+              <div class="card teal" style="min-width:250px;">
+                <p class="title">날씨 관리 문구</p>
+                <p class="text">온도:18°-26°  습도:58%<br>현재 위치<br><span style="font-size:40px;">☀️</span></p>
+              </div>
+              <div class="card white" style="min-width:150px;">
+                <p class="title">물주기가 필요한<br>식물이 2개 있어요</p>
+                <div style="margin-left:auto; width:62px;height:62px;border:1px dashed #999;border-radius:50%;display:grid;place-items:center;color:var(--blue);font-size:12px;font-weight:900;">일괄로<br>물주기</div>
+              </div>
+            </div>
+            <div class="chips">
+              <span class="chip active">내식물</span><span class="chip">일정</span><span class="chip">다이어리</span>
+            </div>
+            <div class="list-row">
+              <div class="plant-img"></div>
+              <div style="flex:1;">
+                <p class="title">거실 몬스테라</p>
+                <p class="text">Lv.4 ・ 물주기 오늘</p>
+              </div>
+              <div style="background:#2388ff;color:#fff;border-radius:12px;padding:8px 11px;font-size:12px;font-weight:900;">물주기</div>
+            </div>
+            <div class="list-row">
+              <div class="plant-img"></div>
+              <div style="flex:1;">
+                <p class="title">책상 스투키</p>
+                <p class="text">Lv.2 ・ 물주기 3일 남음</p>
+              </div>
+              <div style="background:#eee;color:#8a8a8a;border-radius:12px;padding:8px 11px;font-size:12px;font-weight:900;">물주기</div>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item active"><div class="dot"></div><span>내 식물</span></div>
+            <div class="nav-item"><div class="dot"></div><span>사전</span></div>
+            <div class="nav-item"><div class="dot"></div><span>기록</span></div>
+            <div class="nav-item"><div class="dot"></div><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+      <div class="mock-note">
+        <h2>내 식물 홈</h2>
+        <p>실제 소스: <code>MyPlantHome</code>, <code>WeatherView</code>, <code>WateringPlantView</code>, <code>MyPlantListCard</code></p>
+        <div class="grid">
+          <div class="box">
+            <h3>실제 구현</h3>
+            <ul>
+              <li>상단 가로 카드: 날씨, 물주기 대상, 나의 식물</li>
+              <li>탭: 내식물, 일정, 다이어리</li>
+              <li>식물 카드의 즉시 물주기</li>
+              <li>물주기 대상 일괄 처리</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h3>AI 삽입</h3>
+            <ul>
+              <li>날씨 카드 문구를 개인 식물 기준으로 요약</li>
+              <li>물주기 대상 이유 설명</li>
+              <li>오늘 해야 할 일 우선순위 제안</li>
+            </ul>
+          </div>
+          <div class="box wide">
+            <h3>아이디어 메모</h3>
+            <div class="memo" contenteditable="true" data-key="memo-myplant" data-placeholder="이 화면에 추가하고 싶은 AI 기능을 적어보세요."></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="add">
+      <div class="phone">
+        <div class="screen">
+          <div class="status"><span>9:41</span><span>식물 등록</span></div>
+          <div class="content">
+            <h2 class="screen-title">키우는 식물을<br>등록해 주세요</h2>
+            <div class="card white"><p class="title">애칭을 등록하세요</p><p class="text">튼튼한 몬스테라</p></div>
+            <div class="card white"><p class="title">식물종을 선택하세요</p><p class="text" style="color:var(--blue);">몬스테라</p></div>
+            <div class="card" style="height:142px; border:1px dashed #999; display:grid; place-items:center;">
+              <p class="text" style="text-align:center;">대표 이미지를 선택하세요<br>앨범 · 카메라 · 삭제</p>
+            </div>
+            <div class="card white">
+              <p class="title">관리 기준을 확인하세요</p>
+              <p class="text">식물 생일 · 마지막 물준 날 · 물주기 7일 · 영양제 30일 · 분갈이 180일</p>
+            </div>
+            <div class="card white">
+              <p class="text">햇빛 3/5 · 수분 3/5 · 18°C~26°C · 화분 · 메모</p>
+            </div>
+            <div class="button">등록하기</div>
+          </div>
+        </div>
+      </div>
+      <div class="mock-note">
+        <h2>식물 등록</h2>
+        <p>실제 소스: <code>MyPlantPointView.addPlant()</code>, <code>AddMyPlantScreen</code>, <code>AddPlantController</code></p>
+        <div class="grid">
+          <div class="box">
+            <h3>실제 구현</h3>
+            <ul>
+              <li>bottom sheet 등록 flow</li>
+              <li>식물종 검색 화면과 최근 검색어</li>
+              <li>대표 이미지 앨범/카메라 업로드</li>
+              <li>server plant 기준값으로 관리 기준 초기화</li>
+              <li>등록 성공 후 내 식물 목록 반영</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h3>AI 삽입</h3>
+            <ul>
+              <li>초기 관리 기준을 쉬운 말로 설명</li>
+              <li>애칭 자동 추천</li>
+              <li>등록 후 첫 주 돌봄 계획 생성</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="detail">
+      <div class="phone">
+        <div class="screen">
+          <div class="hero-img"></div>
+          <div class="content" style="padding-top:18px;">
+            <p class="title">4 level</p>
+            <div style="height:10px;background:#e9eee9;border-radius:12px;overflow:hidden;margin-bottom:8px;"><div style="width:64%;height:100%;background:#69f0ae;"></div></div>
+            <h2 class="screen-title">거실 몬스테라</h2>
+            <p class="text">몬스테라 ・ plant_001<br>큰 잎이 매력적인 실내 식물입니다.</p>
+            <div class="card white"><p class="text">📌 새잎이 올라오는 중</p></div>
+            <div class="card white">
+              <p class="text">✅ 함께한지 120일이 지났어요<br>✅ 물은 7일에 한번씩 주고 있어요<br>✅ 밝은 간접광에서 키우고 있어요<br>✅ 18°C~26°C 온도에서 키우고 있어요</p>
+            </div>
+            <div class="card white">
+              <p class="title">D-Day</p>
+              <div class="chips"><span class="chip active">물주기 오늘</span><span class="chip">분갈이 20일</span><span class="chip">영양제 8일</span><span class="chip">+</span></div>
+            </div>
+            <div class="button">기록하기</div>
+          </div>
+        </div>
+      </div>
+      <div class="mock-note">
+        <h2>상세 / 기록하기</h2>
+        <p>실제 소스: <code>MyPlantDetailPage</code>, <code>PlantRecordActionSheet</code>, <code>RecentPlantActions</code></p>
+        <div class="grid">
+          <div class="box">
+            <h3>실제 구현</h3>
+            <ul>
+              <li>대표 이미지 SliverAppBar</li>
+              <li>관리 종료/재시작 메뉴</li>
+              <li>레벨 게이지와 관리 기준 편집 bottom sheet</li>
+              <li>D-Day: 물주기, 분갈이, 영양제</li>
+              <li>기록하기: 물주기, 메모, 사진, 영양제, 분갈이, 상태</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h3>AI 삽입</h3>
+            <ul>
+              <li>`기록하기` sheet 최상단에 자연어 입력</li>
+              <li>“잎 끝이 말랐어” -> 상태/메모 초안</li>
+              <li>최근 기록 기반 상세 화면 요약</li>
+            </ul>
+          </div>
+          <div class="box wide">
+            <h3>아이디어 메모</h3>
+            <div class="memo" contenteditable="true" data-key="memo-detail" data-placeholder="기록하기 sheet에 넣을 AI 흐름을 적어보세요."></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="record">
+      <div class="phone">
+        <div class="screen">
+          <div class="status"><span>9:41</span><span>기록</span></div>
+          <div class="content">
+            <h2 class="screen-title">기록</h2>
+            <div class="chips">
+              <span class="chip active">전체</span><span class="chip">물</span><span class="chip">영양제</span><span class="chip">분갈이</span><span class="chip">메모</span><span class="chip">상태</span><span class="chip">사진</span>
+            </div>
+            <div class="list-row"><div class="iconbox">💧</div><div><p class="title">몬스테라 물주기</p><p class="text">오늘 오전 9:20</p></div><span>⋮</span></div>
+            <div class="list-row"><div class="iconbox">✎</div><div><p class="title">스투키 메모</p><p class="text">잎 끝이 조금 말라 보임</p></div><span>⋮</span></div>
+            <div class="list-row"><div class="iconbox">📷</div><div style="flex:1;"><p class="title">필로덴드론 사진</p><div class="card teal" style="height:78px;margin:6px 0;"></div><p class="text">3일 전</p></div><span>⋮</span></div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="dot"></div><span>내 식물</span></div>
+            <div class="nav-item"><div class="dot"></div><span>사전</span></div>
+            <div class="nav-item active"><div class="dot"></div><span>기록</span></div>
+            <div class="nav-item"><div class="dot"></div><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+      <div class="mock-note">
+        <h2>기록 탭</h2>
+        <p>실제 소스: <code>RecordHome</code>, <code>RecordController</code></p>
+        <div class="grid">
+          <div class="box">
+            <h3>실제 구현</h3>
+            <ul>
+              <li>기록 유형 필터 7개</li>
+              <li>사진 기록 썸네일 preview</li>
+              <li>메모/상태 수정 dialog</li>
+              <li>삭제 popup 및 soft delete</li>
+              <li>pull to refresh</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h3>AI 1순위</h3>
+            <ul>
+              <li>제목 아래 자연어 입력창 추가</li>
+              <li>식물명/기록유형/날짜/메모 초안 생성</li>
+              <li>자동 저장 없이 확인 후 저장</li>
+            </ul>
+          </div>
+          <div class="box wide">
+            <h3>아이디어 메모</h3>
+            <div class="memo" contenteditable="true" data-key="memo-record" data-placeholder="기록 탭의 자연어 입력 UI 아이디어를 적어보세요."></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="dictionary">
+      <div class="phone">
+        <div class="screen">
+          <div class="status"><span>9:41</span><span>식물사전</span></div>
+          <div class="appbar"><strong>식물사전</strong></div>
+          <div class="content">
+            <div class="search">🔍 식물 이름을 검색하세요</div>
+            <div class="card teal"><p class="title">오늘의 식물</p><p class="text">몬스테라 ›</p></div>
+            <div style="display:flex;gap:10px;overflow:hidden;">
+              <div class="card" style="min-width:230px;"><p class="title">초보 추천</p><div class="chips"><span class="chip">스투키</span><span class="chip">몬스테라</span></div></div>
+              <div class="card" style="min-width:230px;"><p class="title">공기정화</p><div class="chips"><span class="chip">산세베리아</span><span class="chip">스파티필름</span></div></div>
+            </div>
+            <p class="title">식물 124종</p>
+            <div class="list-row"><div><p class="title">몬스테라</p><p class="text">권장 물주기 간격은 7일입니다.</p></div><span>›</span></div>
+            <div class="list-row"><div><p class="title">칼라데아</p><p class="text">습도를 좋아하고 직사광선을 피합니다.</p></div><span>›</span></div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="dot"></div><span>내 식물</span></div>
+            <div class="nav-item active"><div class="dot"></div><span>사전</span></div>
+            <div class="nav-item"><div class="dot"></div><span>기록</span></div>
+            <div class="nav-item"><div class="dot"></div><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+      <div class="mock-note">
+        <h2>식물사전 / 상세</h2>
+        <p>실제 소스: <code>DictionaryHome</code>, <code>DictionaryDetail</code>, <code>DictionaryController</code></p>
+        <div class="grid">
+          <div class="box">
+            <h3>실제 구현</h3>
+            <ul>
+              <li>오늘의 식물</li>
+              <li>quick section 10종</li>
+              <li>식물 N종 list와 검색</li>
+              <li>상세: 기본 정보, 설명, 관리 정보, 라벨, 팁</li>
+              <li>비슷한 식물, 키우는 사람들, 식물 이야기 진입</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h3>AI 삽입</h3>
+            <ul>
+              <li>내 식물 기록 기준으로 사전 설명 개인화</li>
+              <li>추천 섹션의 추천 이유 자동 문장화</li>
+              <li>오타/비슷한 이름 검색 보정</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="community">
+      <div class="phone">
+        <div class="screen">
+          <div class="status"><span>9:41</span><span>몬스테라</span></div>
+          <div class="appbar"><strong>몬스테라</strong><span class="small">식물 이야기</span></div>
+          <div class="content">
+            <div class="list-row"><div style="flex:1;"><p class="title" style="color:var(--teal);">식집사</p><p class="text">새잎이 올라왔는데 물주기 간격을 유지해도 될까요?</p></div><span class="text">댓글 2</span></div>
+            <div class="list-row"><div style="flex:1;"><p class="title" style="color:var(--teal);">초록생활</p><p class="text">거실 밝은 곳으로 옮긴 뒤 잎이 더 커졌어요.</p></div><span class="text">댓글 0</span></div>
+            <div class="fab">✎</div>
+            <div class="sheet">
+              <p class="title">댓글</p>
+              <p class="text">아직 댓글이 없습니다.</p>
+              <div class="search" style="margin-top:12px;">댓글을 입력하세요  ✈</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mock-note">
+        <h2>식물별 커뮤니티</h2>
+        <p>실제 소스: <code>CommunityPostList</code>, <code>CommunityPostDetail</code></p>
+        <div class="grid">
+          <div class="box">
+            <h3>실제 구현</h3>
+            <ul>
+              <li>사전 상세에서 식물별 게시글로 진입</li>
+              <li>글 작성 dialog</li>
+              <li>게시글 목록: 작성자, 댓글 수, 본문</li>
+              <li>상세: 댓글 stream, 댓글 입력, 작성자 삭제</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h3>AI 삽입</h3>
+            <ul>
+              <li>글쓰기 때 최근 내 기록 요약 제안</li>
+              <li>반복 질문 요약</li>
+              <li>신고/유해 표현 보조 필터</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="account">
+      <div class="phone">
+        <div class="screen">
+          <div class="status"><span>9:41</span><span>계정</span></div>
+          <div class="appbar"><strong>계정</strong></div>
+          <div class="content">
+            <div class="row" style="margin-bottom:28px;">
+              <div style="width:56px;height:56px;border-radius:50%;background:#e0f4ef;display:grid;place-items:center;color:var(--teal);font-size:26px;">👤</div>
+              <div><p class="title" style="font-size:20px;">식집사</p><p class="text">카카오 로그인 사용자</p></div>
+            </div>
+            <div class="list-row"><div class="iconbox">✎</div><p class="title">닉네임 수정</p></div>
+            <div class="list-row"><div class="iconbox">🔔</div><div style="flex:1;"><p class="title">알림</p><p class="text">알림 시간 09:00 ›</p></div><span class="chip active">ON</span></div>
+            <div class="list-row"><div class="iconbox">🌐</div><div style="flex:1;"><p class="title">내 식물 공개</p><p class="text">키우는 사람들 섹션에 공개 식물이 보입니다.</p></div><span class="chip">OFF</span></div>
+            <div class="list-row"><div class="iconbox">↩</div><p class="title">로그아웃</p></div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="dot"></div><span>내 식물</span></div>
+            <div class="nav-item"><div class="dot"></div><span>사전</span></div>
+            <div class="nav-item"><div class="dot"></div><span>기록</span></div>
+            <div class="nav-item active"><div class="dot"></div><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+      <div class="mock-note">
+        <h2>계정</h2>
+        <p>실제 소스: <code>AccountPage</code>, <code>AuthController</code></p>
+        <div class="grid">
+          <div class="box">
+            <h3>실제 구현</h3>
+            <ul>
+              <li>프로필/이메일 표시</li>
+              <li>닉네임 수정 dialog</li>
+              <li>알림 on/off와 시간 picker</li>
+              <li>내 식물 공개 switch</li>
+              <li>로그아웃</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h3>AI 삽입</h3>
+            <ul>
+              <li>개인화 알림 문구</li>
+              <li>공개 식물 소개문 초안</li>
+              <li>설정 변경 영향 안내</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll('[contenteditable][data-key]').forEach((el) => {
+      const key = 'plantgram2-source-mock:' + el.dataset.key;
+      el.textContent = localStorage.getItem(key) || '';
+      el.addEventListener('input', () => localStorage.setItem(key, el.textContent));
+    });
+  </script>
+</body>
+</html>
