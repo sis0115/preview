@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireSignal — 전형 정보</title>
+<style>
+  :root{--ink:#10131C;--sub:#9098A6;--accent:#3D6BFF;--card:#FFFFFF;--line:#EEF1F6;--up:#F23B43;--up-soft:#FFEDED;--green:#16B364;--green-soft:#E8F8EF;--lav:#EEF1FF;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif;
+    background:#C9D4E6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;color:var(--ink);}
+  .phone{width:390px;height:800px;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,#E9F0FC 0%,#F5F7FB 24%);box-shadow:0 30px 70px rgba(20,30,60,.35);}
+  .statusbar{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;font-size:14px;font-weight:600;}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:8px 22px 6px;} .nav .back{font-size:26px;}
+  .chead{padding:6px 24px 2px;}
+  .chead .nm{font-size:24px;font-weight:800;letter-spacing:-.6px;}
+  .chead .sub{font-size:13px;color:var(--sub);font-weight:600;margin-top:5px;} .chead .sub b{color:var(--up);}
+  .itabs{display:flex;gap:5px;margin:16px 24px 0;background:#E4E9F2;border-radius:14px;padding:5px;}
+  .it{flex:1;text-align:center;font-size:13.5px;font-weight:800;padding:10px 4px;border-radius:11px;color:var(--sub);}
+  .it.on{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(30,40,70,.08);}
+  .screen{flex:1;overflow-y:auto;padding:18px 24px 28px;}
+
+  /* 사회적 증거 */
+  .proof{background:linear-gradient(135deg,#101522,#243049);border-radius:22px;padding:20px;color:#fff;display:flex;align-items:center;gap:15px;box-shadow:0 12px 24px rgba(16,21,34,.22);}
+  .proof .big{font-size:34px;font-weight:800;line-height:1;} .proof .big small{font-size:16px;}
+  .proof .tx{flex:1;font-size:13.5px;font-weight:600;line-height:1.5;opacity:.92;} .proof .tx b{color:#8FB3FF;}
+
+  .seclab{font-size:14px;font-weight:800;color:var(--sub);margin:26px 2px 13px;}
+  /* 전형 타임라인 */
+  .flow{background:var(--card);border-radius:22px;padding:8px 18px;box-shadow:0 10px 24px rgba(60,90,200,.07);}
+  .st{display:flex;gap:14px;padding:15px 2px;border-bottom:1px solid var(--line);align-items:flex-start;} .st:last-child{border-bottom:none;}
+  .st .ico{width:34px;height:34px;border-radius:11px;background:var(--lav);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .st .ico.done{background:var(--green-soft);} .st .ico.now{background:var(--up-soft);}
+  .st .b{flex:1;} .st .b .t{font-size:15px;font-weight:800;} .st .b .d{font-size:12.5px;color:var(--sub);font-weight:500;margin-top:3px;line-height:1.5;}
+  .st .tag{font-size:11px;font-weight:800;padding:4px 9px;border-radius:7px;flex-shrink:0;}
+  .tag.done{background:var(--green-soft);color:var(--green);} .tag.now{background:var(--up);color:#fff;} .tag.next{background:#EEF0F4;color:var(--sub);}
+
+  .info{background:var(--card);border-radius:18px;padding:16px 18px;margin-bottom:11px;box-shadow:0 8px 20px rgba(60,90,200,.06);}
+  .info .h{font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:8px;}
+  .info .h .pill{font-size:10.5px;font-weight:800;color:var(--accent);background:var(--lav);padding:3px 8px;border-radius:6px;}
+  .info .row{font-size:13.5px;font-weight:600;color:#48505E;margin-top:10px;line-height:1.5;}
+  .info .row b{color:var(--ink);}
+  .info .src{font-size:11px;color:var(--sub);font-weight:500;margin-top:9px;}
+</style></head>
+<body><div class="phone">
+  <div class="statusbar"><div>1:34</div><div>●●● 5G 🔋</div></div>
+  <div class="nav"><div class="back">‹</div><div></div></div>
+  <div class="chead">
+    <div class="nm">SK하이닉스</div>
+    <div class="sub">양산기술 P&T · 내 면접 <b>D-2</b></div>
+  </div>
+  <div class="itabs"><div class="it">📡 시그널</div><div class="it on">📋 전형 정보</div><div class="it">💬 커뮤니티</div></div>
+  <div class="screen">
+    <div class="proof"><div class="big">14<small>명</small></div><div class="tx"><b>이번 시즌 인증 합격자</b><br>이 직무 후기를 남긴 합격자 수예요</div></div>
+
+    <div class="seclab">전형 단계</div>
+    <div class="flow">
+      <div class="st"><div class="ico done">📄</div><div class="b"><div class="t">서류</div><div class="d">자소서 4문항 · 발표까지 약 2주</div></div><div class="tag done">완료</div></div>
+      <div class="st"><div class="ico done">🧠</div><div class="b"><div class="t">인적성 (SKCT + A!SK)</div><div class="d">SKCT 적성 + A!SK 반도체 상식</div></div><div class="tag done">완료</div></div>
+      <div class="st"><div class="ico now">🎤</div><div class="b"><div class="t">1차 면접</div><div class="d">직무 + 인성 · 약 25분 · 이력서 기반</div></div><div class="tag now">D-2</div></div>
+      <div class="st"><div class="ico">🏆</div><div class="b"><div class="t">최종 발표</div><div class="d">면접 후 약 2~3주</div></div><div class="tag next">예정</div></div>
+    </div>
+
+    <div class="seclab">미리 알아둘 것</div>
+    <div class="info">
+      <div class="h">🧠 인적성 <span class="pill">SKCT · A!SK</span></div>
+      <div class="row"><b>SKCT</b> — 언어추리·창의수리 비중 큼. 온라인이라 <b>필기 제한</b> → 메모장·계산기 띄워 마우스로 푸는 연습. 오래 걸릴 문제는 빠르게 패스.<br><b>교재 실전 유사도</b> — 에듀윌 › 링커리어 › 렛유인 (봉봉=수학 빠른풀이).<br><b>A!SK</b> — 반도체 상식. 유튜브 강의로 단기 대비.</div>
+      <div class="src">합격자 후기 14건에서 반복 언급 · 추정</div>
+    </div>
+    <div class="info">
+      <div class="h">🎤 면접 형식</div>
+      <div class="row">직무 + 인성 <b>같이 25분</b> 내외. 직무·전공 질문보다 <b>이력서 기반 질문이 훨씬 많음.</b></div>
+      <div class="src">합격자 후기 14건 기준 · 추정</div>
+    </div>
+  </div>
+</div></body></html>

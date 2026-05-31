@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireSignal — 커뮤니티 (v2)</title>
+<style>
+  :root{--ink:#10131C;--sub:#9098A6;--accent:#3D6BFF;--card:#FFFFFF;--line:#EEF1F6;--up:#F23B43;--up-soft:#FFEDED;--green:#16B364;--green-soft:#E8F8EF;--gold:#E8A317;--gold-soft:#FFF6E2;--lav:#EEF1FF;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif;
+    background:#C9D4E6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;color:var(--ink);}
+  .phone{width:390px;height:800px;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,#E9F0FC 0%,#F5F7FB 22%);box-shadow:0 30px 70px rgba(20,30,60,.35);}
+  .statusbar{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;font-size:14px;font-weight:600;}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:8px 22px 6px;} .nav .back{font-size:26px;}
+  .chead{padding:6px 24px 2px;}
+  .chead .nm{font-size:24px;font-weight:800;letter-spacing:-.6px;}
+  .chead .sub{font-size:13px;color:var(--sub);font-weight:600;margin-top:5px;}
+  .chead .sub b{color:var(--up);}
+  /* 직군 칩 row (회사단위 + 직군 표시) */
+  .chips-row{display:flex;gap:7px;margin:10px 24px 0;overflow-x:auto;padding-bottom:2px;}
+  .chips-row::-webkit-scrollbar{display:none;}
+  .jchip{font-size:12px;font-weight:800;padding:7px 11px;border-radius:999px;color:var(--sub);background:#fff;flex-shrink:0;box-shadow:0 4px 10px rgba(60,90,200,.05);}
+  .jchip.on{background:var(--ink);color:#fff;}
+  .itabs{display:flex;gap:5px;margin:14px 24px 0;background:#E4E9F2;border-radius:14px;padding:5px;}
+  .it{flex:1;text-align:center;font-size:13.5px;font-weight:800;padding:10px 4px;border-radius:11px;color:var(--sub);}
+  .it.on{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(30,40,70,.08);}
+  .screen{flex:1;overflow-y:auto;padding:14px 24px 24px;}
+
+  .cohort{background:var(--card);border-radius:18px;padding:13px 16px;display:flex;align-items:center;gap:11px;box-shadow:0 8px 20px rgba(60,90,200,.06);margin-bottom:12px;}
+  .cohort .live{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px var(--green-soft);}
+  .cohort .t{flex:1;font-size:13.5px;font-weight:700;} .cohort .t b{color:var(--green);}
+
+  /* AI 여론 카드 (🅑 정책) */
+  .opinion{background:linear-gradient(135deg,#101522,#243049);border-radius:18px;padding:16px 17px;margin-bottom:14px;color:#fff;box-shadow:0 12px 24px rgba(16,21,34,.22);}
+  .opinion .h{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:800;color:#8FB3FF;letter-spacing:.3px;text-transform:uppercase;}
+  .opinion .t{font-size:14.5px;font-weight:800;line-height:1.5;margin-top:9px;letter-spacing:-.2px;}
+  .opinion .t b{color:#FFB1A8;}
+  .opinion .cite{font-size:11px;font-weight:600;opacity:.7;margin-top:9px;}
+
+  /* 오픈채팅 2버튼 (회사단위) */
+  .chatrow{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
+  .chat{background:var(--card);border-radius:16px;padding:13px 14px;box-shadow:0 8px 18px rgba(60,90,200,.06);position:relative;}
+  .chat .ic{font-size:18px;}
+  .chat .a{font-size:13px;font-weight:800;margin-top:6px;letter-spacing:-.2px;}
+  .chat .b{font-size:11px;color:var(--sub);font-weight:600;margin-top:3px;display:flex;align-items:center;gap:5px;}
+  .chat .live{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;}
+  .chat.locked .ic{filter:grayscale(.6);opacity:.55;}
+  .chat.locked .a{color:var(--sub);} .chat.locked .b{color:#B6BDC8;}
+  .chat .lockic{position:absolute;top:12px;right:13px;font-size:12px;color:var(--sub);}
+  .chat.locked{background:#F4F6FA;box-shadow:none;}
+
+  .seclab{font-size:12.5px;font-weight:800;color:var(--sub);margin:6px 2px 10px;display:flex;align-items:center;justify-content:space-between;}
+  .seclab .note{font-weight:600;font-size:11px;color:#B6BDC8;}
+
+  /* 게시글 */
+  .post{background:var(--card);border-radius:18px;padding:15px 16px;margin-bottom:10px;box-shadow:0 8px 20px rgba(60,90,200,.06);}
+  .ph{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+  .ph .who{font-size:12.5px;font-weight:800;}
+  .badge{font-size:10px;font-weight:800;padding:3px 7px;border-radius:6px;display:inline-flex;align-items:center;gap:3px;}
+  .b-doc{background:var(--lav);color:var(--accent);}
+  .b-apt{background:var(--green-soft);color:var(--green);}
+  .b-int{background:var(--up-soft);color:var(--up);}
+  .b-fin1{background:var(--gold-soft);color:var(--gold);}
+  .b-fin{background:var(--gold-soft);color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;}
+  .ph .tm{font-size:11px;color:var(--sub);font-weight:600;margin-left:auto;}
+  .pt{font-size:14px;font-weight:700;line-height:1.5;letter-spacing:-.2px;} .pt b{color:var(--up);}
+  .pmeta{font-size:11.5px;color:var(--sub);font-weight:600;margin-top:9px;display:flex;gap:14px;}
+
+  .write{position:absolute;right:20px;bottom:24px;background:var(--accent);color:#fff;border-radius:999px;padding:14px 20px;font-weight:800;font-size:14px;box-shadow:0 10px 24px rgba(61,107,255,.4);}
+</style></head>
+<body><div class="phone">
+  <div class="statusbar"><div>2:43</div><div>●●● 5G 🔋</div></div>
+  <div class="nav"><div class="back">‹</div><div></div></div>
+  <div class="chead">
+    <div class="nm">SK하이닉스</div>
+    <div class="sub">현재 회사 Phase · <b>🎤 면접 시즌</b> · 후기 14개</div>
+  </div>
+  <div class="chips-row">
+    <div class="jchip on">⭐ 양산기술 P&T</div>
+    <div class="jchip">D램설계</div>
+    <div class="jchip">소자</div>
+    <div class="jchip">SW개발</div>
+  </div>
+  <div class="itabs"><div class="it">📡 시그널</div><div class="it">📋 전형정보</div><div class="it on">💬 커뮤니티</div></div>
+  <div class="screen">
+
+    <div class="cohort"><div class="live"></div><div class="t">지금 <b>38명</b>이 이 회사 준비 중 · 면접 본 사람 <b>14명</b></div></div>
+
+    <!-- AI 여론 카드 (🅑 정책 디폴트 상단) -->
+    <div class="opinion">
+      <div class="h">📡 이 회사 커뮤니티 AI 여론</div>
+      <div class="t">최근 글 18개에서 <b>'이력서 꼬리질문'·'1분 자기소개'</b>가 가장 많이 언급됐어요</div>
+      <div class="cite">🟢 게시글 18건 기반 · 자동 요약</div>
+    </div>
+
+    <!-- 오픈채팅 2버튼 (회사 단위) -->
+    <div class="chatrow">
+      <div class="chat">
+        <div class="ic">💬🎤</div>
+        <div class="a">면접 후기 토론방</div>
+        <div class="b"><span class="live"></span> 12명 대화 중</div>
+      </div>
+      <div class="chat locked">
+        <div class="ic">💬🎖️</div>
+        <div class="a">최종 면접 준비방</div>
+        <div class="b">🎖️ 최종 후기 필요</div>
+        <div class="lockic">🔒</div>
+      </div>
+    </div>
+
+    <div class="seclab">🏢 일반 게시판 <span class="note">카테고리 X · 콘텐츠로 구분</span></div>
+
+    <div class="post">
+      <div class="ph"><div class="who">익명</div><span class="badge b-fin">🏆 최종합격</span><div class="tm">방금</div></div>
+      <div class="pt">🎉 양산기술 P&T 최종 합격! 면접은 진짜 <b>이력서 기반</b>이 다였어요. 자랑 카드로 들어왔어요.</div>
+      <div class="pmeta"><span>♥ 32</span><span>💬 18</span></div>
+    </div>
+
+    <div class="post">
+      <div class="ph"><div class="who">익명</div><span class="badge b-int">🎤 면접후기</span><div class="tm">1시간 전</div></div>
+      <div class="pt">분위기는 편한데 <b>꼬리질문</b>이 깊었어요. 자소서 프로젝트 "왜 그 방법 썼냐"를 3번 물어봄.</div>
+      <div class="pmeta"><span>♥ 21</span><span>💬 9</span></div>
+    </div>
+
+    <div class="post">
+      <div class="ph"><div class="who">익명</div><span class="badge b-apt">🧠 인적성합격</span><div class="tm">3시간 전</div></div>
+      <div class="pt">SKCT 후기 — 봉투모의고사 꼭. 에듀윌이 제일 비슷했고 수리는 시간배분이 갈렸어요.</div>
+      <div class="pmeta"><span>♥ 14</span><span>💬 22</span></div>
+    </div>
+
+    <div class="post">
+      <div class="ph"><div class="who">익명</div><span class="badge b-doc">📄 서류합격</span><div class="tm">어제</div></div>
+      <div class="pt">자소서 1번 문항 직무 스토리텔링으로 풀었더니 서류 붙었어요. 두괄식 진짜 중요…</div>
+      <div class="pmeta"><span>♥ 19</span><span>💬 7</span></div>
+    </div>
+  </div>
+  <div class="write">✍️ 글쓰기</div>
+</div></body></html>
