@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plantgram2 Product Screens</title>
+  <style>
+    :root {
+      --bg: #f5f7f4;
+      --ink: #17211b;
+      --muted: #6b756e;
+      --line: #dfe5df;
+      --green: #2f8f5b;
+      --mint: #dff3e8;
+      --blue: #dcecff;
+      --amber: #fff0c8;
+      --coral: #ffe4dc;
+      --white: #ffffff;
+      --shadow: 0 16px 36px rgba(23, 33, 27, .10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .page-header {
+      padding: 44px 32px 24px;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .page-header h1 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .page-header p {
+      margin: 0;
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .summary {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 32px 24px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .summary-item {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .summary-item strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .summary-item span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .screens {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 8px 32px 60px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    .screen-block {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .screen-caption {
+      min-height: 84px;
+    }
+
+    .screen-caption h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .screen-caption p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .phone {
+      width: 100%;
+      max-width: 360px;
+      min-height: 710px;
+      margin: 0 auto;
+      border-radius: 30px;
+      background: #101512;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .phone-inner {
+      min-height: 686px;
+      background: var(--white);
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status {
+      height: 28px;
+      padding: 9px 18px 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #26332b;
+    }
+
+    .appbar {
+      padding: 12px 20px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .appbar h3 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: #eef4ef;
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .content {
+      flex: 1;
+      padding: 0 18px 14px;
+      overflow: hidden;
+    }
+
+    .bottom-nav {
+      height: 62px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #fbfcfb;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #8a948d;
+    }
+
+    .nav-item.active {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .nav-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 8px;
+      background: currentColor;
+      opacity: .16;
+    }
+
+    .nav-item.active .nav-dot {
+      opacity: .95;
+    }
+
+    .pill-row,
+    .chips {
+      display: flex;
+      gap: 8px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .pill {
+      white-space: nowrap;
+      border-radius: 8px;
+      padding: 8px 12px;
+      background: #eef4ef;
+      color: #4c5d52;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .pill.active {
+      background: var(--green);
+      color: white;
+    }
+
+    .card {
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: white;
+      padding: 14px;
+    }
+
+    .soft {
+      background: #f7faf7;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .metric {
+      min-height: 76px;
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--mint);
+    }
+
+    .metric.blue {
+      background: var(--blue);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+
+    .metric span,
+    .small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .plant-card {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .plant-img {
+      width: 68px;
+      height: 68px;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 48% 32%, #73b77f 0 18%, transparent 19%),
+        radial-gradient(circle at 32% 50%, #4f9c67 0 18%, transparent 19%),
+        radial-gradient(circle at 62% 55%, #3e8657 0 19%, transparent 20%),
+        linear-gradient(#e9f4eb, #d5ead9);
+    }
+
+    .plant-card h4,
+    .list-item h4,
+    .record-item h4 {
+      margin: 0 0 4px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .plant-card p,
+    .list-item p,
+    .record-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .progress {
+      height: 7px;
+      background: #e8eee9;
+      border-radius: 7px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress i {
+      display: block;
+      height: 100%;
+      width: 68%;
+      background: var(--green);
+    }
+
+    .search {
+      height: 42px;
+      border-radius: 8px;
+      background: #f0f4f1;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      color: #77827a;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .hero-plant {
+      min-height: 112px;
+      background: var(--mint);
+      display: grid;
+      grid-template-columns: 1fr 96px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .hero-plant h4 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .big-plant {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 46% 24%, #90c99a 0 18%, transparent 19%),
+        radial-gradient(circle at 30% 45%, #55a66d 0 20%, transparent 21%),
+        radial-gradient(circle at 66% 45%, #3f8c5d 0 22%, transparent 23%),
+        #d6eadb;
+    }
+
+    .section-title {
+      margin: 14px 0 8px;
+      font-size: 13px;
+      color: #39483f;
+      font-weight: 800;
+    }
+
+    .list-item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #edf1ed;
+    }
+
+    .thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: #e3f1e6;
+    }
+
+    .thumb.amber {
+      background: var(--amber);
+    }
+
+    .thumb.coral {
+      background: var(--coral);
+    }
+
+    .detail-head {
+      min-height: 138px;
+      display: grid;
+      grid-template-columns: 1fr 110px;
+      gap: 10px;
+      align-items: center;
+      background: #eef7f0;
+      margin-bottom: 12px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      border-radius: 8px;
+      background: white;
+      border: 1px solid #d8e5db;
+      padding: 5px 8px;
+      font-size: 11px;
+      color: #506058;
+    }
+
+    .tip-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .tip {
+      min-height: 64px;
+      background: #f6f9f7;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      color: #4a574f;
+    }
+
+    .ai-box {
+      background: #f1f7f4;
+      border: 1px solid #cfe3d5;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .ai-input {
+      min-height: 46px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #d8e5db;
+      padding: 12px;
+      color: #68766d;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .record-item {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid #edf1ed;
+    }
+
+    .record-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--mint);
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .profile {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--mint);
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 0;
+      border-bottom: 1px solid #edf1ed;
+      font-size: 14px;
+    }
+
+    .switch {
+      width: 42px;
+      height: 24px;
+      border-radius: 24px;
+      background: var(--green);
+      position: relative;
+    }
+
+    .switch:after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: white;
+      right: 3px;
+      top: 3px;
+    }
+
+    .fab {
+      position: absolute;
+      right: 22px;
+      bottom: 78px;
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: var(--green);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      box-shadow: 0 10px 22px rgba(47, 143, 91, .28);
+    }
+
+    .phone-inner.relative {
+      position: relative;
+    }
+
+    @media (max-width: 1060px) {
+      .screens {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      .page-header,
+      .summary,
+      .screens {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .screens {
+        grid-template-columns: 1fr;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .page-header h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>Plantgram2 기능 및 화면 방향</h1>
+    <p>현재 앱 코드와 개발 문서를 기준으로 정리한 기획 검토용 HTML 산출물입니다. 하단 4개 탭, 식물별 커뮤니티, 기록 AI 삽입 후보를 모바일 스크린샷 느낌으로 배치했습니다.</p>
+  </header>
+
+  <section class="summary" aria-label="앱 요약">
+    <div class="summary-item">
+      <strong>핵심 제품</strong>
+      <span>내 식물 등록, 일정, 기록, 사전 탐색에 집중한 식물 관리 앱</span>
+    </div>
+    <div class="summary-item">
+      <strong>기술 방향</strong>
+      <span>Firebase, GetX, Repository 구조를 기준으로 레거시 기능 재구성</span>
+    </div>
+    <div class="summary-item">
+      <strong>디자인 톤</strong>
+      <span>흰 배경, 그린 액션 컬러, 짧은 카드와 리스트 중심의 관리형 UI</span>
+    </div>
+    <div class="summary-item">
+      <strong>AI 후보</strong>
+      <span>별도 AI 탭보다 자연어 돌봄 기록 입력을 기존 기록 흐름에 삽입</span>
+    </div>
+  </section>
+
+  <main class="screens">
+    <section class="screen-block">
+      <div class="screen-caption">
+        <h2>내 식물 홈</h2>
+        <p>날씨, 오늘 물 줄 식물, 내 식물 목록을 한 번에 보여주는 메인 관리 화면입니다.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status"><span>9:41</span><span>LTE 100%</span></div>
+          <div class="appbar">
+            <h3>내 식물</h3>
+            <div class="icon-btn">+</div>
+          </div>
+          <div class="content">
+            <div class="metric-row">
+              <div class="metric">
+                <strong>24도</strong>
+                <span>오늘은 실내 환기하기 좋은 날</span>
+              </div>
+              <div class="metric blue">
+                <strong>3개</strong>
+                <span>오늘 물주기 대상</span>
+              </div>
+            </div>
+            <div class="card soft">
+              <strong>이번 주 관리 요약</strong>
+              <p class="small">물주기 5회, 상태 메모 2개, 사진 기록 1개</p>
+              <div class="progress"><i></i></div>
+            </div>
+            <div class="pill-row">
+              <span class="pill active">내식물</span>
+              <span class="pill">일정</span>
+              <span class="pill">다이어리</span>
+            </div>
+            <div class="plant-card card">
+              <div class="plant-img"></div>
+              <div>
+                <h4>몬스테라</h4>
+                <p>다음 물주기 D-1<br>거실 창가에서 관리 중</p>
+              </div>
+            </div>
+            <div class="plant-card card">
+              <div class="plant-img"></div>
+              <div>
+                <h4>스투키</h4>
+                <p>다음 물주기 D-6<br>건조하게 관리</p>
+              </div>
+            </div>
+            <div class="plant-card card">
+              <div class="plant-img"></div>
+              <div>
+                <h4>필로덴드론</h4>
+                <p>최근 상태 메모 있음<br>잎 색 변화 관찰</p>
+              </div>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item active"><i class="nav-dot"></i><span>내 식물</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>사전</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>기록</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-block">
+      <div class="screen-caption">
+        <h2>식물사전</h2>
+        <p>검색, 오늘의 식물, 추천 섹션을 통해 식물 관리 정보를 탐색합니다.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status"><span>9:41</span><span>LTE 100%</span></div>
+          <div class="appbar">
+            <h3>식물사전</h3>
+            <div class="icon-btn">⌕</div>
+          </div>
+          <div class="content">
+            <div class="search">식물 이름으로 검색</div>
+            <div class="hero-plant card">
+              <div>
+                <h4>오늘의 식물</h4>
+                <p class="small">공기정화에 좋은 아레카야자</p>
+                <div class="tag-row">
+                  <span class="tag">초보 추천</span>
+                  <span class="tag">밝은 곳</span>
+                </div>
+              </div>
+              <div class="big-plant"></div>
+            </div>
+            <div class="section-title">추천 섹션</div>
+            <div class="chips">
+              <span class="pill active">초보 추천</span>
+              <span class="pill">공기정화</span>
+              <span class="pill">인테리어</span>
+            </div>
+            <div class="chips">
+              <span class="pill">반려동물 주의</span>
+              <span class="pill">햇빛 선호</span>
+            </div>
+            <div class="section-title">인기 식물</div>
+            <div class="list-item">
+              <div class="thumb"></div>
+              <div><h4>몬스테라</h4><p>넓은 잎, 밝은 간접광</p></div>
+            </div>
+            <div class="list-item">
+              <div class="thumb amber"></div>
+              <div><h4>스투키</h4><p>건조에 강한 초보 식물</p></div>
+            </div>
+            <div class="list-item">
+              <div class="thumb coral"></div>
+              <div><h4>칼라데아</h4><p>습도 관리가 중요한 식물</p></div>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><i class="nav-dot"></i><span>내 식물</span></div>
+            <div class="nav-item active"><i class="nav-dot"></i><span>사전</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>기록</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-block">
+      <div class="screen-caption">
+        <h2>식물사전 상세</h2>
+        <p>관리 정보, 상세 팁, 유사 식물, 식물별 커뮤니티 진입을 묶은 상세 화면입니다.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status"><span>9:41</span><span>LTE 100%</span></div>
+          <div class="appbar">
+            <h3>몬스테라</h3>
+            <div class="icon-btn">↗</div>
+          </div>
+          <div class="content">
+            <div class="detail-head card">
+              <div>
+                <h4>Monstera deliciosa</h4>
+                <p class="small">넓은 잎과 절개가 특징인 실내 관엽식물</p>
+                <div class="tag-row">
+                  <span class="tag">간접광</span>
+                  <span class="tag">주 1회</span>
+                  <span class="tag">습도 선호</span>
+                </div>
+              </div>
+              <div class="big-plant"></div>
+            </div>
+            <div class="section-title">관리 정보</div>
+            <div class="tip-grid">
+              <div class="tip"><strong>물</strong><br>겉흙이 마르면 충분히</div>
+              <div class="tip"><strong>빛</strong><br>밝은 간접광</div>
+              <div class="tip"><strong>온도</strong><br>18도 이상 권장</div>
+              <div class="tip"><strong>주의</strong><br>과습과 냉해 주의</div>
+            </div>
+            <div class="card soft">
+              <strong>상세 팁</strong>
+              <p class="small">새잎이 말린 채 오래 유지되면 습도와 물마름 상태를 함께 확인하세요.</p>
+            </div>
+            <div class="section-title">연결 기능</div>
+            <div class="list-item">
+              <div class="thumb"></div>
+              <div><h4>이 식물 이야기 보기</h4><p>같은 식물을 키우는 사용자 게시글</p></div>
+            </div>
+            <div class="list-item">
+              <div class="thumb amber"></div>
+              <div><h4>비슷한 식물</h4><p>필로덴드론, 싱고니움 추천</p></div>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><i class="nav-dot"></i><span>내 식물</span></div>
+            <div class="nav-item active"><i class="nav-dot"></i><span>사전</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>기록</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-block">
+      <div class="screen-caption">
+        <h2>기록</h2>
+        <p>전체 돌봄 기록을 유형별로 필터링하고, AI 자연어 입력을 넣기 좋은 화면입니다.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status"><span>9:41</span><span>LTE 100%</span></div>
+          <div class="appbar">
+            <h3>기록</h3>
+            <div class="icon-btn">+</div>
+          </div>
+          <div class="content">
+            <div class="ai-box">
+              <strong>AI 기록 초안</strong>
+              <p class="small">자연어로 돌봄 내용을 입력하면 저장 전 초안을 만듭니다.</p>
+              <div class="ai-input">예: 몬스테라 물 줬고 새잎이 올라왔어</div>
+            </div>
+            <div class="chips">
+              <span class="pill active">전체</span>
+              <span class="pill">물</span>
+              <span class="pill">영양제</span>
+              <span class="pill">분갈이</span>
+            </div>
+            <div class="record-item">
+              <div class="record-icon">W</div>
+              <div>
+                <h4>몬스테라 물주기</h4>
+                <p>오늘 오전 9:20 · 겉흙이 말라 충분히 물 줌</p>
+              </div>
+            </div>
+            <div class="record-item">
+              <div class="record-icon">S</div>
+              <div>
+                <h4>스투키 상태 메모</h4>
+                <p>어제 · 잎 끝 마름 관찰, 다음 주 재확인</p>
+              </div>
+            </div>
+            <div class="record-item">
+              <div class="record-icon">P</div>
+              <div>
+                <h4>필로덴드론 사진</h4>
+                <p>5월 28일 · 새잎 성장 기록</p>
+              </div>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><i class="nav-dot"></i><span>내 식물</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>사전</span></div>
+            <div class="nav-item active"><i class="nav-dot"></i><span>기록</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-block">
+      <div class="screen-caption">
+        <h2>계정</h2>
+        <p>프로필, 닉네임, 푸시 알림, 내 식물 공개 범위를 관리하는 설정 화면입니다.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status"><span>9:41</span><span>LTE 100%</span></div>
+          <div class="appbar">
+            <h3>계정</h3>
+            <div class="icon-btn">⚙</div>
+          </div>
+          <div class="content">
+            <div class="profile card">
+              <div class="avatar">K</div>
+              <div>
+                <h4>초록집사</h4>
+                <p class="small">kakao_user@example.com</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="setting-row"><span>닉네임 수정</span><strong>변경</strong></div>
+              <div class="setting-row"><span>푸시 알림</span><i class="switch"></i></div>
+              <div class="setting-row"><span>알림 시간</span><strong>오전 9:00</strong></div>
+              <div class="setting-row"><span>내 식물 공개</span><i class="switch"></i></div>
+              <div class="setting-row"><span>로그아웃</span><strong>나가기</strong></div>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><i class="nav-dot"></i><span>내 식물</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>사전</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>기록</span></div>
+            <div class="nav-item active"><i class="nav-dot"></i><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-block">
+      <div class="screen-caption">
+        <h2>식물별 커뮤니티</h2>
+        <p>전체 커뮤니티가 아니라 식물사전 상세에서 특정 식물 맥락으로 진입합니다.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-inner relative">
+          <div class="status"><span>9:41</span><span>LTE 100%</span></div>
+          <div class="appbar">
+            <h3>몬스테라 이야기</h3>
+            <div class="icon-btn">↺</div>
+          </div>
+          <div class="content">
+            <div class="card soft">
+              <strong>같은 식물을 키우는 사람들</strong>
+              <p class="small">몬스테라 관리 경험과 질문을 식물별로 모아봅니다.</p>
+            </div>
+            <div class="list-item">
+              <div class="thumb"></div>
+              <div><h4>새잎이 펴지는 데 며칠 걸리나요?</h4><p>초록집사 · 댓글 4개</p></div>
+            </div>
+            <div class="list-item">
+              <div class="thumb amber"></div>
+              <div><h4>과습인지 확인 부탁드려요</h4><p>식물초보 · 댓글 2개</p></div>
+            </div>
+            <div class="list-item">
+              <div class="thumb coral"></div>
+              <div><h4>지지대 세운 뒤 성장 기록</h4><p>잎사귀 · 댓글 7개</p></div>
+            </div>
+          </div>
+          <div class="fab">+</div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><i class="nav-dot"></i><span>내 식물</span></div>
+            <div class="nav-item active"><i class="nav-dot"></i><span>사전</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>기록</span></div>
+            <div class="nav-item"><i class="nav-dot"></i><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

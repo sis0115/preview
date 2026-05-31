@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plantgram2 AI Planning Board</title>
+  <style>
+    :root {
+      --bg: #f4f6f2;
+      --paper: #ffffff;
+      --ink: #17211b;
+      --muted: #6c756f;
+      --line: #dde5dd;
+      --green: #2f8f5b;
+      --green-dark: #1f6d44;
+      --mint: #e2f4ea;
+      --blue: #e8f1ff;
+      --amber: #fff2ca;
+      --rose: #ffe8df;
+      --lavender: #f0ecff;
+      --shadow: 0 14px 36px rgba(23, 33, 27, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 38px 28px 20px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 820px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .toolbar {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 28px 22px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    a.button {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    button.primary {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    .overview {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 28px 24px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .overview-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 132px;
+    }
+
+    .overview-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .overview-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 28px 56px;
+    }
+
+    .menu-section {
+      display: grid;
+      grid-template-columns: 350px minmax(0, 1fr);
+      gap: 18px;
+      margin-bottom: 18px;
+      align-items: stretch;
+    }
+
+    .phone {
+      background: #111713;
+      border-radius: 30px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+      min-height: 690px;
+    }
+
+    .phone-inner {
+      min-height: 666px;
+      background: var(--paper);
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status {
+      height: 28px;
+      padding: 9px 18px 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #2c362f;
+    }
+
+    .appbar {
+      padding: 12px 18px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .appbar h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #eef4ef;
+      color: var(--green-dark);
+      font-weight: 800;
+    }
+
+    .screen-content {
+      flex: 1;
+      padding: 0 18px 16px;
+      overflow: hidden;
+    }
+
+    .bottom-nav {
+      height: 62px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #fbfcfb;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: #8c968f;
+      font-size: 10px;
+    }
+
+    .nav-item.active {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .nav-mark {
+      width: 20px;
+      height: 20px;
+      border-radius: 8px;
+      background: currentColor;
+      opacity: .18;
+    }
+
+    .nav-item.active .nav-mark { opacity: .95; }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 13px;
+      margin-bottom: 10px;
+    }
+
+    .card.tint { background: var(--mint); border-color: #cae9d7; }
+    .card.blue { background: var(--blue); border-color: #d4e4fb; }
+    .card.amber { background: var(--amber); border-color: #ead996; }
+    .card.rose { background: var(--rose); border-color: #efd0c4; }
+    .card.lavender { background: var(--lavender); border-color: #ded6ff; }
+
+    .card-title {
+      margin: 0 0 5px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .card-text {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .plant-img {
+      width: 58px;
+      height: 58px;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 55% 32%, #8ed59e 0 18%, transparent 19%),
+        radial-gradient(circle at 32% 52%, #5fb878 0 20%, transparent 21%),
+        linear-gradient(135deg, #eaf8ec, #bfe6c8);
+      flex: 0 0 auto;
+    }
+
+    .chips {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin: 9px 0 12px;
+    }
+
+    .chip {
+      border-radius: 8px;
+      padding: 7px 9px;
+      background: #f1f5f1;
+      color: #4e5b52;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .chip.active {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .search {
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: #8d978f;
+      font-size: 13px;
+      margin-bottom: 12px;
+      background: #fbfcfb;
+    }
+
+    .timeline {
+      border-left: 2px solid #dce8de;
+      padding-left: 12px;
+      margin-left: 8px;
+    }
+
+    .timeline .card {
+      position: relative;
+    }
+
+    .timeline .card::before {
+      content: "";
+      position: absolute;
+      left: -20px;
+      top: 18px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .planning-panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      min-height: 690px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .badge {
+      white-space: nowrap;
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: var(--mint);
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .info-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fbfcfb;
+    }
+
+    .info-box h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .memo {
+      min-height: 132px;
+      border: 1px dashed #b7c5b9;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fcfdfb;
+      color: #26352b;
+      font-size: 13px;
+      line-height: 1.6;
+      outline: none;
+      white-space: pre-wrap;
+    }
+
+    .memo:empty::before {
+      content: attr(data-placeholder);
+      color: #98a29b;
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .ai-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .ai-table th,
+    .ai-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .ai-table th {
+      color: #516057;
+      font-size: 12px;
+      background: #f7faf7;
+    }
+
+    footer {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 28px 46px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 980px) {
+      .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .menu-section { grid-template-columns: 1fr; }
+      .phone { max-width: 380px; margin: 0 auto; width: 100%; }
+    }
+
+    @media (max-width: 680px) {
+      header, .toolbar, .overview, main, footer { padding-left: 16px; padding-right: 16px; }
+      h1 { font-size: 27px; }
+      .overview { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .section-head { flex-direction: column; }
+      .planning-panel { min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Plantgram2 AI 적용 아이디어 보드</h1>
+    <p class="lead">
+      현재 Plantgram2의 메뉴별 기능을 간단히 정리하고, 각 메뉴에 AI를 어디까지 넣을지 검토하기 위한 HTML 기획판이다.
+      메모 영역에 직접 아이디어를 적으면 이 브라우저에 자동 저장된다.
+    </p>
+  </header>
+
+  <div class="toolbar">
+    <button class="primary" type="button" onclick="window.print()">인쇄 / PDF 저장</button>
+    <button type="button" onclick="clearMemos()">메모 초기화</button>
+    <a class="button" href="../final-product-brief-2026-05-30/html/index.html">기존 화면 보드 보기</a>
+  </div>
+
+  <section class="overview" aria-label="Plantgram2 menu overview">
+    <div class="overview-card">
+      <strong>내 식물</strong>
+      <p>보유 식물, 오늘 할 일, 일정, 다이어리를 관리하는 중심 메뉴. AI는 기록 입력 비용을 낮추는 방향이 적합하다.</p>
+    </div>
+    <div class="overview-card">
+      <strong>사전</strong>
+      <p>검색, 추천 섹션, 상세 관리 정보, 유사 식물, 식물별 커뮤니티 진입을 담당한다.</p>
+    </div>
+    <div class="overview-card">
+      <strong>기록</strong>
+      <p>전체 돌봄 이력을 필터와 타임라인으로 보여준다. 자연어 기록 AI의 1순위 진입점이다.</p>
+    </div>
+    <div class="overview-card">
+      <strong>계정 / 커뮤니티</strong>
+      <p>카카오 로그인, 닉네임, 알림, 공개 설정과 식물별 게시글/댓글을 다룬다.</p>
+    </div>
+  </section>
+
+  <main>
+    <section class="menu-section" id="myplant">
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status"><span>9:41</span><span>Plantgram</span></div>
+          <div class="appbar"><h2>내 식물</h2><div class="icon">+</div></div>
+          <div class="screen-content">
+            <div class="card tint">
+              <p class="card-title">오늘의 관리</p>
+              <p class="card-text">날씨 24도 · 습도 58% · 물주기 대상 2개</p>
+            </div>
+            <div class="card blue">
+              <p class="card-title">물 줄 식물</p>
+              <p class="card-text">몬스테라 D-day · 스투키 D+1</p>
+            </div>
+            <div class="chips">
+              <span class="chip active">내식물</span>
+              <span class="chip">일정</span>
+              <span class="chip">다이어리</span>
+            </div>
+            <div class="card">
+              <div class="row">
+                <div class="plant-img"></div>
+                <div>
+                  <p class="card-title">거실 몬스테라</p>
+                  <p class="card-text">물주기 오늘 · 최근 기록 3일 전</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="row">
+                <div class="plant-img"></div>
+                <div>
+                  <p class="card-title">책상 스투키</p>
+                  <p class="card-text">분갈이 D-20 · 메모 4개</p>
+                </div>
+              </div>
+            </div>
+            <div class="card amber">
+              <p class="card-title">기록하기</p>
+              <p class="card-text">물주기, 영양제, 분갈이, 상태, 메모, 사진 기록</p>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item active"><div class="nav-mark"></div><span>내 식물</span></div>
+            <div class="nav-item"><div class="nav-mark"></div><span>사전</span></div>
+            <div class="nav-item"><div class="nav-mark"></div><span>기록</span></div>
+            <div class="nav-item"><div class="nav-mark"></div><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+      <div class="planning-panel">
+        <div class="section-head">
+          <div>
+            <h2>내 식물</h2>
+            <p>사용자가 키우는 식물과 오늘 해야 할 돌봄을 빠르게 확인하고, 개별 식물 상세와 기록으로 이어지는 핵심 메뉴.</p>
+          </div>
+          <span class="badge">AI 우선도 높음</span>
+        </div>
+        <div class="grid">
+          <div class="info-box">
+            <h3>현재 기능</h3>
+            <ul>
+              <li>내 식물 목록과 상세 화면</li>
+              <li>대표 이미지 선택 및 업로드</li>
+              <li>날씨 카드와 물주기 대상 카드</li>
+              <li>물주기, 영양제, 분갈이, 상태, 메모, 사진 기록</li>
+              <li>일정과 다이어리 탭</li>
+              <li>식물 공개 설정과 사전 상세 연결</li>
+            </ul>
+          </div>
+          <div class="info-box">
+            <h3>AI 적용 후보</h3>
+            <ul>
+              <li>식물 상세에서 자연어 빠른 기록</li>
+              <li>최근 기록 기반 오늘 할 일 설명</li>
+              <li>물주기 지연/반복 패턴 안내</li>
+              <li>다이어리 사진/메모 요약</li>
+              <li>돌봄 일정 변경 제안 초안</li>
+            </ul>
+          </div>
+          <div class="info-box wide">
+            <h3>내 아이디어 메모</h3>
+            <div class="memo" contenteditable="true" data-key="memo-myplant" data-placeholder="예: 식물 상세 상단에 '오늘 상태를 한 문장으로 기록' 입력창을 넣기"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu-section" id="dictionary">
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status"><span>9:41</span><span>Plantgram</span></div>
+          <div class="appbar"><h2>사전</h2><div class="icon">⌕</div></div>
+          <div class="screen-content">
+            <div class="search">식물 이름을 검색하세요</div>
+            <div class="card tint">
+              <p class="card-title">오늘의 식물 · 칼라데아</p>
+              <p class="card-text">습도를 좋아하고 직사광선을 피하는 식물</p>
+            </div>
+            <div class="chips">
+              <span class="chip active">초보 추천</span>
+              <span class="chip">공기정화</span>
+              <span class="chip">인테리어</span>
+            </div>
+            <div class="card">
+              <div class="row">
+                <div class="plant-img"></div>
+                <div>
+                  <p class="card-title">몬스테라</p>
+                  <p class="card-text">물 보통 · 밝은 간접광 · 유사 식물 4개</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <p class="card-title">상세 관리 팁</p>
+              <p class="card-text">물주기, 햇빛, 온도, 습도, 추천/주의 라벨</p>
+            </div>
+            <div class="card lavender">
+              <p class="card-title">같은 식물을 키우는 사람들</p>
+              <p class="card-text">공개 식물과 식물별 커뮤니티로 연결</p>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="nav-mark"></div><span>내 식물</span></div>
+            <div class="nav-item active"><div class="nav-mark"></div><span>사전</span></div>
+            <div class="nav-item"><div class="nav-mark"></div><span>기록</span></div>
+            <div class="nav-item"><div class="nav-mark"></div><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+      <div class="planning-panel">
+        <div class="section-head">
+          <div>
+            <h2>사전</h2>
+            <p>식물 검색, 추천 섹션, 상세 관리 정보, 유사 식물, 식물별 커뮤니티 진입을 제공하는 지식 기반 메뉴.</p>
+          </div>
+          <span class="badge">AI 우선도 중간</span>
+        </div>
+        <div class="grid">
+          <div class="info-box">
+            <h3>현재 기능</h3>
+            <ul>
+              <li>Firestore 우선 식물 검색</li>
+              <li>오늘의 식물</li>
+              <li>초보, 공기정화, 인테리어, 주의 섹션</li>
+              <li>물/햇빛/온도 기준 추천</li>
+              <li>상세 관리 정보와 plant_tips</li>
+              <li>유사 식물과 식물별 커뮤니티 진입</li>
+            </ul>
+          </div>
+          <div class="info-box">
+            <h3>AI 적용 후보</h3>
+            <ul>
+              <li>오타/비슷한 이름 검색 보정</li>
+              <li>내 식물 환경 기준 추천 이유 설명</li>
+              <li>사전 상세을 쉬운 말로 요약</li>
+              <li>내 기록과 사전 기준의 차이 알림</li>
+              <li>구매 전 체크리스트 생성</li>
+            </ul>
+          </div>
+          <div class="info-box wide">
+            <h3>내 아이디어 메모</h3>
+            <div class="memo" contenteditable="true" data-key="memo-dictionary" data-placeholder="예: 사전 상세에서 '우리 집 환경에 맞을까?' 버튼 추가"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu-section" id="records">
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status"><span>9:41</span><span>Plantgram</span></div>
+          <div class="appbar"><h2>기록</h2><div class="icon">＋</div></div>
+          <div class="screen-content">
+            <div class="search">오늘 어떤 돌봄을 했나요?</div>
+            <div class="chips">
+              <span class="chip active">전체</span>
+              <span class="chip">물</span>
+              <span class="chip">영양제</span>
+              <span class="chip">상태</span>
+            </div>
+            <div class="timeline">
+              <div class="card">
+                <p class="card-title">몬스테라 · 물주기</p>
+                <p class="card-text">새잎이 올라옴 · 오늘 오전 9:20</p>
+              </div>
+              <div class="card">
+                <p class="card-title">스투키 · 상태</p>
+                <p class="card-text">잎 끝이 조금 마름 · 어제</p>
+              </div>
+              <div class="card">
+                <p class="card-title">필로덴드론 · 사진</p>
+                <p class="card-text">성장 사진 추가 · 3일 전</p>
+              </div>
+            </div>
+            <div class="card amber">
+              <p class="card-title">AI 초안 후보</p>
+              <p class="card-text">자연어 입력 → 식물, 유형, 날짜, 메모 확인 후 저장</p>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="nav-mark"></div><span>내 식물</span></div>
+            <div class="nav-item"><div class="nav-mark"></div><span>사전</span></div>
+            <div class="nav-item active"><div class="nav-mark"></div><span>기록</span></div>
+            <div class="nav-item"><div class="nav-mark"></div><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+      <div class="planning-panel">
+        <div class="section-head">
+          <div>
+            <h2>기록</h2>
+            <p>모든 식물의 돌봄 이력을 시간순으로 확인하고, 유형별 필터와 편집/삭제를 지원하는 회고 화면.</p>
+          </div>
+          <span class="badge">AI 1순위</span>
+        </div>
+        <div class="grid">
+          <div class="info-box">
+            <h3>현재 기능</h3>
+            <ul>
+              <li>전체 기록 타임라인</li>
+              <li>유형별 필터</li>
+              <li>물주기, 영양제, 분갈이, 메모, 상태, 사진</li>
+              <li>메모/상태 수정</li>
+              <li>소프트 삭제</li>
+              <li>내 식물 다이어리와 최근 활동 연결</li>
+            </ul>
+          </div>
+          <div class="info-box">
+            <h3>AI 적용 후보</h3>
+            <ul>
+              <li>자연어를 기록 초안으로 변환</li>
+              <li>식물명 후보 자동 매칭</li>
+              <li>여러 기록 유형 동시 추출</li>
+              <li>주간 돌봄 요약</li>
+              <li>기록 누락 감지와 리마인드 문구</li>
+            </ul>
+          </div>
+          <div class="info-box wide">
+            <h3>자연어 기록 초안 예시</h3>
+            <table class="ai-table">
+              <thead>
+                <tr><th>입력</th><th>AI 초안</th><th>저장 정책</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>몬스테라 물 줬고 새잎이 올라왔어</td>
+                  <td>식물: 몬스테라, 유형: 물주기+상태, 메모: 새잎이 올라옴</td>
+                  <td>사용자 확인 후 저장</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="info-box wide">
+            <h3>내 아이디어 메모</h3>
+            <div class="memo" contenteditable="true" data-key="memo-records" data-placeholder="예: 기록 탭 첫 줄을 AI 입력창으로 쓰고, 결과는 기존 기록 sheet를 재사용"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu-section" id="account-community">
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status"><span>9:41</span><span>Plantgram</span></div>
+          <div class="appbar"><h2>계정</h2><div class="icon">⚙</div></div>
+          <div class="screen-content">
+            <div class="card tint">
+              <p class="card-title">식집사</p>
+              <p class="card-text">Kakao 로그인 · 닉네임 수정 가능</p>
+            </div>
+            <div class="card">
+              <p class="card-title">알림 설정</p>
+              <p class="card-text">푸시 사용 · 오전 9:00 · FCM 토큰 저장</p>
+            </div>
+            <div class="card">
+              <p class="card-title">공개 범위</p>
+              <p class="card-text">내 식물 공개 여부와 myplant.is_public 전파</p>
+            </div>
+            <div class="card lavender">
+              <p class="card-title">식물별 커뮤니티</p>
+              <p class="card-text">사전 상세에서 게시글 목록, 상세, 댓글로 진입</p>
+            </div>
+            <div class="card rose">
+              <p class="card-title">운영 보조 후보</p>
+              <p class="card-text">신고 필터, 댓글 알림, 반복 질문 요약</p>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="nav-mark"></div><span>내 식물</span></div>
+            <div class="nav-item"><div class="nav-mark"></div><span>사전</span></div>
+            <div class="nav-item"><div class="nav-mark"></div><span>기록</span></div>
+            <div class="nav-item active"><div class="nav-mark"></div><span>계정</span></div>
+          </nav>
+        </div>
+      </div>
+      <div class="planning-panel">
+        <div class="section-head">
+          <div>
+            <h2>계정 / 커뮤니티</h2>
+            <p>사용자 설정과 식물 맥락형 커뮤니티. AI는 초기에 전면 기능보다 운영 보조나 요약 기능으로 제한하는 편이 적합하다.</p>
+          </div>
+          <span class="badge">AI 우선도 낮음</span>
+        </div>
+        <div class="grid">
+          <div class="info-box">
+            <h3>현재 기능</h3>
+            <ul>
+              <li>Kakao 단일 로그인</li>
+              <li>프로필, 닉네임 수정</li>
+              <li>알림 on/off와 알림 시간</li>
+              <li>내 식물 공개 설정</li>
+              <li>식물별 게시글 목록/상세/댓글</li>
+              <li>댓글 수 집계와 푸시 알림 Functions</li>
+            </ul>
+          </div>
+          <div class="info-box">
+            <h3>AI 적용 후보</h3>
+            <ul>
+              <li>게시글 작성 전 기록 기반 요약 제안</li>
+              <li>유해 표현/신고 보조 필터</li>
+              <li>반복 질문 요약</li>
+              <li>개인화 알림 문구 생성</li>
+              <li>공개 식물 프로필 소개문 초안</li>
+            </ul>
+          </div>
+          <div class="info-box wide">
+            <h3>내 아이디어 메모</h3>
+            <div class="memo" contenteditable="true" data-key="memo-account-community" data-placeholder="예: 커뮤니티 글쓰기에서 최근 내 기록 3개를 요약해 본문 초안으로 제안"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="planning-panel">
+      <div class="section-head">
+        <div>
+          <h2>AI 적용 우선순위 제안</h2>
+          <p>Plantgram2의 현재 완성도를 전제로, 작은 성공 가능성이 높은 순서부터 배치했다.</p>
+        </div>
+        <span class="badge">초안</span>
+      </div>
+      <table class="ai-table">
+        <thead>
+          <tr>
+            <th>순서</th>
+            <th>기능</th>
+            <th>위치</th>
+            <th>핵심 원칙</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>자연어 기록 초안</td>
+            <td>기록 탭, 내 식물 상세 기록하기</td>
+            <td>자동 저장 금지, 사용자가 확인 후 기존 기록 저장 흐름으로 저장</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>주간 돌봄 요약</td>
+            <td>기록 탭, 다이어리</td>
+            <td>이미 저장된 plant_actions만 기반으로 요약</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>내 식물 맞춤 사전 설명</td>
+            <td>사전 상세</td>
+            <td>사전 기준 정보와 내 기록의 차이를 설명하되 단정적 진단은 피함</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>커뮤니티 글쓰기 보조</td>
+            <td>식물별 커뮤니티</td>
+            <td>기록 요약/문장 정리 수준으로 제한</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box" style="margin-top: 14px;">
+        <h3>전체 아이디어 메모</h3>
+        <div class="memo" contenteditable="true" data-key="memo-global" data-placeholder="예: 첫 AI 버전은 Cloud Functions 기반 파서만 만들고, 이미지 진단/상담 챗봇은 출시 후 검토"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    기준 문서: docs/final-product-brief-2026-05-30, docs/plantgram2-implementation-plan, plantgram2/docs/light_maintenance_log.
+    메모는 현재 브라우저의 localStorage에 저장된다.
+  </footer>
+
+  <script>
+    const memos = document.querySelectorAll("[contenteditable][data-key]");
+
+    memos.forEach((memo) => {
+      const key = "plantgram2-ai-board:" + memo.dataset.key;
+      memo.textContent = localStorage.getItem(key) || "";
+      memo.addEventListener("input", () => {
+        localStorage.setItem(key, memo.textContent);
+      });
+    });
+
+    function clearMemos() {
+      if (!confirm("이 HTML 보드에 저장된 메모를 모두 지울까요?")) return;
+      memos.forEach((memo) => {
+        const key = "plantgram2-ai-board:" + memo.dataset.key;
+        localStorage.removeItem(key);
+        memo.textContent = "";
+      });
+    }
+  </script>
+</body>
+</html>
