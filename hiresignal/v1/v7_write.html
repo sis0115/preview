@@ -2,19 +2,19 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HireSignal — 면접 후기 작성 ⑥c (v2.1)</title>
+<title>HireSignal — 면접 후기 작성 ⑥c (v2)</title>
 <style>
   :root{--ink:#10131C;--sub:#9098A6;--accent:#3D6BFF;--card:#FFFFFF;--line:#EEF1F6;--up:#F23B43;--up-soft:#FFEDED;--green:#16B364;--green-soft:#E8F8EF;--gold:#E8A317;--gold-soft:#FFF6E2;--lav:#EEF1FF;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif;
     background:#C9D4E6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;color:var(--ink);}
-  .phone{width:390px;height:820px;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;
+  .phone{width:390px;height:800px;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;
     background:linear-gradient(180deg,#E9F0FC 0%,#F5F7FB 22%);box-shadow:0 30px 70px rgba(20,30,60,.35);}
   .statusbar{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;font-size:14px;font-weight:600;}
   .nav{display:flex;align-items:center;justify-content:space-between;padding:8px 22px 6px;}
-  .nav .back{font-size:26px;} .nav .ctx{font-size:12.5px;font-weight:800;color:var(--sub);}
+  .nav .back{font-size:26px;} .nav .step{font-size:12.5px;font-weight:800;color:var(--sub);}
 
-  /* 3분기 인디케이터 (⑥c 활성) */
+  /* 3분기 인디케이터 */
   .quarters{display:flex;gap:6px;margin:6px 24px 6px;}
   .q{flex:1;background:#fff;border-radius:11px;padding:8px 9px;text-align:center;font-size:11px;font-weight:800;color:var(--sub);box-shadow:0 4px 10px rgba(60,90,200,.05);}
   .q.on{background:var(--up);color:#fff;box-shadow:0 6px 14px rgba(242,59,67,.28);}
@@ -41,7 +41,7 @@
   .cardq .inp .ph{color:var(--sub);font-weight:500;}
   .cardq .addq{margin-top:11px;font-size:12.5px;font-weight:800;color:var(--accent);display:flex;align-items:center;gap:5px;}
 
-  /* AI 문답 안내 */
+  /* 좋은 후기 팁 */
   .tip{margin-top:12px;background:#F4F6FA;border-radius:14px;padding:12px 14px;display:flex;gap:11px;align-items:center;}
   .tip .ic{font-size:18px;}
   .tip .t{flex:1;font-size:12px;color:#4A5263;font-weight:600;line-height:1.5;}
@@ -51,18 +51,15 @@
   .nextpv{margin-top:12px;font-size:11.5px;color:var(--sub);font-weight:600;text-align:center;line-height:1.5;}
   .nextpv b{color:var(--ink);}
 
-  /* 비공개 고지 — 부드럽게 카드 안에 */
-  .privacy{margin-top:14px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--sub);font-weight:600;padding:0 4px;}
-  .privacy .ic{font-size:13px;}
-
   .footer{padding:12px 24px 22px;background:linear-gradient(transparent,#F5F7FB 30%);display:flex;gap:10px;}
   .skip{background:#fff;color:var(--sub);border-radius:14px;padding:14px;font-weight:800;font-size:14px;flex:0 0 32%;text-align:center;box-shadow:0 4px 10px rgba(60,90,200,.05);}
   .skip.dis{opacity:.35;}
   .next{background:var(--accent);color:#fff;border-radius:14px;padding:14px;font-weight:800;font-size:15px;flex:1;text-align:center;}
+  .ai{text-align:center;font-size:11px;color:var(--sub);font-weight:600;margin-top:8px;padding:0 24px 14px;}
 </style></head>
 <body><div class="phone">
   <div class="statusbar"><div>1:34</div><div>●●● 5G 🔋</div></div>
-  <div class="nav"><div class="back">‹</div><div class="ctx">SK하이닉스 · 양산기술 P&T</div></div>
+  <div class="nav"><div class="back">‹</div><div class="step">SK하이닉스 · 양산기술 P&T</div></div>
 
   <!-- 3분기 인디케이터 (⑥c 활성) -->
   <div class="quarters">
@@ -103,12 +100,11 @@
     </div>
 
     <div class="nextpv">다음 카드 · <b>4/8 답변 전략 (옵셔널 — 건너뛰기 가능)</b></div>
-
-    <div class="privacy"><span class="ic">🔒</span>원문은 저장하지 않아요 · 비식별 패턴만 학습에 사용</div>
   </div>
 
   <div class="footer">
-    <div class="skip dis">건너뛰기</div>
+    <div class="skip dis">건너뛰기 (필수)</div>
     <div class="next">다음 카드 →</div>
   </div>
+  <div class="ai">🤖 원문 저장 X · 비식별 패턴만 적재 · 점수 UI 없음</div>
 </div></body></html>

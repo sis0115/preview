@@ -2,121 +2,74 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HireSignal — 회사 목록 (v2)</title>
+<title>HireSignal — 회사 목록 (v2.1)</title>
 <style>
-  :root{--ink:#10131C;--sub:#9098A6;--accent:#3D6BFF;--card:#FFFFFF;--line:#EEF1F6;--up:#F23B43;--up-soft:#FFEDED;--green:#16B364;--green-soft:#E8F8EF;--gold:#E8A317;--gold-soft:#FFF6E2;--mine:#3D6BFF;--mine-soft:#EAF1FF;--lav:#EEF1FF;}
+  :root{--ink:#10131C;--sub:#9098A6;--accent:#3D6BFF;--card:#FFFFFF;--line:#EEF1F6;--up:#F23B43;--up-soft:#FFEDED;--green:#16B364;--lav:#EEF1FF;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif;
     background:#C9D4E6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;color:var(--ink);}
-  .phone{width:390px;height:800px;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;
-    background:linear-gradient(180deg,#E9F0FC 0%,#F5F7FB 24%);box-shadow:0 30px 70px rgba(20,30,60,.35);}
+  .phone{width:390px;height:820px;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,#E9F0FC 0%,#F5F7FB 22%);box-shadow:0 30px 70px rgba(20,30,60,.35);}
   .statusbar{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;font-size:14px;font-weight:600;}
-  .screen{flex:1;overflow-y:auto;padding:10px 24px 24px;}
-  .top{display:flex;align-items:flex-start;justify-content:space-between;}
-  .top .kicker{font-size:14px;font-weight:800;color:var(--accent);}
-  .top .head{font-size:24px;font-weight:800;letter-spacing:-.7px;line-height:1.32;margin-top:9px;}
-  .avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#3D6BFF,#7AA0FF);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;flex-shrink:0;margin-top:4px;}
-  .seg{display:flex;gap:8px;margin-top:20px;}
-  .seg .s{font-size:14px;font-weight:800;padding:9px 18px;border-radius:999px;color:var(--sub);}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;padding:6px 24px 0;}
+  .kicker{font-size:13px;font-weight:800;color:var(--accent);}
+  .head{font-size:24px;font-weight:800;letter-spacing:-.6px;line-height:1.32;margin-top:8px;}
+  .lead{font-size:13px;color:var(--sub);font-weight:600;margin-top:9px;}
+  .avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#3D6BFF,#7AA0FF);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;margin-top:4px;}
+  .seg{display:flex;gap:8px;margin:18px 24px 0;}
+  .seg .s{font-size:13.5px;font-weight:800;padding:9px 16px;border-radius:999px;color:var(--sub);background:#fff;box-shadow:0 4px 12px rgba(60,90,200,.05);}
   .seg .s.on{background:var(--ink);color:#fff;}
-  .seg .s.on .n{background:#fff;color:var(--ink);}
-  .seg .s .n{font-size:11px;font-weight:800;background:#E4E9F2;color:var(--sub);padding:2px 6px;border-radius:6px;margin-left:5px;vertical-align:1px;}
-  .sortnote{font-size:11.5px;color:var(--sub);font-weight:600;margin-top:10px;display:flex;align-items:center;gap:5px;}
-  .sortnote b{color:var(--ink);}
-  .list{margin-top:14px;display:flex;flex-direction:column;gap:11px;}
-  .co{background:var(--card);border-radius:22px;padding:16px 17px;box-shadow:0 8px 20px rgba(60,90,200,.06);display:flex;gap:13px;align-items:center;}
-  .lg{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;}
+  .seg .s .c{font-size:11px;opacity:.6;margin-left:3px;}
+  .screen{flex:1;overflow-y:auto;padding:16px 24px 20px;}
+  .co{background:var(--card);border-radius:20px;padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:13px;box-shadow:0 8px 20px rgba(60,90,200,.06);position:relative;}
+  .lg{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;}
   .lg-sk{background:#E8473F;} .lg-ss{background:#1428A0;} .lg-as{background:#0A2B6B;} .lg-am{background:#1C7BD4;} .lg-lr{background:#222933;font-size:12px;}
   .ci{flex:1;min-width:0;}
-  .ci .r{display:flex;align-items:center;gap:7px;}
-  .ci .nm{font-size:16px;font-weight:800;letter-spacing:-.3px;}
-  .ci .mine{font-size:10px;font-weight:800;color:var(--mine);background:var(--mine-soft);padding:3px 7px;border-radius:6px;}
-  .ci .kw{font-size:13.5px;font-weight:700;margin-top:7px;letter-spacing:-.2px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
-  .ci .kwt{flex:1;min-width:0;color:var(--ink);}
-  .ci .kwt b{color:var(--up);}
-  .ci .meta{font-size:11.5px;color:var(--sub);font-weight:500;margin-top:6px;}
-  .ci .meta b{color:var(--up);}
-  .phase{font-size:11px;font-weight:800;padding:4px 9px;border-radius:8px;display:inline-flex;align-items:center;gap:3px;flex-shrink:0;letter-spacing:-.1px;}
-  .ph-cov{background:var(--lav);color:var(--accent);}
-  .ph-apt{background:var(--green-soft);color:var(--green);}
-  .ph-int{background:var(--up-soft);color:var(--up);}
-  .ph-final{background:var(--gold-soft);color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;}
-  .ph-result{background:#FFE8C2;color:#9A6500;}
-  .ph-off{background:#F2F4F8;color:var(--sub);}
-  .badge{font-size:10.5px;font-weight:800;padding:5px 9px;border-radius:8px;flex-shrink:0;}
-  .badge.hot{background:var(--up-soft);color:var(--up);} .badge.new{background:var(--up);color:#fff;}
-  .tabbar{height:80px;background:rgba(255,255,255,.96);border-top:1px solid var(--line);display:flex;padding-bottom:16px;}
-  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#B6BDC8;font-size:11.5px;font-weight:700;}
-  .tab.active{color:var(--accent);} .tab svg{width:26px;height:26px;}
+  .ci .nm{font-size:15.5px;font-weight:800;}
+  .ci .kw{font-size:13.5px;font-weight:700;margin-top:6px;line-height:1.4;letter-spacing:-.2px;} .ci .kw b{color:var(--up);}
+  .ci .meta{font-size:11.5px;color:var(--sub);font-weight:600;margin-top:7px;} .ci .meta b{color:var(--up);}
+  .badge{position:absolute;top:14px;right:14px;font-size:10px;font-weight:800;padding:3px 8px;border-radius:7px;}
+  .badge.new{background:var(--up);color:#fff;} .badge.hot{background:var(--up-soft);color:var(--up);}
+  .tabbar{display:flex;border-top:1px solid var(--line);background:#fff;padding:10px 0 22px;}
+  .tb{flex:1;text-align:center;font-size:11px;font-weight:700;color:var(--sub);} .tb .i{font-size:21px;display:block;} .tb.on{color:var(--accent);}
 </style></head>
 <body><div class="phone">
   <div class="statusbar"><div>10:50</div><div>●●● 5G 🔋</div></div>
+  <div class="top">
+    <div><div class="kicker">✨ 오늘의 시그널</div><div class="head">회사들이<br>움직이고 있어요</div><div class="lead">여기서부터 시그널을 확인하세요</div></div>
+    <div class="avatar">인</div>
+  </div>
+  <div class="seg"><div class="s on">전체</div><div class="s">내 관심<span class="c">3</span></div></div>
   <div class="screen">
-    <div class="top">
-      <div><div class="kicker">✨ 오늘의 시그널 다이제스트</div><div class="head">지금, 이 회사들이<br>움직이고 있어요</div></div>
-      <div class="avatar">인</div>
-    </div>
-    <div class="seg">
-      <div class="s">전체</div>
-      <div class="s on">내 지원 <span class="n">3</span></div>
-    </div>
-    <div class="sortnote">⏱ <b>임박한 Phase 순</b>으로 정렬 중</div>
-    <div class="list">
+    <div class="co"><div class="lg lg-sk">SK</div><div class="ci">
+      <div class="nm">SK하이닉스</div>
+      <div class="kw">🎤 면접 ‘<b>이력서 기반 꼬리질문</b>’ 늘었어요</div>
+      <div class="meta">양산기술 P&T · <b>D-2</b></div>
+    </div><div class="badge new">NEW</div></div>
 
-      <!-- 🎤 면접 시즌 · D-2 -->
-      <div class="co"><div class="lg lg-sk">SK</div><div class="ci">
-        <div class="r"><div class="nm">SK하이닉스</div><div class="mine">내 지원</div></div>
-        <div class="kw">
-          <span class="phase ph-int">🎤 면접</span>
-          <span class="kwt">'<b>이력서 기반 꼬리질문</b>' 늘었어요</span>
-        </div>
-        <div class="meta">양산기술 P&T · <b>D-2</b> · 후기 14개</div>
-      </div><div class="badge new">NEW</div></div>
+    <div class="co"><div class="lg lg-ss">삼</div><div class="ci">
+      <div class="nm">삼성전자 DS</div>
+      <div class="kw">📝 자소서 ‘두괄식’·‘1번 직무 스토리’가 합격 패턴</div>
+      <div class="meta">공정설계 · D-5</div>
+    </div></div>
 
-      <!-- 📝 자소서 시즌 · D-5 -->
-      <div class="co"><div class="lg lg-ss">삼</div><div class="ci">
-        <div class="r"><div class="nm">삼성전자 DS</div><div class="mine">내 지원</div></div>
-        <div class="kw">
-          <span class="phase ph-cov">📝 자소서</span>
-          <span class="kwt">'두괄식'·'1번 직무 스토리'가 합격 패턴</span>
-        </div>
-        <div class="meta">공정설계 · <b>D-5</b> · 후기 10개</div>
-      </div></div>
+    <div class="co"><div class="lg lg-as">AS</div><div class="ci">
+      <div class="nm">ASML</div>
+      <div class="kw">🎖️ 최종 ‘1:1 직무 PT면접’ · 작년 최종 데이터 5건</div>
+      <div class="meta">CS엔지니어 · <b>D-1</b></div>
+    </div><div class="badge hot">🔥 급상승</div></div>
 
-      <!-- 🎖️ 최종 면접 시즌 · D-1 -->
-      <div class="co"><div class="lg lg-as">AS</div><div class="ci">
-        <div class="r"><div class="nm">ASML</div><div class="mine">내 지원</div></div>
-        <div class="kw">
-          <span class="phase ph-final">🎖️ 최종</span>
-          <span class="kwt">'1:1 직무 PT면접'·작년 최종 데이터 5건</span>
-        </div>
-        <div class="meta">CS엔지니어 · <b>D-1</b> · 후기 4개</div>
-      </div><div class="badge hot">🔥 급상승</div></div>
+    <div class="co"><div class="lg lg-lr">Lam</div><div class="ci">
+      <div class="nm">램리서치</div>
+      <div class="kw">🧠 인적성 ‘영어면접 + GSAT 유형’ 단골</div>
+      <div class="meta">CS엔지니어 · 인적성 D-3</div>
+    </div></div>
 
-      <!-- 🧠 인적성 시즌 -->
-      <div class="co"><div class="lg lg-lr">Lam</div><div class="ci">
-        <div class="r"><div class="nm">램리서치</div></div>
-        <div class="kw">
-          <span class="phase ph-apt">🧠 인적성</span>
-          <span class="kwt">'영어면접 + GSAT 유형' 단골</span>
-        </div>
-        <div class="meta">CS엔지니어 · 인적성 D-3 · 후기 2개</div>
-      </div></div>
-
-      <!-- 🌙 시즌 외 — 작년 가이드 -->
-      <div class="co"><div class="lg lg-am">AM</div><div class="ci">
-        <div class="r"><div class="nm">어플라이드(AMAT)</div></div>
-        <div class="kw">
-          <span class="phase ph-off">🌙 시즌 외</span>
-          <span class="kwt">작년 합격 자소서 <b>6패턴</b> 정리됨</span>
-        </div>
-        <div class="meta">CS엔지니어 · 다음 시즌 미정 · 후기 6개</div>
-      </div></div>
-
-    </div>
+    <div class="co"><div class="lg lg-am">AM</div><div class="ci">
+      <div class="nm">어플라이드(AMAT)</div>
+      <div class="kw">🌙 시즌 외 · 작년 합격 자소서 6패턴 정리됨</div>
+      <div class="meta">CS엔지니어 · 다음 시즌 미정</div>
+    </div></div>
   </div>
-  <div class="tabbar">
-    <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>홈</div>
-    <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="13" rx="3"/><path d="M9 10h6M9 13.5h4"/></svg>코파일럿</div>
-  </div>
+  <div class="tabbar"><div class="tb on"><span class="i">🏠</span>홈</div><div class="tb"><span class="i">🤖</span>코파일럿</div></div>
 </div></body></html>

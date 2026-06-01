@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireSignal — 합격메일 인증</title>
+<style>
+  :root{--ink:#10131C;--sub:#9098A6;--accent:#3D6BFF;--bg:#FFFFFF;--line:#EEF1F6;--up:#F23B43;--green:#16B364;--green-soft:#E8F8EF;--gold:#E8A317;--gold-soft:#FFF6E2;--lav:#EEF1FF;--amber:#E8920C;--amber-soft:#FCF2DD;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif;background:#C9D4E6;min-height:100vh;display:flex;align-items:center;justify-content:center;gap:22px;padding:24px;flex-wrap:wrap;color:var(--ink);}
+  .phone{width:360px;height:780px;border-radius:42px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:var(--bg);box-shadow:0 30px 70px rgba(20,30,60,.35);}
+  .statusbar{height:50px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;font-size:13px;font-weight:600;flex-shrink:0;}
+  .nav{display:flex;align-items:center;gap:10px;padding:6px 22px 4px;} .nav .back{font-size:24px;} .nav .step{font-size:12px;color:var(--sub);font-weight:700;}
+  .pbar{height:4px;background:#EAEDF3;margin:6px 22px 0;border-radius:2px;overflow:hidden;} .pbar i{display:block;height:100%;background:var(--accent);border-radius:2px;}
+  .body{flex:1;overflow-y:auto;padding:22px;}
+  .h{font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.34;} .h em{font-style:normal;color:var(--accent);}
+  .sub{font-size:13.5px;color:var(--sub);font-weight:600;line-height:1.55;margin-top:11px;}
+  .btn{position:absolute;left:22px;right:22px;bottom:26px;background:var(--accent);color:#fff;border-radius:15px;padding:16px;text-align:center;font-weight:800;font-size:15.5px;}
+  .ghost{background:#EEF1F6;color:var(--ink);}
+  /* step1 upload */
+  .drop{margin-top:26px;border:2px dashed #C5CEDD;border-radius:18px;padding:38px 20px;text-align:center;background:#FAFBFD;}
+  .drop .ic{font-size:34px;} .drop .t{font-size:14px;font-weight:800;margin-top:12px;} .drop .b{font-size:12px;color:var(--sub);font-weight:600;margin-top:6px;}
+  .why{margin-top:18px;background:var(--lav);border-radius:14px;padding:14px 15px;font-size:12.5px;color:#3A4A7A;font-weight:600;line-height:1.55;}
+  .or{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--sub);font-size:12px;font-weight:700;} .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line);}
+  .link{border:1.5px solid var(--line);border-radius:14px;padding:14px;text-align:center;font-size:14px;font-weight:800;}
+  /* step2 confirm */
+  .shot{margin-top:18px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#F4F6FA;padding:14px;font-size:12px;color:#5A6473;line-height:1.5;}
+  .shot .mh{font-weight:800;color:var(--ink);font-size:13px;margin-bottom:6px;}
+  .fields{margin-top:18px;display:flex;flex-direction:column;gap:11px;}
+  .fl{border:1px solid var(--line);border-radius:13px;padding:13px 15px;display:flex;align-items:center;gap:12px;}
+  .fl .k{font-size:12px;color:var(--sub);font-weight:700;width:64px;}
+  .fl .v{font-size:14.5px;font-weight:800;flex:1;}
+  .fl .edit{font-size:12px;color:var(--accent);font-weight:800;}
+  .conf{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;background:var(--green-soft);color:var(--green);}
+  .conf.low{background:var(--amber-soft);color:var(--amber);}
+  .disc{margin-top:16px;background:var(--amber-soft);border-radius:13px;padding:13px 14px;font-size:12px;color:#946312;font-weight:600;line-height:1.55;}
+  /* step3 done */
+  .done{text-align:center;padding-top:40px;}
+  .badge{width:96px;height:96px;border-radius:28px;margin:0 auto;background:linear-gradient(135deg,#F7C948,#E8920C);display:flex;align-items:center;justify-content:center;font-size:46px;box-shadow:0 18px 36px rgba(232,146,12,.35);}
+  .done .t{font-size:22px;font-weight:800;margin-top:22px;} .done .t em{font-style:normal;color:var(--gold);}
+  .done .b{font-size:13.5px;color:var(--sub);font-weight:600;margin-top:11px;line-height:1.55;}
+  .share{margin:26px 16px 0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 20px rgba(60,90,200,.06);}
+  .share .q{font-size:14px;font-weight:800;} .share .d{font-size:12px;color:var(--sub);font-weight:600;margin-top:6px;}
+  .label{font-size:11px;font-weight:800;color:#fff;background:var(--ink);display:inline-block;padding:4px 10px;border-radius:8px;margin-bottom:14px;}
+</style></head>
+<body>
+
+<!-- STEP 1 -->
+<div class="phone">
+  <div class="statusbar"><div>1:35</div><div>●●● 5G 🔋</div></div>
+  <div class="nav"><div class="back">‹</div><div class="step">1 / 3 · 업로드</div></div>
+  <div class="pbar"><i style="width:33%"></i></div>
+  <div class="body">
+    <div class="label">합격 인증</div>
+    <div class="h">합격 메일을<br><em>캡처해서 올려주세요</em></div>
+    <div class="sub">AI가 회사·전형·날짜를 읽어 인증해요. 30초면 끝나요.</div>
+    <div class="drop"><div class="ic">📧</div><div class="t">캡처 이미지 올리기</div><div class="b">합격/통과 안내 메일 스크린샷</div></div>
+    <div class="why">🔓 왜 인증하나요?<br>인증하면 <b>뱃지</b>가 생기고, 후기의 <b>신뢰도</b>가 올라가요. 같은 전형 준비생에게 더 정확한 데이터가 돼요.</div>
+    <div class="or">또는</div>
+    <div class="link">📮 메일 계정 연동하기</div>
+  </div>
+  <div class="btn">이미지 선택</div>
+</div>
+
+<!-- STEP 2 -->
+<div class="phone">
+  <div class="statusbar"><div>1:35</div><div>●●● 5G 🔋</div></div>
+  <div class="nav"><div class="back">‹</div><div class="step">2 / 3 · 확인</div></div>
+  <div class="pbar"><i style="width:66%"></i></div>
+  <div class="body">
+    <div class="label">합격 인증</div>
+    <div class="h">이렇게 읽었어요<br><em>맞는지 확인해주세요</em></div>
+    <div class="shot"><div class="mh">📧 [SK hynix] 26(상) 신입 채용 서류전형 합격 안내</div>안녕하세요. 귀하께서 지원하신 양산기술 직무 서류전형에 합격하셨음을…</div>
+    <div class="fields">
+      <div class="fl"><div class="k">회사</div><div class="v">SK하이닉스</div><span class="conf">AI 92%</span><div class="edit">수정</div></div>
+      <div class="fl"><div class="k">전형</div><div class="v">서류 합격 📄</div><span class="conf">AI 88%</span><div class="edit">수정</div></div>
+      <div class="fl"><div class="k">직무</div><div class="v">양산기술 P&T</div><span class="conf low">확인필요</span><div class="edit">수정</div></div>
+      <div class="fl"><div class="k">날짜</div><div class="v">2026.06.01</div><span class="conf">AI 95%</span><div class="edit">수정</div></div>
+    </div>
+    <div class="disc">⚠️ AI 인증은 <b>신뢰 가중</b>이지 절대 증명이 아니에요. 캡처가 위조될 수 있어, 다른 인증과 교차로 신뢰도를 매겨요.</div>
+  </div>
+  <div class="btn">확인하고 인증하기</div>
+</div>
+
+<!-- STEP 3 -->
+<div class="phone">
+  <div class="statusbar"><div>1:35</div><div>●●● 5G 🔋</div></div>
+  <div class="nav"><div class="back">‹</div><div class="step">3 / 3 · 완료</div></div>
+  <div class="pbar"><i style="width:100%"></i></div>
+  <div class="body">
+    <div class="done">
+      <div class="badge">📄</div>
+      <div class="t"><em>서류 합격</em> 뱃지 획득!</div>
+      <div class="b">이제 SK하이닉스 양산기술의<br><b>면접·시험 정보</b>가 열렸어요.</div>
+    </div>
+    <div class="share">
+      <div class="q">🎉 커뮤니티에 자랑할까요?</div>
+      <div class="d">인증 카드로 자동 생성돼요. 같은 전형 준비생에게 도움이 돼요.</div>
+    </div>
+  </div>
+  <div class="btn">자랑 카드로 공유하기</div>
+</div>
+
+</body></html>

@@ -1,159 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HireSignal — 목업 인덱스</title>
-  <style>
-    :root{--ink:#10131C;--sub:#9098A6;--accent:#3D6BFF;--card:#FFFFFF;--line:#EEF1F6;--up:#F23B43;--up-soft:#FFEDED;--green:#16B364;--green-soft:#E8F8EF;--gold:#E8A317;--gold-soft:#FFF6E2;--lav:#EEF1FF;--bg:#F4F6FA;}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-tap-highlight-color:transparent;}
-    main{max-width:720px;margin:0 auto;padding:28px 18px 60px;}
-    .kicker{font-size:13px;font-weight:800;color:var(--accent);letter-spacing:-.1px;}
-    h1{font-size:26px;font-weight:800;letter-spacing:-.5px;margin-top:6px;line-height:1.3;}
-    .lead{font-size:13.5px;color:#4A5263;font-weight:600;margin-top:10px;line-height:1.65;}
-    .lead b{color:var(--ink);}
-    .section{margin-top:28px;}
-    .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-    .sh h2{font-size:17px;font-weight:800;letter-spacing:-.3px;}
-    .sh .tag{font-size:11px;font-weight:800;padding:5px 10px;border-radius:8px;}
-    .tag.v1{background:#EEF0F4;color:var(--sub);}
-    .tag.v2{background:var(--up-soft);color:var(--up);}
-    .grid{display:grid;grid-template-columns:1fr;gap:10px;}
-    @media (min-width:560px){.grid{grid-template-columns:1fr 1fr;}}
-    a.card{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:18px;padding:16px 16px;box-shadow:0 6px 18px rgba(60,90,200,.06);text-decoration:none;color:inherit;}
-    a.card:active{transform:scale(.98);}
-    .ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--lav);}
-    .ic.home{background:var(--up-soft);}
-    .ic.signal{background:var(--lav);}
-    .ic.info{background:var(--green-soft);}
-    .ic.comm{background:var(--gold-soft);}
-    .ic.room{background:#EEF0F4;}
-    .ic.write{background:var(--up-soft);}
-    .ic.report{background:var(--lav);}
-    .ic.mock{background:var(--lav);}
-    .ic.copilot{background:var(--green-soft);}
-    .ic.prof{background:var(--gold-soft);}
-    .info{flex:1;min-width:0;}
-    .info .t{font-size:14.5px;font-weight:800;letter-spacing:-.2px;}
-    .info .b{font-size:11.5px;color:var(--sub);font-weight:600;margin-top:3px;line-height:1.45;}
-    .info .b code{background:#F0F2F6;padding:1px 5px;border-radius:4px;font-size:10.5px;color:#4A5263;}
-    .go{font-size:18px;color:#C5CCD6;}
-    .note{margin-top:20px;background:#fff;border-radius:14px;padding:14px 15px;font-size:12px;font-weight:600;color:#4A5263;line-height:1.6;box-shadow:0 4px 14px rgba(60,90,200,.05);}
-    .note b{color:var(--ink);}
-    footer{margin-top:36px;text-align:center;font-size:11px;color:var(--sub);font-weight:600;}
-  </style>
-</head>
-<body>
-  <main>
-    <div class="kicker">✨ HireSignal · 면접판의 토스</div>
-    <h1>모바일 목업 인덱스</h1>
-    <p class="lead">탭하면 폰 목업 화면이 열려요. <b>v2</b>는 2026-06-01 Stage 2에서 다시 그린 화면, <b>v1</b>은 아직 갱신되지 않은 원본이에요.</p>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HireSignal — 목업 인덱스</title>
+<style>
+  :root{--ink:#10131C;--sub:#8A92A0;--accent:#3D6BFF;--card:#fff;--line:#ECEFF4;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif;background:#F4F6FA;color:var(--ink);padding:34px 20px 60px;}
+  .wrap{max-width:560px;margin:0 auto;}
+  .kicker{font-size:13px;font-weight:800;color:var(--accent);}
+  h1{font-size:26px;font-weight:800;letter-spacing:-.6px;margin-top:8px;}
+  .desc{font-size:14px;color:var(--sub);line-height:1.6;margin-top:12px;}
+  h2{font-size:15px;font-weight:800;margin:30px 0 6px;}
+  .stage{font-size:12px;color:var(--sub);font-weight:700;margin-bottom:12px;}
+  a.card{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 16px;margin-bottom:10px;text-decoration:none;color:inherit;box-shadow:0 4px 14px rgba(60,90,200,.04);}
+  a.card .ic{font-size:22px;}
+  a.card .t .a{font-size:15px;font-weight:800;}
+  a.card .t .b{font-size:12.5px;color:var(--sub);font-weight:600;margin-top:3px;}
+  a.card .t .b code{background:#EEF1F6;padding:1px 6px;border-radius:5px;font-size:11px;}
+  a.card .go{margin-left:auto;color:var(--sub);font-size:18px;}
+  .note{font-size:13px;color:var(--sub);line-height:1.65;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:18px;}
+  .dep{opacity:.5;}
+  .tag{font-size:10.5px;font-weight:800;color:#fff;background:var(--accent);padding:2px 7px;border-radius:6px;margin-left:6px;}
+  .tag.x{background:#C0566A;}
+</style></head>
+<body><div class="wrap">
+  <div class="kicker">✨ HireSignal · 면접판의 토스</div>
+  <h1>모바일 목업 인덱스</h1>
+  <p class="desc">탭하면 폰 목업이 열려요. <b>Stage 1b(2026-06-01)</b>에서 홈·시그널·커뮤니티를 갱신하고, 전형정보 독립화면을 폐기(시그널 하단 합병)했어요. 시그널 아카이브를 신설했고요. 셀(회사×직무) 개념은 UI에서 숨기고 화면은 "회사" 단위입니다.</p>
 
-    <div class="section">
-      <div class="sh">
-        <h2>v2 — 다시 그림 (5종)</h2>
-        <span class="tag v2">Stage 2 · 2026-06-01</span>
-      </div>
-      <div class="grid">
-        <a class="card" href="v2/v6_home.html">
-          <div class="ic home">🏠</div>
-          <div class="info">
-            <div class="t">홈 — 회사 목록</div>
-            <div class="b">Phase 칩 + 다이제스트 발췌 · <code>v6_home</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-        <a class="card" href="v2/v6_signal.html">
-          <div class="ic signal">📡</div>
-          <div class="info">
-            <div class="t">회사 상세 · 시그널</div>
-            <div class="b">현재 phase 다이제스트 본체 · <code>v6_signal</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-        <a class="card" href="v2/v8_community.html">
-          <div class="ic comm">💬</div>
-          <div class="info">
-            <div class="t">회사 상세 · 커뮤니티</div>
-            <div class="b">AI 여론 + 오픈채팅 2버튼(회사단위) · <code>v8_community</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-        <a class="card" href="v2/v7_write.html">
-          <div class="ic write">✍️</div>
-          <div class="info">
-            <div class="t">면접 후기 작성 (⑥c)</div>
-            <div class="b">3분기 + 카드 슬라이드 + 점수 폐기 · <code>v7_write</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-        <a class="card" href="v2/v4_profile.html">
-          <div class="ic prof">👤</div>
-          <div class="info">
-            <div class="t">프로필</div>
-            <div class="b">뱃지 6종 + 셀별 5단계 + 자랑 카드 · <code>v4_profile</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-      </div>
-    </div>
+  <h2>v2.1 — Stage 1b 갱신</h2>
+  <div class="stage">2026-06-01</div>
+  <a class="card" href="v2/v6_home.html"><span class="ic">🏠</span><div class="t"><div class="a">홈 — 회사 목록</div><div class="b">정렬중·후기수·내지원 뱃지 제거 · 시그널 유도 카피 · <code>v6_home</code></div></div><span class="go">›</span></a>
+  <a class="card" href="v2/v6_signal.html"><span class="ic">📡</span><div class="t"><div class="a">회사 상세 · 시그널 <span class="tag">합병</span></div><div class="b">셀탭 제거 · AI 분석 발행본 · 전형 타임라인+미리알것 하단 합병 · <code>v6_signal</code></div></div><span class="go">›</span></a>
+  <a class="card" href="v2/v9_signal_archive.html"><span class="ic">🗂</span><div class="t"><div class="a">지난 요약본 (아카이브) <span class="tag">신규</span></div><div class="b">시그널의 '지난 요약본 더보기' 목적지 · <code>v9_signal_archive</code></div></div><span class="go">›</span></a>
+  <a class="card" href="v2/v8_community.html"><span class="ic">💬</span><div class="t"><div class="a">회사 상세 · 커뮤니티</div><div class="b">코호트 제거 · 익명→닉네임 · 셀탭 제거(2탭) · <code>v8_community</code></div></div><span class="go">›</span></a>
+  <a class="card" href="v2/v9_compose.html"><span class="ic">✍️</span><div class="t"><div class="a">커뮤니티 글쓰기 <span class="tag">신규</span></div><div class="b">내 기록(합격인증/후기/스펙) 칩 탭 → 카드 첨부 · <code>v9_compose</code></div></div><span class="go">›</span></a>
+  <a class="card" href="v2/v9_copilot.html"><span class="ic">🤖</span><div class="t"><div class="a">코파일럿 — 단일 화면 <span class="tag">신규</span></div><div class="b">상단 회사 셀렉터(드롭다운) + Phase 프로그램 · <code>v9_copilot</code></div></div><span class="go">›</span></a>
+  <a class="card" href="v2/v9_verify.html"><span class="ic">✅</span><div class="t"><div class="a">합격메일 AI 인증 <span class="tag">신규</span></div><div class="b">3단계: 업로드→AI 추출 확인→완료+공유 · <code>v9_verify</code></div></div><span class="go">›</span></a>
 
-    <div class="section">
-      <div class="sh">
-        <h2>v1 — 아직 그대로 (5종)</h2>
-        <span class="tag v1">2026-05-31 원본</span>
-      </div>
-      <div class="grid">
-        <a class="card" href="v1/v7_info.html">
-          <div class="ic info">📋</div>
-          <div class="info">
-            <div class="t">회사 상세 · 전형정보</div>
-            <div class="b">5단계 타임라인 미반영 · <code>v7_info</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-        <a class="card" href="v1/v8_room_locked.html">
-          <div class="ic room">🔒</div>
-          <div class="info">
-            <div class="t">경험자 대화방 (구 게이트)</div>
-            <div class="b">오픈채팅 전환 미반영 · <code>v8_room_locked</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-        <a class="card" href="v1/v8_report.html">
-          <div class="ic report">📊</div>
-          <div class="info">
-            <div class="t">코파일럿 · 내 면접 리포트</div>
-            <div class="b">Phase 강조 미반영 · <code>v8_report</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-        <a class="card" href="v1/v8_mock.html">
-          <div class="ic mock">🤖</div>
-          <div class="info">
-            <div class="t">코파일럿 · AI 모의면접</div>
-            <div class="b">Stateless·텍스트모드 미반영 · <code>v8_mock</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-        <a class="card" href="v1/v4_copilot.html">
-          <div class="ic copilot">📝</div>
-          <div class="info">
-            <div class="t">코파일럿 · 자소서 커버리지</div>
-            <div class="b">독립 화면 유지 결정 · <code>v4_copilot</code></div>
-          </div>
-          <div class="go">›</div>
-        </a>
-      </div>
-    </div>
+  <a class="card" href="v2/v7_write.html"><span class="ic">✍️</span><div class="t"><div class="a">면접 후기 작성 <span class="tag">톤 갱신</span></div><div class="b">3분기 + 카드 슬라이드 + 점수 폐기 + 비공개 고지 부드럽게 · <code>v7_write</code></div></div><span class="go">›</span></a>
+  <a class="card" href="v2/v4_profile.html"><span class="ic">👤</span><div class="t"><div class="a">프로필 <span class="tag">톤 갱신</span></div><div class="b">뱃지 6종 + 5단계 (셀 단어 비노출) + 닉네임 + 자랑 카드 CTA · <code>v4_profile</code></div></div><span class="go">›</span></a>
 
-    <div class="note">
-      💡 <b>v1 원본 5종(v6_home·v6_signal·v8_community·v7_write·v4_profile)</b>은 Stage 2 리드로 시 in-place로 덮어써져 보존되지 않았어요. v2만 노출.<br>
-      다음 단계 후보 — Stage 3(다이제스트·아카이브·코파일럿 허브) · Stage 4(자소서 입력·AI 문답·오픈채팅) · Stage 5(합격메일 인증·자랑 카드)
-    </div>
+  <h2>v1 — 코파일럿 하위 (v9_copilot에서 진입)</h2>
+  <div class="stage">코파일럿 단일 화면은 v2 완료(v9_copilot). 하위 프로그램 화면은 v2 톤 갱신 대기.</div>
+  <a class="card" href="v1/v8_report.html"><span class="ic">📊</span><div class="t"><div class="a">코파일럿 · 내 면접 리포트</div><div class="b">회사 단일 진입·셀 자동 컨텍스트 미반영 · <code>v8_report</code></div></div><span class="go">›</span></a>
+  <a class="card" href="v1/v8_mock.html"><span class="ic">🤖</span><div class="t"><div class="a">코파일럿 · AI 모의면접</div><div class="b">Stateless·텍스트모드 · <code>v8_mock</code></div></div><span class="go">›</span></a>
+  <a class="card" href="v1/v4_copilot.html"><span class="ic">📝</span><div class="t"><div class="a">코파일럿 · 자소서 커버리지</div><div class="b">독립 화면 유지 · 원문은 RAG 뒷단에만 · <code>v4_copilot</code></div></div><span class="go">›</span></a>
 
-    <footer>HireSignal preview · Stage 2 (2026-06-01)</footer>
-  </main>
-</body>
-</html>
+  <h2 class="dep">폐기 / 미채택</h2>
+  <div class="stage">참고용 표시. 실파일은 삭제/보관됨.</div>
+  <div class="card dep" style="cursor:default;"><span class="ic">📋</span><div class="t"><div class="a">회사 상세 · 전형정보 <span class="tag x">폐기</span></div><div class="b">독립 화면 삭제 → 시그널 하단으로 합병 · 구 <code>v7_info</code></div></div></div>
+  <a class="card dep" href="v1/v8_room_locked.html"><span class="ic">💬</span><div class="t"><div class="a">경험자 대화방 <span class="tag x">미채택</span></div><div class="b">유저 충분 시 재도입 후보 — 보관 · <code>v8_room_locked</code></div></div><span class="go">›</span></a>
+
+  <div class="note">💡 <b>다음 Stage 후보</b> — 코파일럿 하위(v8_report·v8_mock·v4_copilot) v2 톤 갱신 · 자랑 카드 모달 · <code>docs/07_data_requirements.md</code> 기반 백엔드 스키마/API 초안.</div>
+  <p class="desc" style="margin-top:18px;">HireSignal preview · Stage 1b~2a (2026-06-01)</p>
+</div></body></html>
