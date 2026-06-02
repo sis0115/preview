@@ -35,3 +35,6 @@ HTML preview repository.
 - [Merged insights after batch 3 Hyundai](./hiresignal/copilot-mvp/merged_insights_batch3_hyundai.md)
 - [Merged 55 report](./hiresignal/copilot-mvp/report_merged55.md)
 - [Additional batch 3 Hyundai report](./hiresignal/copilot-mvp/report_additional_batch3_hyundai.md)
+- [Product Dataset V2 summary](./hiresignal/copilot-mvp/product_dataset_v2_summary.md)
+- [Product Dataset V2 public JSON](./hiresignal/copilot-mvp/product_dataset_v2_public.json)
+- [Product Dataset V2 schema](./hiresignal/copilot-mvp/product_schema_v2.md)
