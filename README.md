@@ -18,3 +18,10 @@ HTML preview repository.
 ### Earlier planning board
 
 - [AI planning board](./plantgram2/ai-planning-board-2026-06-01/index.html)
+
+## HireSignal
+
+- [HireSignal mobile mockup](./hiresignal/index.html)
+- [Copilot MVP README](./hiresignal/copilot-mvp/README.md)
+- [Company backdata review](./hiresignal/copilot-mvp/company_backdata_review.md)
+- [Freeform product insights](./hiresignal/copilot-mvp/freeform_product_insights.md)
