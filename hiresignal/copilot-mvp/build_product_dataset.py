@@ -16,7 +16,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
-DEFAULT_INFILE = "merged_results_55.jsonl"
+DEFAULT_INFILE = "merged_results_67.jsonl"
 DEFAULT_CACHE = "transcript_cache.json"
 DEFAULT_JSON = "product_dataset_v2.json"
 DEFAULT_MD = "product_dataset_v2.md"

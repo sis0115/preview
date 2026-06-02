@@ -6,7 +6,7 @@
 
 입력:
 
-- `merged_results_55.jsonl`
+- `merged_results_67.jsonl`
 - `transcript_cache.json`
 
 외부 API:
