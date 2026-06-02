@@ -29,3 +29,6 @@ HTML preview repository.
 - [Merged insights after batch 1](./hiresignal/copilot-mvp/merged_insights_batch1.md)
 - [Merged 47 report](./hiresignal/copilot-mvp/report_merged47.md)
 - [Additional batch 1 report](./hiresignal/copilot-mvp/report_additional_batch1.md)
+- [Merged insights after batch 2A finance](./hiresignal/copilot-mvp/merged_insights_batch2_finance.md)
+- [Merged 51 report](./hiresignal/copilot-mvp/report_merged51.md)
+- [Additional batch 2A finance report](./hiresignal/copilot-mvp/report_additional_batch2_finance.md)
