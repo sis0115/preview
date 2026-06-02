@@ -26,3 +26,6 @@ HTML preview repository.
 - [Company backdata review](./hiresignal/copilot-mvp/company_backdata_review.md)
 - [Freeform product insights](./hiresignal/copilot-mvp/freeform_product_insights.md)
 - [Additional video candidates](./hiresignal/copilot-mvp/additional_video_candidates.md)
+- [Merged insights after batch 1](./hiresignal/copilot-mvp/merged_insights_batch1.md)
+- [Merged 47 report](./hiresignal/copilot-mvp/report_merged47.md)
+- [Additional batch 1 report](./hiresignal/copilot-mvp/report_additional_batch1.md)
