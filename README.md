@@ -25,3 +25,4 @@ HTML preview repository.
 - [Copilot MVP README](./hiresignal/copilot-mvp/README.md)
 - [Company backdata review](./hiresignal/copilot-mvp/company_backdata_review.md)
 - [Freeform product insights](./hiresignal/copilot-mvp/freeform_product_insights.md)
+- [Additional video candidates](./hiresignal/copilot-mvp/additional_video_candidates.md)
