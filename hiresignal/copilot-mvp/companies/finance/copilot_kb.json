@@ -1,0 +1,178 @@
+{
+  "schema": "company-copilot-kb-2026-06-03",
+  "company": "Finance / Banking",
+  "scope": "Korean bank recruitment common structure with IBK, Woori, and Hana initial bank-specific signals",
+  "status": "banking_common_plus_existing_youtube_signals_v1",
+  "judgment": {
+    "is_relevant_for_copilot": true,
+    "reason": "Banking recruitment requires integrated coaching across resume evidence, NCS/written routines, customer-facing experience, and bank-specific interview formats such as PT, sales role-play, BEI, and value-fit interviews."
+  },
+  "role_knowledge": [
+    {
+      "role": "Retail Banking / RM",
+      "korean_role": "개인금융 / RM",
+      "copilot_focus": ["customer needs", "trust", "accurate explanation", "complaint handling", "relationship management"],
+      "experience_translation": ["customer service", "needs discovery", "conflict resolution", "clear explanation", "accuracy and ethics"]
+    },
+    {
+      "role": "Corporate Banking / RM",
+      "korean_role": "기업금융 / RM",
+      "copilot_focus": ["corporate customer", "credit", "financial analysis", "industry understanding", "post-loan monitoring"],
+      "experience_translation": ["business analysis", "financial statement", "risk-return balance", "long-term relationship", "SME support"]
+    },
+    {
+      "role": "PB / Wealth Management",
+      "korean_role": "PB / 자산관리",
+      "copilot_focus": ["investment profile", "risk explanation", "portfolio", "suitability", "long-term trust"],
+      "experience_translation": ["financial product explanation", "risk disclosure", "customer goal", "complete sales"]
+    },
+    {
+      "role": "Digital",
+      "korean_role": "디지털",
+      "copilot_focus": ["mobile banking", "customer journey", "data-based service", "fintech", "UX", "digital product planning"],
+      "experience_translation": ["service improvement", "data analysis", "customer pain point", "digital channel"]
+    },
+    {
+      "role": "IT",
+      "korean_role": "IT",
+      "copilot_focus": ["banking system", "mobile channel", "security", "availability", "incident response", "data integrity"],
+      "experience_translation": ["system stability", "security", "performance", "monitoring", "failure recovery"]
+    },
+    {
+      "role": "Risk / Credit Review",
+      "korean_role": "리스크 / 심사",
+      "copilot_focus": ["credit risk", "soundness", "loan review", "objective judgment", "regulation", "monitoring"],
+      "experience_translation": ["quantitative and qualitative judgment", "rule-based decision", "risk detection", "follow-up management"]
+    },
+    {
+      "role": "Compliance / Consumer Protection",
+      "korean_role": "컴플라이언스 / 소비자보호",
+      "copilot_focus": ["complete sales", "duty of explanation", "internal control", "complaint", "ethics"],
+      "experience_translation": ["rule compliance", "customer understanding", "complaint process", "ethical decision"]
+    }
+  ],
+  "bank_specific": [
+    {
+      "bank": "IBK기업은행",
+      "focus": ["SME finance", "policy finance", "public mission", "financial general", "digital", "IT"],
+      "interview_angle": ["why IBK", "SME/customer growth", "regional economy", "digital/IT with banking understanding"]
+    },
+    {
+      "bank": "우리은행",
+      "focus": ["corporate banking", "retail banking", "non-finance major explanation", "interview defense"],
+      "interview_angle": ["why Woori", "why corporate banking", "customer/company analysis", "transferable experience"]
+    },
+    {
+      "bank": "하나은행",
+      "focus": ["PT", "BEI", "Hana FIT", "value fit", "sales/customer scenario"],
+      "interview_angle": ["PT structuring", "BEI experience verification", "organization fit", "customer response"]
+    }
+  ],
+  "role_recommendation_rules": [
+    {
+      "user_keywords": ["고객 응대", "민원", "상담", "설명", "신뢰", "영업점"],
+      "recommended_role": "개인금융 / RM"
+    },
+    {
+      "user_keywords": ["기업", "재무제표", "여신", "산업 분석", "중소기업", "담보"],
+      "recommended_role": "기업금융 / RM"
+    },
+    {
+      "user_keywords": ["투자", "포트폴리오", "자산관리", "위험성향", "금융상품"],
+      "recommended_role": "PB / 자산관리"
+    },
+    {
+      "user_keywords": ["앱", "UX", "데이터", "핀테크", "모바일", "서비스 기획"],
+      "recommended_role": "디지털"
+    },
+    {
+      "user_keywords": ["개발", "보안", "장애", "시스템", "서버", "데이터 정합성"],
+      "recommended_role": "IT"
+    },
+    {
+      "user_keywords": ["리스크", "심사", "신용", "건전성", "규정", "모니터링"],
+      "recommended_role": "리스크 / 심사"
+    },
+    {
+      "user_keywords": ["소비자보호", "완전판매", "설명의무", "내부통제", "민원"],
+      "recommended_role": "컴플라이언스 / 소비자보호"
+    }
+  ],
+  "industry_knowledge": [
+    {
+      "topic": "Digital Banking / Mobile Banking",
+      "copilot_use": "Connect to customer journey, non-face-to-face service, digital inclusion, mobile channel reliability, and UX."
+    },
+    {
+      "topic": "CBDC / Deposit Token / Payments",
+      "copilot_use": "Connect to digital/IT, payments infrastructure, security, customer explanation, risk, and compliance."
+    },
+    {
+      "topic": "Financial Consumer Protection",
+      "copilot_use": "Connect to complete sales, suitability, explanation duty, internal control, complaints, and trust."
+    },
+    {
+      "topic": "AI / Data in Banking",
+      "copilot_use": "Connect to personalization, fraud detection, credit monitoring, customer support, and process automation."
+    }
+  ],
+  "youtube_signals": {
+    "existing_batch": "youtube_batch2a",
+    "use": [
+      "resume interest evidence, keywords, and consistency",
+      "customer-facing experience as core resume evidence",
+      "NCS and economic/financial knowledge routine",
+      "avoid exaggerated resume claims that fail follow-up questions",
+      "bank interview modes: PT, sales, BEI, role-play, value fit",
+      "non-finance majors must explain why banking"
+    ]
+  },
+  "written_exam_rules": [
+    "Track NCS routine.",
+    "Track economy and finance news routine.",
+    "Track banking product and regulation knowledge.",
+    "Track digital finance knowledge.",
+    "Identify weak areas and make repeated practice visible."
+  ],
+  "interview_modes": [
+    "common personality and motivation",
+    "PT",
+    "sales role-play",
+    "BEI",
+    "customer complaint scenario",
+    "bank-specific value fit",
+    "corporate banking case"
+  ],
+  "copilot_rules": {
+    "do": [
+      "Ask target bank and recruitment track first.",
+      "Check customer-facing experience, banking interest evidence, written exam routine, and interview mode separately.",
+      "Generate follow-up questions for each resume claim to test defensibility.",
+      "For non-finance majors, strengthen the reason for banking instead of only saying the major is acceptable.",
+      "Split coaching by bank-specific interview formats."
+    ],
+    "avoid": [
+      "Do not provide generic banking advice with only the bank name changed.",
+      "Do not list certificates, competitions, or news without connecting them to banking work.",
+      "Do not polish exaggerated claims without testing interview defense.",
+      "Do not summarize digital finance news without role connection."
+    ]
+  },
+  "youtube_collection_priority": [
+    "IBK SME finance, digital, IT interview",
+    "Woori corporate banking, retail banking, PT, executive interview",
+    "Hana PT, BEI, Hana FIT",
+    "KB UB, ICT, PB interview",
+    "Shinhan digital, ICT, general banker interview",
+    "NH NongHyup general, regional, digital interview",
+    "banking sales role-play, BEI, PT common material"
+  ],
+  "sources": [
+    "https://ibk.incruit.com/",
+    "https://ibk.incruit.com/recruiter/duty_introduce.html",
+    "https://obank.kbstar.com/",
+    "https://www.bok.or.kr/portal/submain/submain/cbdc.do?menuNo=2",
+    "https://www.fss.or.kr/",
+    "https://www.fsc.go.kr/"
+  ]
+}
