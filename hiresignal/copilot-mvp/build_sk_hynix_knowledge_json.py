@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+import json
+from pathlib import Path
+
+
+DATA = {
+    "schema_version": "sk-hynix-copilot-kb-2026-06-03",
+    "company": "SK하이닉스",
+    "purpose": "공식 직무/기술/산업 자료와 유튜브 기반 직무 신호를 결합해 자소서 첨삭, 면접 질문 생성, 직무 추천에 쓰는 배경 지식",
+    "source_policy": {
+        "youtube": "직무 언어, 현직자 표현, 취준생 혼동 지점 파악",
+        "official_job_roles": "직무명, 업무 범위, 요구 역량의 기준",
+        "newsroom": "최신 기술/제품/전략 동향과 지원동기 소재",
+        "industry_news": "공식 자료로 확인한 동향을 보강하는 용도",
+    },
+    "role_knowledge": {
+        "Product Engineering": {
+            "core_work": ["완제품 개발", "제품 평가/분석", "수율 개선", "Test Solution 고도화", "제품 경쟁력 강화"],
+            "resume_checks": [
+                "평가/분석 데이터를 제품 품질이나 성능 개선으로 연결했는가",
+                "수율, 테스트, 불량, 검증, 신뢰성 중 하나 이상의 경험 언어가 있는가",
+                "설계/소자/공정 지식을 제품 관점으로 통합해 설명하는가",
+            ],
+            "experience_translation": "제품 요구사항 -> 평가/분석 -> 이상 패턴 판단 -> 개선 방향 -> 제품 완성도/수율 기여",
+            "interview_questions": [
+                "평가 데이터에서 이상 패턴이 보이면 어떻게 원인을 좁히겠는가",
+                "수율과 품질 중 하나를 우선해야 하는 상황이면 어떻게 판단하겠는가",
+                "본인 프로젝트에서 제품 완성도 관점의 지표는 무엇이었는가",
+            ],
+        },
+        "Utility기술": {
+            "core_work": ["클린룸 환경 유지", "공조/배기", "배관", "Gas/Chemical/UPW 공급", "전기/제어", "안전/환경", "P&S 설비 운영"],
+            "resume_checks": [
+                "안정 공급, 무중단 운영, 예방 정비, 안전/환경 기준이 드러나는가",
+                "Gas, Chemical, UPW, 공조, 배기, 배관, 전기/제어 중 관련 경험이 있는가",
+                "문제 발생 후 조치보다 사전 예방과 운영 안정화 관점이 있는가",
+            ],
+            "experience_translation": "설비/플랜트 경험 -> 안정 공급 리스크 -> 이상 징후 탐지 -> 예방/조치 -> 생산 환경 안정화",
+            "interview_questions": [
+                "클린룸 환경 유지가 반도체 품질에 왜 중요한가",
+                "Utility 공급이 중단되면 생산에 어떤 영향이 생기는가",
+                "안전/환경 기준과 생산성 목표가 충돌하면 어떻게 판단하겠는가",
+            ],
+        },
+        "품질보증": {
+            "core_work": ["신제품 품질 인증", "양산 품질 관리", "고객 품질", "불량/변경관리", "전사 품질 시스템 개선"],
+            "resume_checks": [
+                "문제를 발견한 뒤 기준/규격/고객 요구사항과 연결했는가",
+                "불량 원인 분석과 재발 방지 구조가 있는가",
+                "품질을 개인 성향이 아니라 시스템과 프로세스 관점으로 설명하는가",
+            ],
+            "experience_translation": "검수/관리 경험 -> 품질 기준 -> 불량/이슈 분류 -> 원인 분석 -> 재발 방지/고객 품질",
+            "interview_questions": [
+                "품질 문제를 발견했지만 생산 일정이 급하면 어떻게 대응하겠는가",
+                "고객 품질 이슈와 내부 공정 이슈를 어떻게 구분하겠는가",
+                "재발 방지 대책을 만들 때 어떤 데이터를 봐야 하는가",
+            ],
+        },
+        "양산기술": {
+            "core_work": ["안정 양산", "공정/장비 조건 최적화", "수율/품질 개선", "생산성 개선", "양산 데이터 분석"],
+            "resume_checks": [
+                "경험이 개발 완료 후 안정 생산, 수율, 품질, 생산성 개선으로 연결되는가",
+                "데이터를 보고 공정/장비 조건을 조정한 근거가 있는가",
+                "현장 부서와 협업해 문제를 해결한 장면이 있는가",
+            ],
+            "experience_translation": "문제 상황 -> 데이터/불량 확인 -> 원인 가설 -> 공정/장비 조건 조정 -> 수율/품질/생산성 결과",
+        },
+        "R&D 공정": {
+            "core_work": ["신규 공정 개발", "실험 설계", "변수 통제", "분석 장비 활용", "원인 규명"],
+            "resume_checks": [
+                "실험 설계, 변수 통제, 분석 장비 활용 경험이 드러나는가",
+                "정답이 없는 문제에서 원인을 규명한 과정을 설명하는가",
+                "공정 조건을 바꿔 성능/품질을 개선한 논리가 있는가",
+            ],
+            "experience_translation": "가설 설정 -> 변수 통제 -> 분석 장비/데이터 확인 -> 공정 조건 탐색 -> 개선 근거",
+        },
+        "양산기술(P&T)": {
+            "core_work": ["패키징 공정", "Test 공정", "후공정 최적화", "제품 신뢰성", "HBM/PKG 연계"],
+            "resume_checks": [
+                "패키징/테스트/후공정 흐름을 이해하고 있는가",
+                "제품 완성도와 신뢰성 관점의 경험이 있는가",
+                "HBM/PKG 같은 산업 키워드를 직무 경험과 연결했는가",
+            ],
+            "experience_translation": "제품 평가/테스트 경험 -> 후공정 흐름 -> 불량 검출 -> 신뢰성 확인 -> 제품 완성도 개선",
+        },
+        "소자": {
+            "core_work": ["소자 구조 이해", "전기적 특성 분석", "성능 개선", "설계-공정 연결"],
+            "resume_checks": [
+                "소자가 설계와 공정 사이에서 성능을 개선하는 역할임을 이해하는가",
+                "반도체 물성/전기적 특성/소자 구조 경험을 설명할 수 있는가",
+                "성능 개선을 데이터나 실험 결과로 말할 수 있는가",
+            ],
+            "experience_translation": "전공/실험 경험 -> 소자 구조 -> 전기적 특성 -> 성능 개선 -> 공정-설계 연결",
+        },
+        "설계": {
+            "core_work": ["아키텍처 설계", "디지털/아날로그 회로", "레이아웃", "검증", "고객/시장 요구 반영"],
+            "resume_checks": [
+                "회로/로직/검증/아키텍처 경험이 구체적인가",
+                "설계 결과를 검증하거나 개선한 경험이 있는가",
+                "학부/석사 프로젝트를 메모리 설계 언어로 번역했는가",
+            ],
+            "experience_translation": "요구사항 이해 -> 구조 설계 -> 구현 -> 검증 -> 개선 결과",
+        },
+        "Maintenance": {
+            "core_work": ["장비 안정 가동", "점검/유지보수", "고장 대응", "성능 최적화", "현장 적응"],
+            "resume_checks": [
+                "장비 이상 대응, 유지보수, 예방 점검 경험이 있는가",
+                "현장 적응과 교대/라인 운영 이해가 드러나는가",
+                "장비 문제를 데이터나 현상 관찰로 해결한 사례가 있는가",
+            ],
+            "experience_translation": "이상 징후 발견 -> 원인 추적 -> 조치/정비 -> 재발 방지 -> 라인 안정화",
+        },
+    },
+    "industry_knowledge": {
+        "HBM4": {
+            "why_it_matters": "AI 인프라 병목을 완화하는 고성능 메모리이며, 대역폭/전력효율/신뢰성이 핵심 경쟁 포인트",
+            "connect_to_roles": {
+                "양산기술": "HBM 수요 확대는 안정 양산과 수율 개선 역량을 중요하게 만든다",
+                "양산기술(P&T)": "고적층 HBM은 패키징/테스트/열/warpage 제어가 경쟁력이다",
+                "Product Engineering": "고성능 제품을 고객 요구 성능과 신뢰성 기준으로 평가·분석해야 한다",
+                "품질보증": "개발, 인증, 양산, 고객 품질까지 이어지는 품질 시스템이 중요하다",
+            },
+        },
+        "Advanced MR-MUF": {
+            "why_it_matters": "고적층 HBM에서 휨 제어와 방열 성능을 높여 안정 양산을 가능하게 하는 패키징 공정",
+            "connect_to_roles": {
+                "양산기술(P&T)": "후공정/패키징 안정성과 직접 연결",
+                "Product Engineering": "제품 평가와 신뢰성 분석 소재",
+                "R&D 공정": "공정 조건과 소재/열/구조 이슈 탐색 소재",
+            },
+        },
+        "iHBM": {
+            "why_it_matters": "고대역폭·고집적 AI 메모리에서 열 관리와 시스템 안정성을 높이는 차세대 솔루션",
+            "connect_to_roles": {
+                "설계": "열/전력/신뢰성 요구를 설계 관점으로 이해",
+                "양산기술(P&T)": "패키징 내부 열 경로와 WLP/MR-MUF 공정 이해",
+                "Product Engineering": "고객 환경에서 제품 안정성과 성능 평가",
+            },
+        },
+        "Advanced Packaging": {
+            "why_it_matters": "AI 메모리 공급망에서 HBM 성능과 고객 대응력을 좌우하는 핵심 역량",
+            "connect_to_roles": {
+                "양산기술(P&T)": "패키징/테스트 생산 역량",
+                "Product Engineering": "고객 요구에 맞는 제품 평가/분석",
+                "품질보증": "고객 품질과 신뢰성 보증",
+            },
+        },
+    },
+    "copilot_rules": {
+        "do": [
+            "지원 직무를 먼저 확인한다",
+            "직무가 불명확하면 경험 키워드로 sub_role을 추천한다",
+            "공식 직무 설명을 업무 범위 기준으로 삼는다",
+            "유튜브 자막은 현직자 표현과 면접/자소서 변환 힌트로 사용한다",
+            "최신 뉴스는 지원동기와 직무 중요성 설명에만 사용한다",
+        ],
+        "avoid": [
+            "반도체 산업 성장 같은 일반론으로 끝내기",
+            "HBM, AI, MR-MUF 키워드 나열",
+            "회사 뉴스 요약만 하고 지원자 경험과 연결하지 않는 답변",
+            "모든 반도체 직무를 공정/수율로만 설명",
+            "품질보증을 꼼꼼함, Maintenance를 성실함 같은 성향으로만 설명",
+        ],
+    },
+    "sources": [
+        "https://www.skhynix.com/careers/UI-FR-CR03/",
+        "https://www.skhynix.com/careers/UI-FR-CR0203/",
+        "https://news.skhynix.com/sk-hynix-completes-worlds-first-hbm4-development-and-readies-mass-production/",
+        "https://news.skhynix.co.kr/ihbm-solution/",
+        "https://news.skhynix.com/sk-hynix-signs-investment-agreement-of-advanced-chip-packaging-with-indiana/",
+        "https://news.skhynix.com/first-class-quality-comes-from-first-class-culture-jung-sik-park-head-of-quality-reliability-assurance/",
+        "https://news.skhynix.com/tsmc-2025-technology-symposium-sk-hynix-showcases-hbm4/",
+        "https://news.skhynix.com/small-size-big-impact/",
+        "https://news.skhynix.co.kr/sc25-ai-hpc-exhibition/",
+    ],
+}
+
+
+def main():
+    Path("sk_hynix_copilot_knowledge_base.json").write_text(
+        json.dumps(DATA, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    print("wrote sk_hynix_copilot_knowledge_base.json")
+
+
+if __name__ == "__main__":
+    main()
