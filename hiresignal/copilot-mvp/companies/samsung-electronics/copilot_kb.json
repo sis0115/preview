@@ -1,0 +1,96 @@
+{
+  "schema": "company-copilot-kb-2026-06-03",
+  "company": "Samsung Electronics",
+  "scope": "DS Division",
+  "status": "official_first_draft",
+  "judgment": {
+    "is_relevant_for_copilot": true,
+    "reason": "Samsung Electronics DS has official role taxonomy and broad semiconductor business context across memory, System LSI, foundry, advanced packaging, manufacturing infrastructure, and AI/data-center memory solutions."
+  },
+  "role_knowledge": [
+    {
+      "role": "Circuit Design",
+      "korean_role": "회로설계",
+      "copilot_focus": ["architecture", "verification", "performance", "power", "area", "signal integrity"]
+    },
+    {
+      "role": "Evaluation and Analysis",
+      "korean_role": "평가 및 분석",
+      "copilot_focus": ["product evaluation", "process analysis", "data science", "quality control", "reliability"]
+    },
+    {
+      "role": "Semiconductor Process Design",
+      "korean_role": "반도체공정설계",
+      "copilot_focus": ["process integration", "device", "layout", "mask", "performance and quality"]
+    },
+    {
+      "role": "Semiconductor Process Technology",
+      "korean_role": "반도체공정기술",
+      "copilot_focus": ["yield", "quality", "productivity", "mass production", "process improvement"]
+    },
+    {
+      "role": "Equipment Technology",
+      "korean_role": "설비기술",
+      "copilot_focus": ["equipment operation", "troubleshooting", "preventive maintenance", "performance improvement"]
+    },
+    {
+      "role": "Infrastructure Technology",
+      "korean_role": "인프라기술",
+      "copilot_focus": ["facility", "power", "UPW", "HVAC", "gas", "utility stability", "safety and environment"]
+    },
+    {
+      "role": "Package Development",
+      "korean_role": "패키지개발",
+      "copilot_focus": ["advanced packaging", "thermal reliability", "electrical reliability", "mechanical reliability", "heterogeneous integration"]
+    },
+    {
+      "role": "Software and System Design",
+      "korean_role": "S/W개발 및 신호/시스템설계",
+      "copilot_focus": ["fab automation", "digital twin", "AI and ML", "system software", "firmware", "CXL"]
+    }
+  ],
+  "industry_knowledge": [
+    {
+      "topic": "HBM4",
+      "copilot_use": "Connect to memory process, package development, evaluation, reliability, power efficiency, and AI/HPC workload context."
+    },
+    {
+      "topic": "CXL Memory",
+      "copilot_use": "Connect to memory expansion, memory pooling, server/datacenter workloads, system software, firmware, and product strategy."
+    },
+    {
+      "topic": "Foundry",
+      "copilot_use": "Connect to process technology, customer requirements, PPA, yield, advanced nodes, and application-specific manufacturing."
+    },
+    {
+      "topic": "Advanced Packaging",
+      "copilot_use": "Connect to I-Cube, H-Cube, X-Cube, turnkey service, heterogeneous integration, thermal/electrical/mechanical reliability."
+    }
+  ],
+  "copilot_rules": {
+    "do": [
+      "Ask the target DS business unit and role before giving detailed advice.",
+      "Translate user experience into role-specific metrics such as yield, reliability, process stability, equipment uptime, or package performance.",
+      "Separate Samsung DS-specific context from generic semiconductor advice.",
+      "Use SK hynix comparison only when it clarifies common semiconductor role patterns."
+    ],
+    "avoid": [
+      "Do not give generic Samsung application advice without role targeting.",
+      "Do not force HBM4 into every role.",
+      "Do not mix DX/mobile/consumer electronics context with DS semiconductor context.",
+      "Do not summarize technology news without connecting it to job duties."
+    ]
+  },
+  "sources": [
+    "https://www.samsung-dsrecruit.com/recruits/job_intro/index.php",
+    "https://www.samsung.com/sec/about-us/careers/job-fields/en/",
+    "https://semiconductor.samsung.com/about-us/careers/jobs/",
+    "https://semiconductor.samsung.com/about-us/careers/us/students/jobs-in-engineering/",
+    "https://semiconductor.samsung.com/kr/dram/hbm/hbm4/",
+    "https://semiconductor.samsung.com/news-events/news/samsung-ships-industry-first-commercial-hbm4-with-ultimate-performance-for-ai-computing/",
+    "https://semiconductor.samsung.com/kr/cxl-memory/",
+    "https://semiconductor.samsung.com/kr/newsroom/news/samsung-develops-industrys-first-cxl-dram-supporting-cxl-2-0/",
+    "https://semiconductor.samsung.com/kr/foundry/advanced-package/",
+    "https://semiconductor.samsung.com/emea/foundry/process-technology/"
+  ]
+}

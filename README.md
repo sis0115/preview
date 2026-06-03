@@ -23,6 +23,12 @@ HTML preview repository.
 
 - [HireSignal mobile mockup](./hiresignal/index.html)
 - [Copilot MVP README](./hiresignal/copilot-mvp/README.md)
+- [Company Copilot Data README](./hiresignal/copilot-mvp/companies/README.md)
+- [SK Hynix company folder README](./hiresignal/copilot-mvp/companies/sk-hynix/README.md)
+- [SK Hynix company copilot KB](./hiresignal/copilot-mvp/companies/sk-hynix/copilot_kb.md)
+- [Samsung Electronics DS folder README](./hiresignal/copilot-mvp/companies/samsung-electronics/README.md)
+- [Samsung Electronics DS copilot KB draft](./hiresignal/copilot-mvp/companies/samsung-electronics/copilot_kb.md)
+- [Samsung Electronics DS initial taxonomy](./hiresignal/copilot-mvp/companies/samsung-electronics/roles/taxonomy_initial.md)
 - [Company backdata review](./hiresignal/copilot-mvp/company_backdata_review.md)
 - [Freeform product insights](./hiresignal/copilot-mvp/freeform_product_insights.md)
 - [Additional video candidates](./hiresignal/copilot-mvp/additional_video_candidates.md)
