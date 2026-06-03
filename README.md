@@ -49,4 +49,5 @@ HTML preview repository.
 - [Non-core dataset archive public JSON](./hiresignal/copilot-mvp/product_dataset_non_core_archive_public.json)
 - [SK Hynix video candidates](./hiresignal/copilot-mvp/sk_hynix_video_candidates.md)
 - [SK Hynix H1 curated candidates](./hiresignal/copilot-mvp/sk_hynix_h1_curated_candidates.md)
+- [SK Hynix H1 collection review](./hiresignal/copilot-mvp/sk_hynix_h1_collection_review.md)
 - [Product Dataset V2 schema](./hiresignal/copilot-mvp/product_schema_v2.md)

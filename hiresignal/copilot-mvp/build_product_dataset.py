@@ -16,7 +16,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
-DEFAULT_INFILE = "core_results_finance_hyundai_semiconductor.jsonl"
+DEFAULT_INFILE = "core_results_hynix_h1.jsonl"
 DEFAULT_CACHE = "transcript_cache.json"
 DEFAULT_JSON = "product_dataset_v2.json"
 DEFAULT_MD = "product_dataset_v2.md"
