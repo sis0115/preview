@@ -52,4 +52,6 @@ HTML preview repository.
 - [SK Hynix H1 collection review](./hiresignal/copilot-mvp/sk_hynix_h1_collection_review.md)
 - [SK Hynix job taxonomy research](./hiresignal/copilot-mvp/sk_hynix_job_taxonomy_research.md)
 - [SK Hynix sub role mapping review](./hiresignal/copilot-mvp/sk_hynix_subrole_mapping_review.md)
+- [SK Hynix gap role candidates](./hiresignal/copilot-mvp/sk_hynix_gap_role_candidates.md)
+- [SK Hynix gap role curated candidates](./hiresignal/copilot-mvp/sk_hynix_gap_role_curated_candidates.md)
 - [Product Dataset V2 schema](./hiresignal/copilot-mvp/product_schema_v2.md)
