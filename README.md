@@ -29,6 +29,8 @@ HTML preview repository.
 - [Samsung Electronics DS folder README](./hiresignal/copilot-mvp/companies/samsung-electronics/README.md)
 - [Samsung Electronics DS copilot KB draft](./hiresignal/copilot-mvp/companies/samsung-electronics/copilot_kb.md)
 - [Samsung Electronics DS initial taxonomy](./hiresignal/copilot-mvp/companies/samsung-electronics/roles/taxonomy_initial.md)
+- [Samsung Electronics DS official detailed roles](./hiresignal/copilot-mvp/companies/samsung-electronics/roles/official_detailed_roles.md)
+- [Samsung Electronics DS official role pages](./hiresignal/copilot-mvp/companies/samsung-electronics/sources/official_role_pages.md)
 - [Company backdata review](./hiresignal/copilot-mvp/company_backdata_review.md)
 - [Freeform product insights](./hiresignal/copilot-mvp/freeform_product_insights.md)
 - [Additional video candidates](./hiresignal/copilot-mvp/additional_video_candidates.md)

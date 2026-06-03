@@ -2,7 +2,7 @@
   "schema": "company-copilot-kb-2026-06-03",
   "company": "Samsung Electronics",
   "scope": "DS Division",
-  "status": "official_first_draft",
+  "status": "official_detailed_roles_v1",
   "judgment": {
     "is_relevant_for_copilot": true,
     "reason": "Samsung Electronics DS has official role taxonomy and broad semiconductor business context across memory, System LSI, foundry, advanced packaging, manufacturing infrastructure, and AI/data-center memory solutions."
@@ -16,7 +16,8 @@
     {
       "role": "Evaluation and Analysis",
       "korean_role": "평가 및 분석",
-      "copilot_focus": ["product evaluation", "process analysis", "data science", "quality control", "reliability"]
+      "copilot_focus": ["product engineering", "test process design", "defect detection", "quality control", "reliability", "data science", "customer validation"],
+      "experience_translation": ["test and evaluation data", "failure mode analysis", "statistical inference", "DOE", "ML-based defect factor discovery", "wafer and package evaluation"]
     },
     {
       "role": "Semiconductor Process Design",
@@ -26,17 +27,19 @@
     {
       "role": "Semiconductor Process Technology",
       "korean_role": "반도체공정기술",
-      "copilot_focus": ["yield", "quality", "productivity", "mass production", "process improvement"]
+      "copilot_focus": ["yield", "quality", "productivity", "process parameter", "process setup", "monitoring", "automation logic", "big data analysis"],
+      "experience_translation": ["process condition optimization", "variation control", "yield factor analysis", "defect root cause", "monitoring tool", "inspection and metrology"]
     },
     {
       "role": "Equipment Technology",
       "korean_role": "설비기술",
-      "copilot_focus": ["equipment operation", "troubleshooting", "preventive maintenance", "performance improvement"]
+      "copilot_focus": ["equipment operation", "troubleshooting", "preventive maintenance", "performance improvement", "modification and improvement", "productivity"]
     },
     {
       "role": "Infrastructure Technology",
       "korean_role": "인프라기술",
-      "copilot_focus": ["facility", "power", "UPW", "HVAC", "gas", "utility stability", "safety and environment"]
+      "copilot_focus": ["facility", "construction", "power", "UPW", "HVAC", "gas", "chemical", "utility stability", "safety and environment"],
+      "experience_translation": ["stable utility supply", "cleanroom operation", "power load", "gas and chemical risk", "facility maintenance", "environment and safety compliance"]
     },
     {
       "role": "Package Development",
@@ -46,8 +49,53 @@
     {
       "role": "Software and System Design",
       "korean_role": "S/W개발 및 신호/시스템설계",
-      "copilot_focus": ["fab automation", "digital twin", "AI and ML", "system software", "firmware", "CXL"]
+      "copilot_focus": ["fab automation", "digital twin", "AI and ML", "defect image analysis", "FDC database", "warning system", "automatic judgment", "system software", "firmware", "CXL"],
+      "experience_translation": ["data engineering", "statistical significance testing", "process window analysis", "defect image classification", "web application", "DB operation", "robotics and AMR"]
+    },
+    {
+      "role": "Mechanical Equipment Development",
+      "korean_role": "기구개발",
+      "copilot_focus": ["equipment system development", "mechanical design", "thermal and fluid conditions", "robotics", "component reliability", "CAD and CAE", "process equipment requirements"],
+      "experience_translation": ["mechanical design", "durability test", "lifetime prediction", "tolerance and measurement", "thermal fluid analysis", "robotic transfer mechanism"]
     }
+  ],
+  "role_recommendation_rules": [
+    {
+      "user_keywords": ["통계", "실험계획", "불량 분석", "신뢰성", "품질", "검증"],
+      "recommended_role": "평가 및 분석"
+    },
+    {
+      "user_keywords": ["공정 조건", "산포", "수율", "parameter", "monitoring", "8대 공정"],
+      "recommended_role": "반도체공정기술"
+    },
+    {
+      "user_keywords": ["장비", "트러블슈팅", "예방보전", "개조개선", "설비 안정화"],
+      "recommended_role": "설비기술"
+    },
+    {
+      "user_keywords": ["전력", "초순수", "HVAC", "Gas", "Chemical", "클린룸"],
+      "recommended_role": "인프라기술"
+    },
+    {
+      "user_keywords": ["열", "warpage", "substrate", "TSV", "interposer", "패키지"],
+      "recommended_role": "패키지개발"
+    },
+    {
+      "user_keywords": ["Python", "ML", "DB", "defect image", "Digital Twin", "자동화"],
+      "recommended_role": "신호 및 시스템 설계"
+    },
+    {
+      "user_keywords": ["Verilog", "회로", "timing", "power", "architecture", "UVM", "layout"],
+      "recommended_role": "회로설계"
+    }
+  ],
+  "youtube_collection_priority": [
+    "평가 및 분석",
+    "반도체공정기술",
+    "설비기술/기구개발",
+    "인프라기술",
+    "패키지개발",
+    "신호 및 시스템 설계"
   ],
   "industry_knowledge": [
     {
@@ -83,6 +131,13 @@
   },
   "sources": [
     "https://www.samsung-dsrecruit.com/recruits/job_intro/index.php",
+    "https://www.samsung-dsrecruit.com/recruits/job_intro/memory/circuitDesign.php",
+    "https://www.samsung-dsrecruit.com/recruits/job_intro/memory/analysis.php",
+    "https://www.samsung-dsrecruit.com/recruits/job_intro/memory/semiProcess_design.php",
+    "https://www.samsung-dsrecruit.com/recruits/job_intro/css/semiProcess_tech.php",
+    "https://www.samsung-dsrecruit.com/recruits/job_intro/memory/constructionTech.php",
+    "https://www.samsung-dsrecruit.com/recruits/job_intro/fab_engOps/signSystem_design.php",
+    "https://samsung-dsrecruit.com/recruits/job_intro/fab_engOps/instrumentDev.php",
     "https://www.samsung.com/sec/about-us/careers/job-fields/en/",
     "https://semiconductor.samsung.com/about-us/careers/jobs/",
     "https://semiconductor.samsung.com/about-us/careers/us/students/jobs-in-engineering/",
