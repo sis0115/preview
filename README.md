@@ -25,6 +25,8 @@ HTML preview repository.
 - [Copilot MVP README](./hiresignal/copilot-mvp/README.md)
 - [Copilot MVP runtime design](./hiresignal/copilot-mvp/docs/copilot_mvp_runtime_design.md)
 - [Copilot knowledge growth strategy](./hiresignal/copilot-mvp/docs/knowledge_growth_strategy.md)
+- [Copilot MVP TODO](./hiresignal/copilot-mvp/docs/copilot_mvp_todo.md)
+- [SK Hynix resume review demo](./hiresignal/copilot-mvp/docs/sk_hynix_resume_review_demo.md)
 - [Company Copilot Data README](./hiresignal/copilot-mvp/companies/README.md)
 - [SK Hynix company folder README](./hiresignal/copilot-mvp/companies/sk-hynix/README.md)
 - [SK Hynix company copilot KB](./hiresignal/copilot-mvp/companies/sk-hynix/copilot_kb.md)
