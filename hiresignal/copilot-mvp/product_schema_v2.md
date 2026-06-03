@@ -6,7 +6,7 @@
 
 입력:
 
-- `merged_results_67.jsonl`
+- `core_results_finance_hyundai_semiconductor.jsonl`
 - `transcript_cache.json`
 
 외부 API:
@@ -54,9 +54,14 @@ YouTube watch URL.
 
 제품 도메인.
 
+현재 제품 주입 대상:
+
 - `semiconductor`
 - `finance`
 - `hyundai`
+
+별도 archive 대상:
+
 - `retail_consumer`
 - `general_interview`
 
@@ -77,7 +82,7 @@ YouTube watch URL.
 - 반도체: 이상 원인 분석, 수율/품질 개선, 조건 최적화, 장비/현장 대응
 - 금융권: 고객 응대, 금융상품 세일즈, PT/BEI 대응, 필기 준비
 - 현대차: 품질 검증, 구매/협력사 조율, 파이로트/양산 전 평가, 자기소개 PT
-- 소비재/유통: 브랜드/상품 기획, 고객/시장 이해, 유통/물류/커머스 운영, PT/발표/설득
+- archive 소비재/유통: 브랜드/상품 기획, 고객/시장 이해, 유통/물류/커머스 운영, PT/발표/설득
 
 ### evaluation_criteria
 
