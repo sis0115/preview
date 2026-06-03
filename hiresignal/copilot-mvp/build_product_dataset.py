@@ -94,6 +94,29 @@ DOMAIN_RULES = {
             "PT 각 장에 말하려는 한 문장이 있는가",
         ],
     },
+    "retail_consumer": {
+        "match": ["CJ", "올리브영", "대한통운", "ENM", "제일제당", "아모레퍼시픽", "LG생활건강", "브랜드", "커머스", "마케팅"],
+        "tasks": [
+            ("브랜드/상품 기획", ["브랜드", "상품", "제품", "기획", "큐레이션"]),
+            ("고객/시장 이해", ["고객", "소비자", "시장", "트렌드", "니즈"]),
+            ("유통/물류/커머스 운영", ["유통", "물류", "커머스", "올리브영", "대한통운", "채널"]),
+            ("PT/발표/설득", ["pt", "발표", "프레젠테이션", "설득", "스토리"]),
+            ("계열사/직무 선택", ["계열사", "직무", "회사", "선택", "지원"]),
+        ],
+        "criteria": [
+            ("회사/브랜드 이해", ["회사", "브랜드", "계열사", "사업", "제품"]),
+            ("고객 관점", ["고객", "소비자", "니즈", "경험"]),
+            ("콘텐츠/커뮤니케이션", ["콘텐츠", "커뮤니케이션", "소통", "표현"]),
+            ("실행력/협업", ["실행", "협업", "결단", "문제해결"]),
+            ("직무 적합성", ["직무", "역량", "적합", "경험"]),
+        ],
+        "resume_checks": [
+            "지원 계열사와 직무를 구체적으로 골랐는가",
+            "브랜드/상품/고객 경험을 본인의 행동과 연결했는가",
+            "마케팅·영업·MD·물류 중 어느 직무 언어로 경험을 번역했는가",
+            "PT나 면접에서 고객 관점과 실행 경험이 드러나는가",
+        ],
+    },
     "general_interview": {
         "match": ["1분 자기소개", "면접", "자기소개"],
         "tasks": [
@@ -164,6 +187,8 @@ def detect_domain(note, result, transcript):
     note_text = note or ""
     if company in {"현대자동차"} or "현대차" in note_text or "현대자동차" in note_text:
         return "hyundai"
+    if any(k in note_text for k in ["CJ", "올리브영", "대한통운", "ENM", "제일제당", "아모레퍼시픽", "LG생활건강", "LG 생건"]):
+        return "retail_consumer"
     if company in {"금융권", "케이뱅크", "DB금융투자"} or any(k in note_text for k in ["금융", "은행", "증권", "케이뱅크", "DB금융"]):
         return "finance"
     if company in {"SK하이닉스", "삼성전자"} or any(k in note_text for k in ["SK하이닉스", "삼성전자", "반도체", "DS", "공정기술", "설비"]):
@@ -253,6 +278,13 @@ def build_experience_rules(domain, job_tasks, criteria):
             rules.append("자소서 필살기 경험을 PT 슬라이드의 한 문장 메시지, 문제, 행동, 결과로 시각화")
         if "품질 검증/마지막 점검" in names or "파이로트/양산 전 평가" in names:
             rules.append("프로젝트 경험을 품질 검증, 사전 문제 발견, 양산 전 개선, 협업 부서 조율로 재작성")
+    elif domain == "retail_consumer":
+        if "고객/시장 이해" in names or "고객 관점" in names:
+            rules.append("대외활동/인턴/프로젝트 경험을 고객 문제, 시장 관찰, 실행 아이디어, 반응 지표로 재작성")
+        if "PT/발표/설득" in names or "콘텐츠/커뮤니케이션" in names:
+            rules.append("발표 경험을 타깃 고객, 메시지 구조, 설득 근거, 실행 결과 중심으로 재작성")
+        if "계열사/직무 선택" in names or "회사/브랜드 이해" in names:
+            rules.append("지원 계열사 선택 이유를 브랜드/상품/채널 이해와 본인 경험의 접점으로 재작성")
     else:
         rules.append("1분 자기소개에는 질문받고 싶은 경험 2개만 남기고 스펙 나열을 제거")
     return rules
@@ -302,6 +334,8 @@ def product_features_for(domain):
         return ["은행 관심 증거 점검", "PT/세일즈/BEI 면접 모드", "필기 루틴 관리"]
     if domain == "hyundai":
         return ["자소서-PT 일관성 검사", "필살기 경험 2개 선별", "품질/구매/R&D 직무 번역"]
+    if domain == "retail_consumer":
+        return ["브랜드/고객 경험 번역", "계열사·직무 선택 점검", "PT/발표 스토리라인 코칭"]
     return ["1분 자기소개 경험 2개 설계", "자연형 답변 훈련", "꼬리질문 생성"]
 
 

@@ -57,6 +57,7 @@ YouTube watch URL.
 - `semiconductor`
 - `finance`
 - `hyundai`
+- `retail_consumer`
 - `general_interview`
 
 ### keep
@@ -76,6 +77,7 @@ YouTube watch URL.
 - 반도체: 이상 원인 분석, 수율/품질 개선, 조건 최적화, 장비/현장 대응
 - 금융권: 고객 응대, 금융상품 세일즈, PT/BEI 대응, 필기 준비
 - 현대차: 품질 검증, 구매/협력사 조율, 파이로트/양산 전 평가, 자기소개 PT
+- 소비재/유통: 브랜드/상품 기획, 고객/시장 이해, 유통/물류/커머스 운영, PT/발표/설득
 
 ### evaluation_criteria
 
@@ -89,6 +91,8 @@ YouTube watch URL.
 - 은행 관심 증거
 - 회사-직무 연결
 - 필살기 경험
+- 회사/브랜드 이해
+- 고객 관점
 
 ### resume_checks
 

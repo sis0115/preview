@@ -40,6 +40,8 @@ HTML preview repository.
 - [Merged 67 report](./hiresignal/copilot-mvp/report_merged67.md)
 - [Company video candidates latest/views](./hiresignal/copilot-mvp/company_video_candidates_latest_views.md)
 - [Company video candidates curated](./hiresignal/copilot-mvp/company_video_candidates_curated.md)
+- [Batch5 company backdata review](./hiresignal/copilot-mvp/company_backdata_batch5_review.md)
+- [Merged 88 report](./hiresignal/copilot-mvp/report_merged88.md)
 - [Product Dataset V2 summary](./hiresignal/copilot-mvp/product_dataset_v2_summary.md)
 - [Product Dataset V2 public JSON](./hiresignal/copilot-mvp/product_dataset_v2_public.json)
 - [Product Dataset V2 schema](./hiresignal/copilot-mvp/product_schema_v2.md)
