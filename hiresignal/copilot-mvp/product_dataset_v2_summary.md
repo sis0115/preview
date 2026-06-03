@@ -14,6 +14,16 @@
 - hyundai: 17
 - finance: 17
 
+## SK하이닉스 Sub Role 분포
+- 양산기술: 5
+- Maintenance: 4
+- 소자: 3
+- 기반기술: 3
+- 양산기술(P&T): 3
+- 미분류: 2
+- R&D 공정: 2
+- 설계: 1
+
 ## 상위 직무 과업
 - [semiconductor] 이상 원인 분석: 27
 - [semiconductor] 장비/현장 대응: 27
@@ -58,5 +68,6 @@
 - 필기 루틴 관리: 17
 
 ## H1 반영 포인트
-- SK하이닉스 공식 직무 영상 중심으로 양산기술, R&D공정, P&T, 소자, 설계, Maintenance 신호가 추가됨
-- 아직 추출 결과의 role 라벨은 `반도체 직무`로 뭉치는 경향이 있어, 다음 단계는 role 정규화가 필요함
+- SK하이닉스 공식 직무 taxonomy를 기준으로 `sub_role`, `sub_role_confidence`를 추가함
+- 하이닉스 지원자를 `반도체 직무`로 뭉개지 않고 양산기술/R&D공정/P&T/소자/설계/Maintenance 등으로 분기할 수 있게 됨
+- 남은 개선점은 미분류/low confidence 레코드의 수동 검수와 Product Engineering/품질보증/Utility기술 보강

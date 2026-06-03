@@ -50,6 +50,35 @@ YouTube watch URL.
 
 기존 로컬 추출기가 판정한 직무명. 일부 오분류가 있으므로 `job_tasks`, `evaluation_criteria`가 더 중요하다.
 
+### sub_role
+
+회사별 세부 직무 라벨. 현재는 SK하이닉스에 우선 적용한다.
+
+예:
+
+- 양산기술
+- R&D 공정
+- 양산기술(P&T)
+- 소자
+- 설계
+- Maintenance
+- Product Engineering
+- 품질보증
+- 기반기술
+- Utility기술
+
+### sub_role_confidence
+
+`sub_role` 판정 신뢰도.
+
+- `high`: 제목/노트 또는 자막에서 직무명이 명확히 잡힘
+- `medium`: 관련 키워드가 반복되지만 직무명이 직접 명시되지는 않음
+- `low`: 하이닉스 영상이지만 세부 직무 판정 근거가 약함
+
+### sub_role_evidence
+
+로컬 전체 JSON에만 들어가는 짧은 판정 근거. 공개용 JSON에서는 제거한다.
+
 ### domain
 
 제품 도메인.

@@ -145,6 +145,110 @@ QUESTION_PATTERNS = [
 ]
 
 
+SK_HYNIX_SUB_ROLE_RULES = [
+    {
+        "name": "양산기술",
+        "keywords": ["양산기술", "양산 기술", "생산의 컨트롤 타워", "생산성", "수율", "공정 조건", "양산 데이터"],
+        "resume_checks": [
+            "경험이 개발 완료 후 안정 생산, 수율, 품질, 생산성 개선으로 연결되는가",
+            "데이터를 보고 공정/장비 조건을 조정한 근거가 있는가",
+            "현장 부서와 협업해 문제를 해결한 장면이 있는가",
+        ],
+        "experience_rule": "프로젝트 경험을 문제 상황 -> 데이터/불량 확인 -> 원인 가설 -> 공정/장비 조건 조정 -> 수율/품질/생산성 결과로 재작성",
+    },
+    {
+        "name": "R&D 공정",
+        "keywords": ["R&D공정", "R&D 공정", "공정 개발", "연구개발 공정", "분석 장비", "실험", "변수", "원인", "미래 반도체 기술의 출발점"],
+        "resume_checks": [
+            "실험 설계, 변수 통제, 분석 장비 활용 경험이 드러나는가",
+            "정답이 없는 문제에서 원인을 규명한 과정을 설명하는가",
+            "공정 조건을 바꿔 성능/품질을 개선한 논리가 있는가",
+        ],
+        "experience_rule": "연구/실험 경험을 가설 설정 -> 변수 통제 -> 분석 장비/데이터 확인 -> 공정 조건 탐색 -> 개선 근거로 재작성",
+    },
+    {
+        "name": "양산기술(P&T)",
+        "keywords": ["P&T", "PNT", "Package", "PKG", "패키지", "패키징", "TEST", "테스트", "후공정", "최종 관문"],
+        "resume_checks": [
+            "패키징/테스트/후공정 흐름을 이해하고 있는가",
+            "제품 완성도와 신뢰성 관점의 경험이 있는가",
+            "HBM/PKG 같은 산업 키워드를 직무 경험과 연결했는가",
+        ],
+        "experience_rule": "제품 평가/테스트 경험을 후공정 흐름, 불량 검출, 신뢰성 확인, 제품 완성도 개선 관점으로 재작성",
+    },
+    {
+        "name": "소자",
+        "keywords": ["소자", "Device", "디바이스", "트랜지스터", "전기적", "성능", "설계랑 공정 사이", "동작을 완성"],
+        "resume_checks": [
+            "소자가 설계와 공정 사이에서 성능을 개선하는 역할임을 이해하는가",
+            "반도체 물성/전기적 특성/소자 구조 경험을 설명할 수 있는가",
+            "성능 개선을 데이터나 실험 결과로 말할 수 있는가",
+        ],
+        "experience_rule": "전공/실험 경험을 소자 구조 이해, 전기적 특성 분석, 성능 개선, 공정-설계 연결 관점으로 재작성",
+    },
+    {
+        "name": "설계",
+        "keywords": ["설계", "회로", "아키텍처", "검증", "DRAM 설계", "HBM Digital", "NAND 설계", "SoC", "레이아웃"],
+        "resume_checks": [
+            "회로/로직/검증/아키텍처 경험이 구체적인가",
+            "설계 결과를 검증하거나 개선한 경험이 있는가",
+            "학부/석사 프로젝트를 메모리 설계 언어로 번역했는가",
+        ],
+        "experience_rule": "회로/코딩/검증 경험을 요구사항 이해 -> 구조 설계 -> 구현 -> 검증 -> 개선 결과로 재작성",
+    },
+    {
+        "name": "Maintenance",
+        "keywords": ["Maintenance", "maintenance", "메인트", "설비관리", "설비", "장비", "유지보수", "고장", "트러블슈팅", "교대"],
+        "resume_checks": [
+            "장비 이상 대응, 유지보수, 예방 점검 경험이 있는가",
+            "현장 적응과 교대/라인 운영 이해가 드러나는가",
+            "장비 문제를 데이터나 현상 관찰로 해결한 사례가 있는가",
+        ],
+        "experience_rule": "현장/장비 경험을 이상 징후 발견 -> 원인 추적 -> 조치/정비 -> 재발 방지 -> 라인 안정화로 재작성",
+    },
+    {
+        "name": "Product Engineering",
+        "keywords": ["Product Engineering", "PE", "제품 평가", "평가", "Test Solution", "테스트 솔루션", "제품 완성도"],
+        "resume_checks": [
+            "제품 평가, 분석, 테스트 데이터 해석 경험이 있는가",
+            "설계/소자/공정 지식을 제품 관점으로 연결했는가",
+            "수율과 품질을 제품 완성도 관점에서 설명하는가",
+        ],
+        "experience_rule": "평가/분석 경험을 제품 요구사항 -> 테스트/분석 -> 이슈 판단 -> 개선 방향 제안으로 재작성",
+    },
+    {
+        "name": "품질보증",
+        "keywords": ["품질보증", "품질 보증", "QA", "고객 품질", "인증", "불량", "변경관리", "재발 방지"],
+        "resume_checks": [
+            "불량 원인 분석과 재발 방지 경험이 있는가",
+            "고객 품질/인증/변경관리 관점으로 말할 수 있는가",
+            "품질 기준과 데이터 기반 판단 근거가 있는가",
+        ],
+        "experience_rule": "품질 경험을 기준 확인 -> 불량/이슈 분석 -> 원인 규명 -> 재발 방지 -> 고객/현장 영향으로 재작성",
+    },
+    {
+        "name": "기반기술",
+        "keywords": ["기반기술", "계측", "분석", "Mask", "마스크", "소재", "장비", "수율 확보"],
+        "resume_checks": [
+            "계측/분석/소재/장비 관련 경험이 직무와 연결되는가",
+            "기술/품질/원가 혁신 관점의 설명이 있는가",
+            "수율 확보를 위한 분석 역량이 드러나는가",
+        ],
+        "experience_rule": "분석/소재/장비 경험을 계측/분석 방법, 기술 문제, 품질/원가 영향, 수율 확보 관점으로 재작성",
+    },
+    {
+        "name": "Utility기술",
+        "keywords": ["Utility", "유틸리티", "클린룸", "공조", "배기", "배관", "Gas", "Chemical", "UPW", "전기", "제어"],
+        "resume_checks": [
+            "클린룸/배관/가스/케미컬/전기/제어 관련 경험이 있는가",
+            "안정적 공급과 설비 운영 데이터 관점이 드러나는가",
+            "안전/환경/운영 안정성을 고려했는가",
+        ],
+        "experience_rule": "플랜트/전기/화공 경험을 안정 공급, 운영 데이터, 안전/환경, 설비 운영 최적화 관점으로 재작성",
+    },
+]
+
+
 def read_jsonl(path):
     rows = []
     with open(path, encoding="utf-8") as f:
@@ -179,6 +283,69 @@ def snippets(text, needles, limit=3, width=95):
         if len(out) >= limit:
             break
     return out
+
+
+def is_sk_hynix_record(note, result, transcript):
+    company = result.get("company") or ""
+    note_only = (note or "").lower()
+    note_blob = " ".join([note or "", company]).lower()
+    transcript_blob = transcript[:900].lower()
+    hynix_terms = ["sk하이닉스", "sk 하이닉스", "하이닉스", "hynix"]
+    samsung_terms = ["삼성전자", "samsung", "삼성반도체"]
+    note_only_has_hynix = any(k in note_only for k in hynix_terms)
+    note_only_has_samsung = any(k in note_only for k in samsung_terms)
+    note_has_hynix = any(k in note_blob for k in hynix_terms)
+    note_has_samsung = any(k in note_blob for k in samsung_terms)
+    if note_has_samsung and not note_has_hynix:
+        return False
+    if note_only_has_samsung and not note_only_has_hynix:
+        return False
+    if note_has_hynix:
+        return True
+    if company == "SK하이닉스" and not note_has_samsung:
+        return any(k in transcript_blob for k in hynix_terms)
+    return False
+
+
+def detect_sk_hynix_sub_role(note, result, transcript):
+    if not is_sk_hynix_record(note, result, transcript):
+        return None
+    blob = " ".join([
+        note or "",
+        result.get("role") or "",
+        result.get("summary") or "",
+        transcript[:4500],
+    ])
+    scores = []
+    for rule in SK_HYNIX_SUB_ROLE_RULES:
+        evidence = snippets(blob, rule["keywords"], limit=3, width=120)
+        score = len(evidence)
+        if rule["name"] in (note or ""):
+            score += 3
+        if rule["name"] in (result.get("role") or ""):
+            score += 2
+        if score:
+            scores.append((score, rule, evidence))
+    if not scores:
+        return {
+            "company": "SK하이닉스",
+            "sub_role": "미분류",
+            "confidence": "low",
+            "evidence": [],
+            "resume_checks": [],
+            "experience_translation_rule": None,
+        }
+    scores.sort(key=lambda x: x[0], reverse=True)
+    score, rule, evidence = scores[0]
+    confidence_label = "high" if score >= 4 else "medium" if score >= 2 else "low"
+    return {
+        "company": "SK하이닉스",
+        "sub_role": rule["name"],
+        "confidence": confidence_label,
+        "evidence": evidence,
+        "resume_checks": rule["resume_checks"],
+        "experience_translation_rule": rule["experience_rule"],
+    }
 
 
 def detect_domain(note, result, transcript):
@@ -303,23 +470,33 @@ def build_dataset(rows, cache):
         note = row.get("note") or ""
         domain = detect_domain(note, result, transcript)
         rule = DOMAIN_RULES[domain]
+        sk_hynix_sub_role = detect_sk_hynix_sub_role(note, result, transcript)
         job_tasks = extract_pairs(transcript, rule["tasks"])
         criteria = extract_pairs(transcript, rule["criteria"])
         questions = extract_questions(transcript)
+        experience_rules = build_experience_rules(domain, job_tasks, criteria)
+        if sk_hynix_sub_role and sk_hynix_sub_role.get("experience_translation_rule"):
+            experience_rules.insert(0, sk_hynix_sub_role["experience_translation_rule"])
+        resume_checks = list(rule["resume_checks"])
+        if sk_hynix_sub_role:
+            resume_checks = sk_hynix_sub_role.get("resume_checks", []) + resume_checks
         video = {
             "video_id": vid,
             "url": row.get("url"),
             "title_or_note": note,
             "company": result.get("company"),
             "role": result.get("role"),
+            "sub_role": sk_hynix_sub_role.get("sub_role") if sk_hynix_sub_role else None,
+            "sub_role_confidence": sk_hynix_sub_role.get("confidence") if sk_hynix_sub_role else None,
+            "sub_role_evidence": sk_hynix_sub_role.get("evidence") if sk_hynix_sub_role else [],
             "domain": domain,
             "keep": bool(result.get("keep")),
             "video_claims": extract_video_claims(transcript),
             "job_tasks": job_tasks,
             "evaluation_criteria": criteria,
-            "resume_checks": rule["resume_checks"],
+            "resume_checks": resume_checks,
             "interview_questions": questions,
-            "experience_translation_rules": build_experience_rules(domain, job_tasks, criteria),
+            "experience_translation_rules": experience_rules,
             "product_features": product_features_for(domain),
             "confidence": confidence(job_tasks, criteria, questions),
         }
@@ -351,6 +528,7 @@ def confidence(job_tasks, criteria, questions):
 def aggregate(videos):
     by_domain = Counter(v["domain"] for v in videos)
     by_company_role = Counter((v.get("company") or "미상", v.get("role") or "직무미상") for v in videos if v["keep"])
+    by_sub_role = Counter(v.get("sub_role") for v in videos if v.get("sub_role"))
     task_counts = Counter()
     criteria_counts = Counter()
     feature_counts = Counter()
@@ -367,6 +545,10 @@ def aggregate(videos):
         "top_company_roles": [
             {"company": c, "role": r, "count": n}
             for (c, r), n in by_company_role.most_common(20)
+        ],
+        "sk_hynix_sub_roles": [
+            {"sub_role": role, "count": n}
+            for role, n in by_sub_role.most_common(20)
         ],
         "top_job_tasks": [
             {"domain": d, "task": t, "count": n}
@@ -396,6 +578,11 @@ def write_md(data, path):
     for item in data["aggregate"]["top_company_roles"][:12]:
         lines.append(f"- {item['company']} / {item['role']}: {item['count']}")
 
+    if data["aggregate"].get("sk_hynix_sub_roles"):
+        lines.append("\n## SK Hynix Sub Roles")
+        for item in data["aggregate"]["sk_hynix_sub_roles"]:
+            lines.append(f"- {item['sub_role']}: {item['count']}")
+
     lines.append("\n## Top Job Tasks")
     for item in data["aggregate"]["top_job_tasks"][:18]:
         lines.append(f"- [{item['domain']}] {item['task']}: {item['count']}")
@@ -415,6 +602,7 @@ def write_md(data, path):
             f"### {v['title_or_note'] or v['video_id']}",
             f"- domain: {v['domain']}",
             f"- company/role: {v.get('company') or '미상'} / {v.get('role') or '직무미상'}",
+            f"- sub_role: {v.get('sub_role') or '-'} ({v.get('sub_role_confidence') or '-'})",
             f"- confidence: {v['confidence']}",
         ])
         if v["video_claims"]:
