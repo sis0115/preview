@@ -1,11 +1,17 @@
 {
   "schema": "company-copilot-kb-2026-06-03",
   "company": "Finance / Banking",
-  "scope": "Korean bank recruitment common structure with IBK, Woori, and Hana initial bank-specific signals",
-  "status": "banking_common_plus_existing_youtube_signals_v1",
+  "scope": "Korean bank recruitment common structure with bank-specific skeletons",
+  "status": "banking_common_plus_bank_specific_skeleton_v1",
   "judgment": {
     "is_relevant_for_copilot": true,
-    "reason": "Banking recruitment requires integrated coaching across resume evidence, NCS/written routines, customer-facing experience, and bank-specific interview formats such as PT, sales role-play, BEI, and value-fit interviews."
+    "reason": "Banking recruitment requires integrated coaching across resume evidence, NCS/written routines, customer-facing experience, and bank-specific interview formats. Bank-specific structure must remain because company-level recruiting differences are a core HireSignal selling point."
+  },
+  "operating_principle": {
+    "common_kb_role": "Use finance/copilot_kb as the shared banking preparation structure.",
+    "bank_specific_role": "Use banks/{bank}/ as the future company-specific copilot layer.",
+    "current_depth": "Skeleton only. Finance is not the current target, so do not collect deeply until a specific bank becomes target.",
+    "first_question": "Always ask target bank before giving detailed banking advice."
   },
   "role_knowledge": [
     {
@@ -66,6 +72,21 @@
       "bank": "하나은행",
       "focus": ["PT", "BEI", "Hana FIT", "value fit", "sales/customer scenario"],
       "interview_angle": ["PT structuring", "BEI experience verification", "organization fit", "customer response"]
+    },
+    {
+      "bank": "KB국민은행",
+      "focus": ["UB", "PB/wealth management", "ICT", "customer asset management"],
+      "interview_angle": ["UB customer relationship", "wealth management suitability", "ICT stability and security"]
+    },
+    {
+      "bank": "신한은행",
+      "focus": ["digital/ICT", "customer experience", "platform banking", "mobile service"],
+      "interview_angle": ["digital finance", "customer experience improvement", "service stability"]
+    },
+    {
+      "bank": "NH농협은행",
+      "focus": ["regional banking", "agriculture/public mission", "general banker", "digital transition"],
+      "interview_angle": ["regional economy", "public mission", "customer trust", "digital inclusion"]
     }
   ],
   "role_recommendation_rules": [

@@ -39,6 +39,7 @@ HTML preview repository.
 - [Finance copilot KB](./hiresignal/copilot-mvp/companies/finance/copilot_kb.md)
 - [Finance initial taxonomy](./hiresignal/copilot-mvp/companies/finance/roles/taxonomy_initial.md)
 - [Finance background judgment](./hiresignal/copilot-mvp/companies/finance/judgment.md)
+- [Finance bank-specific skeleton](./hiresignal/copilot-mvp/companies/finance/banks/README.md)
 - [Finance YouTube batch insights](./hiresignal/copilot-mvp/companies/finance/collections/youtube_batch2a/merged_insights_batch2_finance.md)
 - [Company backdata review](./hiresignal/copilot-mvp/company_backdata_review.md)
 - [Freeform product insights](./hiresignal/copilot-mvp/freeform_product_insights.md)
