@@ -18,3 +18,12 @@ HTML preview repository.
 ### Earlier planning board
 
 - [AI planning board](./plantgram2/ai-planning-board-2026-06-01/index.html)
+
+## HireSignal UI Mockups
+
+- [HireSignal mobile mockup](./hiresignal/index.html)
+- [v2 Home](./hiresignal/v2/v6_home.html)
+- [v2 Signal](./hiresignal/v2/v6_signal.html)
+- [v2 Write](./hiresignal/v2/v7_write.html)
+- [v2 Copilot](./hiresignal/v2/v9_copilot.html)
+- [v2 Compose](./hiresignal/v2/v9_compose.html)
