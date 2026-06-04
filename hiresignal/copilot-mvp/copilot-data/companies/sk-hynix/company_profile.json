@@ -1,0 +1,14 @@
+{
+  "company_id": "sk-hynix",
+  "display_name": "SK하이닉스",
+  "industry": "semiconductor",
+  "scope": "memory semiconductor recruitment copilot",
+  "primary_tasks": [
+    "resume_review",
+    "interview_practice",
+    "role_recommendation",
+    "spec_gap"
+  ],
+  "status": "active",
+  "source_company_kb": "companies/sk-hynix/copilot_kb.json"
+}

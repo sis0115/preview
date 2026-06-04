@@ -1,0 +1,20 @@
+{
+  "task": "interview_practice",
+  "required_inputs": [
+    "company_id",
+    "role_id"
+  ],
+  "optional_inputs": [
+    "draft",
+    "experience_cards",
+    "interview_stage"
+  ],
+  "output_sections": [
+    "예상 질문",
+    "질문 의도",
+    "답변 구조",
+    "꼬리질문",
+    "답변 리스크",
+    "보강해야 할 근거"
+  ]
+}

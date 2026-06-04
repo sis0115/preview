@@ -1,0 +1,34 @@
+{
+  "aliases": {
+    "sk-hynix": [
+      "SK하이닉스",
+      "하이닉스",
+      "SK hynix",
+      "sk hynix"
+    ],
+    "samsung-electronics": [
+      "삼성전자",
+      "삼성전자 DS",
+      "삼성 DS",
+      "Samsung DS"
+    ],
+    "hyundai-kia": [
+      "현대자동차",
+      "현대차",
+      "현차",
+      "기아",
+      "Kia",
+      "Hyundai"
+    ],
+    "finance": [
+      "금융권",
+      "은행권",
+      "IBK",
+      "우리은행",
+      "하나은행",
+      "KB",
+      "신한은행",
+      "NH농협"
+    ]
+  }
+}

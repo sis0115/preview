@@ -1,0 +1,20 @@
+{
+  "company_id": "sk-hynix",
+  "cases": [
+    "experience_missing",
+    "company_news_only",
+    "role_unclear",
+    "experience_scattered",
+    "technical_explanation_only",
+    "collaboration_missing",
+    "motivation_experience_disconnected",
+    "wrong_question_intent",
+    "outdated_or_inaccurate_industry_keyword",
+    "failure_not_defended",
+    "trait_words_only",
+    "spec_listing",
+    "overclaiming",
+    "privacy_risk"
+  ],
+  "source_doc": "docs/sk_hynix_resume_review_demo.md"
+}

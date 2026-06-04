@@ -1,0 +1,11 @@
+{
+  "company_id": "sk-hynix",
+  "signals": [
+    {
+      "signal_id": "sk-hynix-youtube-role-language",
+      "source_type": "youtube_signal",
+      "usage": "직무 언어, 현직자 표현, 취준생 혼동 지점 파악",
+      "source_policy": "직무 언어, 현직자 표현, 취준생 혼동 지점 파악"
+    }
+  ]
+}
