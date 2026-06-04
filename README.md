@@ -24,6 +24,7 @@ HTML preview repository.
 - [HireSignal mobile mockup](./hiresignal/index.html)
 - [Copilot MVP README](./hiresignal/copilot-mvp/README.md)
 - [Copilot MVP runtime design](./hiresignal/copilot-mvp/docs/copilot_mvp_runtime_design.md)
+- [Copilot data folder and loader design](./hiresignal/copilot-mvp/docs/copilot_data_folder_and_loader_design.md)
 - [Copilot knowledge growth strategy](./hiresignal/copilot-mvp/docs/knowledge_growth_strategy.md)
 - [Copilot MVP TODO](./hiresignal/copilot-mvp/docs/copilot_mvp_todo.md)
 - [SK Hynix resume review demo](./hiresignal/copilot-mvp/docs/sk_hynix_resume_review_demo.md)
