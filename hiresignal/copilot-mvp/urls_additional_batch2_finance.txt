@@ -1,7 +1,0 @@
-# 추가 수집 배치 2A: 금융권 면접 강화 (기존 47건 제외, 쇼츠 제외)
-# 목적: 은행별 면접 방식, PT/BEI, 기업금융, 비전공자 후기 보강
-
-https://www.youtube.com/watch?v=rhy73-Wwqag   # 금융위원회: 금융권 자소서/필기/면접 전략
-https://www.youtube.com/watch?v=m7fhDbrAqZk   # 우리은행 기업금융 2차 면접 기출 복원
-https://www.youtube.com/watch?v=iRoToY3wk4I   # 하나은행 1차 실무진 면접 PT/BEI/하나FIT
-https://www.youtube.com/watch?v=neT6hSNcUpQ   # 우리은행 면접 후기: 비전공자 금융자격증 전무
