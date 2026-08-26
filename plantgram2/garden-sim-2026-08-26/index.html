@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>정원 시뮬레이터</title>
+<style>
+:root{
+  --bg:#eef1ec; --paper:#fff; --soft:#f5f8f5;
+  --ink:#151d18; --muted:#6e7a72; --faint:#98a49c; --line:#e3eae4;
+  --brand:#168f80; --brand-soft:#e2f2ef; --brand-ink:#0c4f46;
+  --water:#4088ff; --water-soft:#e9f1ff; --sun:#c8912b;
+  --shadow:0 14px 32px rgba(22,32,25,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.wrap{max-width:1020px;margin:0 auto;padding:30px 20px 70px}
+h1{font-size:25px;margin:0 0 6px}
+.lede{color:var(--muted);font-size:13.5px;margin:0 0 18px;max-width:66ch}
+.stagebox{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.scene{background:linear-gradient(178deg,#e6f1f6 0%,#edf3e9 58%,#f3f0e6 100%);
+  border-radius:14px;overflow:hidden;position:relative;user-select:none}
+.scene svg{display:block;width:100%;height:auto}
+
+.hud{position:absolute;left:12px;top:11px;right:12px;display:flex;gap:8px;align-items:flex-start;pointer-events:none}
+.hudcard{background:rgba(255,255,255,.88);backdrop-filter:blur(6px);border-radius:13px;padding:8px 13px;box-shadow:var(--shadow)}
+.hudcard .t{font-size:13px;font-weight:800;display:flex;gap:6px;align-items:center}
+.hudcard .lvrow{display:flex;align-items:center;gap:7px;margin-top:3px;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gauge{width:110px;height:6px;border-radius:99px;background:#e3eae4;overflow:hidden}
+.gauge i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#168f80,#0f6b5f);transition:width .5s}
+.hud .sp{flex:1}
+.needcard{background:rgba(255,255,255,.88);backdrop-filter:blur(6px);border-radius:99px;padding:7px 13px;
+  font-size:11.5px;font-weight:800;color:var(--water);box-shadow:var(--shadow)}
+
+.modebar{position:absolute;left:12px;bottom:12px;display:flex;background:rgba(255,255,255,.92);
+  border-radius:13px;padding:3px;gap:2px;box-shadow:var(--shadow)}
+.modebar button{border:0;background:none;font:inherit;font-size:12.5px;font-weight:800;color:var(--muted);
+  padding:9px 14px;border-radius:10px;cursor:pointer}
+.modebar button.on{background:var(--brand);color:#fff}
+
+.tray{position:absolute;right:12px;bottom:12px;display:none;gap:7px;align-items:center;
+  background:rgba(255,255,255,.92);border-radius:13px;padding:7px 10px;box-shadow:var(--shadow)}
+.tray.show{display:flex}
+.tray .lb{font-size:10.5px;font-weight:800;color:var(--faint);margin-right:2px}
+.tray button{border:2px solid transparent;background:var(--soft);border-radius:11px;width:52px;height:56px;
+  cursor:pointer;display:grid;place-items:center;padding:0}
+.tray button.on{border-color:var(--brand);background:var(--brand-soft)}
+.tray button svg{display:block}
+
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:70px;background:#16211b;color:#fff;
+  font-size:12.5px;font-weight:700;border-radius:99px;padding:8px 16px;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+.gpfloat{position:absolute;font-size:13px;font-weight:800;color:var(--brand);pointer-events:none;
+  animation:rise 1s ease-out forwards;text-shadow:0 1px 0 #fff}
+@keyframes rise{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-34px)}}
+.drop{position:absolute;font-size:20px;pointer-events:none;animation:dropfall .5s ease-in forwards}
+@keyframes dropfall{from{opacity:1;transform:translateY(-26px)}to{opacity:0;transform:translateY(2px)}}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+.legend b{color:var(--ink)}
+.note{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px 17px;margin-top:16px;
+  font-size:13px;color:var(--muted);box-shadow:var(--shadow)}
+.note b{color:var(--ink)}
+.back{display:inline-block;margin-top:26px;font-size:13px;color:var(--brand);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>정원 시뮬레이터 <span style="font-size:11px;font-weight:800;background:var(--brand-soft);color:var(--brand-ink);border-radius:99px;padding:2px 10px;vertical-align:3px">배치 + 돌보기 인터랙션</span></h1>
+  <p class="lede">아트 피드백 반영판: 식물이 화분 <b>안에서 자라 나오고</b>(앞 테두리가 줄기를 덮음), 모든 형태에 줄기가 생겼고, 그라디언트 셰이딩으로 입체감을 더했습니다. <b>돌보기 모드</b>에서 목마른 식물을 탭해 물을 주고, <b>꾸미기 모드</b>에서 식물을 옮기거나 새 식물을 배치해보세요.</p>
+
+  <div class="stagebox">
+    <div class="scene" id="scene">
+      <svg id="garden" viewBox="0 0 900 640"></svg>
+      <div class="hud">
+        <div class="hudcard">
+          <div class="t">🏡 우리집 정원 <span style="font-size:10.5px;background:var(--brand-soft);color:var(--brand-ink);border-radius:99px;padding:1px 8px">Lv.<span id="lv">7</span></span></div>
+          <div class="lvrow"><div class="gauge"><i id="gpbar"></i></div><span id="gptxt"></span></div>
+        </div>
+        <div class="sp"></div>
+        <div class="needcard" id="need"></div>
+      </div>
+      <div class="modebar">
+        <button data-mode="care" class="on">🌱 돌보기</button>
+        <button data-mode="edit">🔧 꾸미기</button>
+      </div>
+      <div class="tray" id="tray"></div>
+      <div class="toast" id="toast"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="note" id="designnote">
+    <b>구현된 규칙</b> — ① 목마른 식물: 채도↓ + 기울어짐 + 💧말풍선, 탭하면 물주기(+10 GP, 게이지 상승) ② 꾸미기: 식물 선택 → 초록 발광 타일로 이동, 트레이의 보유 식물을 빈 자리에 배치, 선반↔바닥 자유 이동 ③ 모든 상태 변화는 좌표+파츠 JSON 갱신뿐 — 이 데이터가 그대로 Firestore 문서입니다.
+  </div>
+
+  <a class="back" href="../garden-kit-2026-08-26/">← 파츠 카탈로그</a>
+</div>
+
+<script>
+/* ================= 투영 ================= */
+const TW=88, TH=44, ZH=50, OX=450, OY=176;
+const P=(x,y,z=0)=>[(x-y)*TW/2+OX,(x+y)*TH/2-z*ZH+OY];
+const pts=a=>a.map(p=>p.join(',')).join(' ');
+const sh=(hex,amt)=>{const n=parseInt(hex.slice(1),16),c=v=>Math.max(0,Math.min(255,v));
+  return '#'+((c((n>>16)+amt)<<16)|(c(((n>>8)&255)+amt)<<8)|c((n&255)+amt)).toString(16).padStart(6,'0');};
+const n1=v=>Math.round(v*100)/100;
+
+/* ================= 그라디언트 defs ================= */
+let DEFS='', defId=0;
+function grad(type, stops, attrs=''){
+  const id='g'+(defId++);
+  DEFS+=`<${type}Gradient id="${id}" ${attrs}>`+
+    stops.map(([o,c,op])=>`<stop offset="${o}" stop-color="${c}"${op!=null?` stop-opacity="${op}"`:''}/>`).join('')+
+    `</${type}Gradient>`;
+  return `url(#${id})`;
+}
+
+/* ================= 잎/줄기 (셰이딩 강화) ================= */
+function toneGrads(t){
+  return {
+    leafA: grad('linear',[[0,sh(t.base,26)],[.55,t.base],[1,sh(t.base,-24)]],'x1="0" y1="0" x2="0.4" y2="1"'),
+    leafB: grad('linear',[[0,sh(t.alt,26)],[.55,t.alt],[1,sh(t.alt,-22)]],'x1="0" y1="0" x2="0.4" y2="1"'),
+    vein:t.vein
+  };
+}
+function leafBlade(x,y,rot,s,fill,vein){
+  return `<g transform="translate(${n1(x)},${n1(y)}) rotate(${n1(rot)}) scale(${n1(s)})">
+    <path d="M0,0 C-16,-7 -20,-28 0,-39 C20,-28 16,-7 0,0 Z" fill="${fill}"/>
+    <path d="M0,0 C-16,-7 -20,-28 0,-39" stroke="rgba(20,40,26,.22)" stroke-width="1.6" fill="none"/>
+    <path d="M0,-2 L0,-36" stroke="${vein}" stroke-width="1.4" opacity=".55"/>
+    <path d="M0,-13 L-8,-19 M0,-21 L-8,-27 M0,-13 L8,-19 M0,-21 L8,-27" stroke="${vein}" stroke-width="1" opacity=".32" fill="none"/></g>`;
+}
+/* 줄기: 흙(0,0)에서 (x,y)까지 자연스러운 곡선 */
+const stem=(x,y,vein,w=2.4)=>`<path d="M0,4 Q${n1(x*.25)},${n1(y*.45)} ${n1(x)},${n1(y)}"
+  stroke="${vein}" stroke-width="${w}" fill="none" stroke-linecap="round"/>`;
+
+const STAGE_SCALE=[.55,.74,.9,1], STAGE_COUNT=[.4,.65,.85,1];
+const pick=(a,r)=>a.slice(0,Math.max(1,Math.round(a.length*r)));
+
+const FORMS={
+  broadleaf:{name:'대엽형',draw(w,st,g){
+    const s=STAGE_SCALE[st-1],k=w/46;
+    const L=pick([[1,-46,-4,1],[-15,-32,-33,.9],[17,-34,31,.86],[-10,-18,-58,.72],[12,-17,55,.68]],STAGE_COUNT[st-1]);
+    let o='';L.forEach(([x,y])=>{o+=stem(x,y,g.vein);});
+    L.forEach(([x,y,r,c],i)=>{o+=leafBlade(x,y,r,c,i%2?g.leafB:g.leafA,g.vein);});
+    return `<g transform="scale(${n1(k*s)})">${o}</g>`;}},
+  upright:{name:'직립형',draw(w,st,g){
+    const s=STAGE_SCALE[st-1],k=w/46,edge='#c9b96a';
+    const L=pick([[0,-58,0,1],[-12,-48,-13,.9],[12,-50,13,.92],[-6,-40,-6,.72],[7,-42,7,.75]],STAGE_COUNT[st-1]);
+    let o='';L.forEach(([x,y,r,c],i)=>{o+=`<g transform="translate(${x},2) rotate(${r})">
+      <path d="M0,0 C${n1(-5*c)},${n1(y*.55)} ${n1(-4*c)},${n1(y*.85)} 0,${y} C${n1(4*c)},${n1(y*.85)} ${n1(5*c)},${n1(y*.55)} 0,0 Z" fill="${i%2?g.leafB:g.leafA}"/>
+      <path d="M0,0 C${n1(-5*c)},${n1(y*.55)} ${n1(-4*c)},${n1(y*.85)} 0,${y}" stroke="${edge}" stroke-width="1.1" fill="none" opacity=".55"/></g>`;});
+    return `<g transform="scale(${n1(k*s)})">${o}</g>`;}},
+  rosette:{name:'로제트형',draw(w,st,g){
+    const s=STAGE_SCALE[st-1],k=w/46,cnt=Math.round(9*STAGE_COUNT[st-1])+3;
+    let o='';for(let i=0;i<cnt;i++){o+=`<g transform="rotate(${n1(i*360/cnt)}) translate(0,-12)">
+      <ellipse rx="6" ry="12" fill="${i%2?g.leafB:g.leafA}"/>
+      <ellipse rx="2.4" ry="9" cy="-1" fill="rgba(255,255,255,.14)"/></g>`;}
+    return `<g transform="translate(0,-9) scale(${n1(k*s)})">${o}<circle r="5.5" fill="${g.vein}"/></g>`;}},
+  patterned:{name:'무늬엽형',draw(w,st,g){
+    const s=STAGE_SCALE[st-1],k=w/46,mark='#d7e4c9';
+    const L=pick([[0,-40,-6,1.05],[-16,-28,-40,.95],[17,-29,38,.96],[-9,-16,-62,.72],[10,-17,58,.74]],STAGE_COUNT[st-1]);
+    let o='';L.forEach(([x,y])=>{o+=stem(x,y+4,g.vein,2.2);});
+    L.forEach(([x,y,r,c],i)=>{o+=`<g transform="translate(${x},${y}) rotate(${r}) scale(${c})">
+      <ellipse cy="-15" rx="11" ry="19" fill="${i%2?g.leafB:g.leafA}"/>
+      <ellipse cy="-15" rx="5" ry="13" fill="${mark}" opacity=".5"/>
+      <path d="M0,4 L0,-30" stroke="${mark}" stroke-width="1.4" opacity=".6"/></g>`;});
+    return `<g transform="scale(${n1(k*s)})">${o}</g>`;}},
+  vine:{name:'덩굴형',draw(w,st,g){
+    const s=STAGE_SCALE[st-1],k=w/46;
+    const L=pick([[0,-36,0,.9],[-16,-26,-30,.8],[16,-28,30,.78],[-26,-10,-64,.68],[26,-12,62,.66],[-11,-48,-14,.72],[-33,4,-88,.6],[33,2,86,.58]],STAGE_COUNT[st-1]);
+    let o='';L.forEach(([x,y])=>{o+=stem(x,y+3,g.vein,2);});
+    L.forEach(([x,y,r,c],i)=>{o+=`<g transform="translate(${x},${y}) rotate(${r}) scale(${c})">
+      <path d="M0,0 C-13,-6 -16,-22 0,-30 C16,-22 13,-6 0,0 Z" fill="${i%2?g.leafB:g.leafA}"/>
+      <path d="M0,-3 L0,-27" stroke="${g.vein}" stroke-width="1.2" opacity=".5"/></g>`;});
+    return `<g transform="scale(${n1(k*s)})">${o}</g>`;}},
+  palm:{name:'깃꼴형',draw(w,st,g){
+    const s=STAGE_SCALE[st-1],k=w/46;
+    const F=pick([[0,1],[-26,.86],[26,.86],[-14,.7],[14,.7]],STAGE_COUNT[st-1]);
+    let o='';F.forEach(([rot,len],i)=>{const H=54*len,fill=i%2?g.leafB:g.leafA;let pin='';
+      for(let j=1;j<=7;j++){const t=j/8,y=-H*t,sp=13*Math.sin(Math.PI*t)*.9;
+        pin+=`<path d="M0,${n1(y)} L${n1(-sp)},${n1(y-7)} M0,${n1(y)} L${n1(sp)},${n1(y-7)}" stroke="${fill}" stroke-width="4" stroke-linecap="round"/>`;}
+      o+=`<g transform="rotate(${rot})"><path d="M0,2 L0,${n1(-H)}" stroke="${g.vein}" stroke-width="2.2"/>${pin}</g>`;});
+    return `<g transform="scale(${n1(k*s)})">${o}</g>`;}},
+  cactus:{name:'기둥형',draw(w,st,g){
+    const s=STAGE_SCALE[st-1],k=w/46,H=46;
+    const arms=st>=3?[[-1,.5],[1,.42]]:(st===2?[[-1,.42]]:[]);
+    let o=`<rect x="-8" y="${-H}" width="16" height="${H+4}" rx="8" fill="${g.leafA}"/>
+      <rect x="-8" y="${-H}" width="6" height="${H+4}" rx="3" fill="rgba(255,255,255,.12)"/>
+      <path d="M-3,${n1(-H*.85)} L-3,${n1(-H*.15)} M3,${n1(-H*.85)} L3,${n1(-H*.15)}" stroke="${g.vein}" stroke-width="1.2" opacity=".45"/>`;
+    arms.forEach(([d,hs])=>{o+=`<path d="M0,${n1(-H*.5)} Q${n1(d*15)},${n1(-H*.5)} ${n1(d*15)},${n1(-H*.55-H*hs*.5)}"
+      stroke="${g.leafA}" stroke-width="12" fill="none" stroke-linecap="round"/>`;});
+    return `<g transform="scale(${n1(k*s)})">${o}</g>`;}},
+  fern:{name:'양치형',draw(w,st,g){
+    const s=STAGE_SCALE[st-1],k=w/46;
+    const F=pick([[0,1],[-30,.9],[30,.9],[-56,.74],[56,.74],[-15,.8],[15,.8]],STAGE_COUNT[st-1]);
+    let o='';F.forEach(([rot,len],i)=>{const H=48*len,fill=i%2?g.leafB:g.leafA;let pin='';
+      for(let j=1;j<=9;j++){const t=j/10,y=-H*t,sp=8*Math.sin(Math.PI*t);
+        pin+=`<ellipse cx="${n1(-sp)}" cy="${n1(y)}" rx="${n1(sp*.5+1.4)}" ry="2.4" fill="${fill}"/>
+              <ellipse cx="${n1(sp)}" cy="${n1(y)}" rx="${n1(sp*.5+1.4)}" ry="2.4" fill="${fill}"/>`;}
+      o+=`<g transform="rotate(${rot})"><path d="M0,2 Q${n1(rot*.06)},${n1(-H*.6)} 0,${n1(-H)}" stroke="${g.vein}" stroke-width="1.6" fill="none"/>${pin}</g>`;});
+    return `<g transform="scale(${n1(k*s)})">${o}</g>`;}},
+};
+const TONES={green:{base:'#3f7d54',alt:'#4f9163',vein:'#2c5b3c'},
+  deep:{base:'#356a48',alt:'#437c55',vein:'#254d33'},
+  variegated:{base:'#4a8b5c',alt:'#8fbf95',vein:'#2f6040'}};
+
+/* ================= 화분 (원통 셰이딩 + 앞테두리로 줄기 덮기) ================= */
+function avatar(it,w){
+  const t=TONES[it.tone||'green'], g=toneGrads(t);
+  const color=it.pot, RX=w*.5, RY=w*.22, H=w*.74, BR=w*.335;
+  const dark=sh(color,-34), light=sh(color,22);
+  const bodyG=grad('linear',[[0,light],[.42,color],[1,dark]],'x1="0" y1="0" x2="1" y2="0"');
+  const rimG=grad('linear',[[0,sh(color,34)],[.5,sh(color,14)],[1,sh(color,-10)]],'x1="0" y1="0" x2="1" y2="0"');
+  const soilG=grad('radial',[[0,'#6b543f'],[1,'#4a3828']]);
+  const thirsty=it.state==='thirsty';
+  const LIFT={rosette:.05,cactus:.3}[it.form] ?? .55;
+
+  const plant=`<g transform="translate(0,${n1(-H+RY*LIFT)}) ${thirsty?'rotate(-5)':''}"
+     ${thirsty?'opacity=".88"':''}>${FORMS[it.form].draw(w,it.stage,g)}</g>`;
+
+  return `<g ${thirsty?'style="filter:saturate(.72)"':''}>
+    <ellipse cx="2" cy="2" rx="${n1(RX*1.08)}" ry="${n1(RX*.4)}" fill="rgba(46,60,48,.18)"/>
+    <path d="M${-RX},${-H} L${-BR},-3 Q${-BR},0 ${-BR+4},0 L${BR-4},0 Q${BR},0 ${BR},-3 L${RX},${-H} Z" fill="${bodyG}"/>
+    <ellipse cx="0" cy="0" rx="${BR}" ry="${n1(BR*.33)}" fill="${dark}"/>
+    <ellipse cx="0" cy="${-H}" rx="${RX}" ry="${RY}" fill="${sh(color,-16)}"/>
+    <ellipse cx="0" cy="${n1(-H+RY*.14)}" rx="${n1(RX*.82)}" ry="${n1(RY*.76)}" fill="${soilG}"/>
+    ${plant}
+    <path d="M${-RX},${-H} A${RX},${RY} 0 0 0 ${RX},${-H}" fill="none"
+      stroke="${rimG}" stroke-width="${n1(RY*.85)}" stroke-linecap="round"/>
+    <path d="M${n1(-RX*.94)},${n1(-H+RY*.28)} A${n1(RX*.94)},${n1(RY*.9)} 0 0 0 ${n1(RX*.94)},${n1(-H+RY*.28)}"
+      fill="none" stroke="rgba(0,0,0,.14)" stroke-width="1.6"/>
+  </g>`;
+}
+
+/* ================= 씬 데이터 ================= */
+const SHELF=1.05, N=4;
+const SLOTS=[
+  {id:'s1',x:1.0,y:.5,z:SHELF,shelf:1},{id:'s2',x:2.2,y:.5,z:SHELF,shelf:1},{id:'s3',x:3.4,y:.5,z:SHELF,shelf:1},
+  {id:'s4',x:.5,y:1.6,z:SHELF,shelf:2},{id:'s5',x:.5,y:2.8,z:SHELF,shelf:2},
+  {id:'f1',x:1.5,y:1.5,z:0},{id:'f2',x:2.5,y:1.5,z:0},{id:'f3',x:3.5,y:1.5,z:0},
+  {id:'f4',x:1.5,y:2.5,z:0},{id:'f5',x:2.5,y:2.5,z:0},{id:'f6',x:3.5,y:2.5,z:0},
+  {id:'f7',x:1.5,y:3.5,z:0},{id:'f8',x:2.5,y:3.5,z:0},{id:'f9',x:3.5,y:3.5,z:0},
+];
+const state={
+  gp:1240, gpMax:1600, lv:7, mode:'care', sel:null, traySel:null,
+  plants:[
+    {id:'p1',n:'몬스테라',form:'broadleaf',stage:4,tone:'green',pot:'#c98a6a',slot:'f4',state:'thirsty',plv:4,dday:'D+1'},
+    {id:'p2',n:'스투키',form:'upright',stage:3,tone:'deep',pot:'#8fa89b',slot:'s1',state:'healthy',plv:6,dday:'D-5'},
+    {id:'p3',n:'몽이',form:'rosette',stage:2,tone:'green',pot:'#dcc9a8',slot:'s2',state:'thirsty',plv:2,dday:'오늘'},
+    {id:'p4',n:'칼라',form:'patterned',stage:3,tone:'variegated',pot:'#b7a3c9',slot:'s4',state:'healthy',plv:5,dday:'D-3'},
+    {id:'p5',n:'초코',form:'vine',stage:4,tone:'green',pot:'#a8785d',slot:'f8',state:'healthy',plv:8,dday:'D-2'},
+    {id:'p6',n:'테이블야자',form:'palm',stage:3,tone:'deep',pot:'#9fb8d0',slot:'f6',state:'healthy',plv:3,dday:'D-4'},
+    {id:'p7',n:'가시',form:'cactus',stage:3,tone:'green',pot:'#e0a08c',slot:null,state:'healthy',plv:1,dday:'D-12'},
+    {id:'p8',n:'보스턴',form:'fern',stage:2,tone:'green',pot:'#c98a6a',slot:null,state:'healthy',plv:2,dday:'D-6'},
+  ],
+};
+const bySlot=id=>state.plants.find(p=>p.slot===id);
+
+/* ================= 씬 렌더 ================= */
+function render(){
+  DEFS=''; defId=0;
+  let o='';
+
+  /* 잔디 받침 + 옆면 */
+  const grassG=grad('linear',[[0,'#d5e5c2'],[1,'#c3d8ab']],'x1="0" y1="0" x2="0" y2="1"');
+  o+=`<polygon points="${pts([P(-.55,-.55),P(N+.55,-.55),P(N+.55,N+.55),P(-.55,N+.55)])}" fill="${grassG}"/>`;
+  o+=`<polygon points="${pts([P(-.55,N+.55),P(N+.55,N+.55),[P(N+.55,N+.55)[0],P(N+.55,N+.55)[1]+14],[P(-.55,N+.55)[0],P(-.55,N+.55)[1]+14]])}" fill="#aec59a"/>`;
+  o+=`<polygon points="${pts([P(N+.55,-.55),P(N+.55,N+.55),[P(N+.55,N+.55)[0],P(N+.55,N+.55)[1]+14],[P(N+.55,-.55)[0],P(N+.55,-.55)[1]+14]])}" fill="#a2b98f"/>`;
+
+  /* 바닥 타일 (그라디언트 + 줄눈) */
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+    const base=(i+j)%2?'#ece7da':'#f4f0e5';
+    const tg=grad('linear',[[0,sh(base==='#ece7da'?'#ece7da':'#f4f0e5',8)],[1,sh(base==='#ece7da'?'#ece7da':'#f4f0e5',-7)]],'x1="0" y1="0" x2="0" y2="1"');
+    o+=`<polygon points="${pts([P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1)])}" fill="${tg}" stroke="#dcd5c4" stroke-width=".7"/>`;
+  }
+
+  /* 뒷벽 유리 + 지붕 (하늘 그라디언트) */
+  const WALL=2.1,RIDGE=3.4;
+  const skyG=grad('linear',[[0,'#dff0f7'],[1,'#eef6f2']],'x1="0" y1="0" x2="0" y2="1"');
+  o+=`<polygon points="${pts([P(0,0,0),P(N,0,0),P(N,0,WALL),P(0,0,WALL)])}" fill="${skyG}" opacity=".6"/>`;
+  o+=`<polygon points="${pts([P(0,0,0),P(0,N,0),P(0,N,WALL),P(0,0,WALL)])}" fill="${skyG}" opacity=".52"/>`;
+  o+=`<polygon points="${pts([P(0,0,WALL),P(N,0,WALL),P(N,N/2,RIDGE),P(0,N/2,RIDGE)])}" fill="#d8ebf2" opacity=".5"/>`;
+  /* 유리 하이라이트 스트릭 */
+  o+=`<polygon points="${pts([P(.4,0,.2),P(1.1,0,.2),P(1.7,0,WALL-.1),P(1.0,0,WALL-.1)])}" fill="#fff" opacity=".25"/>`;
+
+  /* 선반 (나무 질감 그라디언트) */
+  const woodT=grad('linear',[[0,'#f0e2c8'],[1,'#dcc9a4']],'x1="0" y1="0" x2="0" y2="1"');
+  const woodS='#c3ab82';
+  function shelfRun(ax,ay,bx,by,depth){
+    const isX = ay===by;
+    const p1=P(ax,ay,SHELF), p2=P(bx,by,SHELF);
+    const p3=isX?P(bx,by+depth,SHELF):P(bx+depth,by,SHELF);
+    const p4=isX?P(ax,ay+depth,SHELF):P(ax+depth,ay,SHELF);
+    const l3=isX?P(bx,by+depth,SHELF-.09):P(bx+depth,by,SHELF-.09);
+    const l4=isX?P(ax,ay+depth,SHELF-.09):P(ax+depth,ay,SHELF-.09);
+    return `<polygon points="${pts([p4,p3,l3,l4])}" fill="${woodS}"/>
+            <polygon points="${pts([p1,p2,p3,p4])}" fill="${woodT}"/>`;
+  }
+  [[.55,.18,SHELF],[1.75,.18,SHELF],[2.95,.18,SHELF],[3.85,.18,SHELF]].forEach(([x,y])=>{
+    const a=P(x,y+.5,0),b=P(x,y+.5,SHELF-.05);
+    o+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#e9e2d1" stroke-width="4" stroke-linecap="round"/>`;});
+  [[.18,1.1],[.18,2.3],[.18,3.2]].forEach(([x,y])=>{
+    const a=P(x+.5,y,0),b=P(x+.5,y,SHELF-.05);
+    o+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#e9e2d1" stroke-width="4" stroke-linecap="round"/>`;});
+  o+=shelfRun(.2,.18,4.05,.18,.8);
+  o+=shelfRun(.18,.2,.18,3.35,.8);
+
+  /* 빈 슬롯 하이라이트 (꾸미기 모드) */
+  if(state.mode==='edit'&&(state.sel||state.traySel)){
+    SLOTS.forEach(s=>{
+      if(bySlot(s.id))return;
+      const c=P(s.x,s.y,s.z);
+      o+=`<g class="slotmark" data-slot="${s.id}" style="cursor:pointer">
+        <ellipse cx="${c[0]}" cy="${c[1]}" rx="30" ry="14" fill="rgba(22,143,128,.16)"/>
+        <ellipse cx="${c[0]}" cy="${c[1]}" rx="30" ry="14" fill="none" stroke="#168f80" stroke-width="2" stroke-dasharray="6 5">
+          <animate attributeName="stroke-dashoffset" from="0" to="22" dur="1.2s" repeatCount="indefinite"/>
+        </ellipse></g>`;
+    });
+  }
+
+  /* 식물 (깊이 정렬) */
+  const placed=state.plants.filter(p=>p.slot).map(p=>({p,s:SLOTS.find(s=>s.id===p.slot)}))
+    .sort((a,b)=>(a.s.x+a.s.y)-(b.s.x+b.s.y));
+  placed.forEach(({p,s})=>{
+    const [sx,sy]=P(s.x,s.y,s.z);
+    const w=(s.z>0?34:46)*(0.85+p.stage*0.08);
+    const on=state.sel===p.id;
+    o+=`<g class="plant" data-id="${p.id}" transform="translate(${sx},${sy})" style="cursor:pointer">
+      ${on?`<ellipse cy="2" rx="${w*.72}" ry="${w*.3}" fill="none" stroke="#168f80" stroke-width="2.4" stroke-dasharray="6 5"/>`:''}
+      ${avatar(p,w)}
+      ${p.state==='thirsty'&&state.mode==='care'?`
+        <g transform="translate(${w*.42},${-w*1.32})">
+          <rect x="-8" y="-30" width="52" height="22" rx="11" fill="#4088ff"/>
+          <path d="M2,-9 l6,8 6,-8" fill="#4088ff"/>
+          <text x="18" y="-15" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">💧 D+1</text>
+          <animateTransform attributeName="transform" type="translate"
+            values="${w*.42},${-w*1.32};${w*.42},${-w*1.38};${w*.42},${-w*1.32}" dur="1.6s" repeatCount="indefinite"/>
+        </g>`:''}
+      ${on?`<g transform="translate(0,${-w*1.62})"><rect x="-40" y="-18" width="80" height="22" rx="11" fill="#168f80"/>
+        <text x="0" y="-2.5" text-anchor="middle" fill="#fff" font-size="11.5" font-weight="700">${p.n} Lv.${p.plv}</text></g>`:''}
+    </g>`;
+  });
+
+  document.getElementById('garden').innerHTML=`<defs>${DEFS}</defs>${o}`;
+  const svg=document.getElementById('garden'), bb=svg.getBBox();
+  svg.setAttribute('viewBox',`${bb.x-10} ${bb.y-14} ${bb.width+20} ${bb.height+24}`);
+
+  /* HUD */
+  const need=state.plants.filter(p=>p.slot&&p.state==='thirsty').length;
+  document.getElementById('need').textContent = need?`💧 물이 필요한 식물 ${need}`:'✨ 모두 촉촉해요';
+  document.getElementById('gpbar').style.width=(state.gp/state.gpMax*100)+'%';
+  document.getElementById('gptxt').textContent=`${state.gp.toLocaleString()} / ${state.gpMax.toLocaleString()} GP`;
+  document.getElementById('lv').textContent=state.lv;
+
+  /* 트레이 */
+  const tray=document.getElementById('tray');
+  const unplaced=state.plants.filter(p=>!p.slot);
+  tray.className='tray'+(state.mode==='edit'?' show':'');
+  tray.innerHTML='<span class="lb">보유 식물</span>'+(unplaced.length?unplaced.map(p=>{
+    DEFS='';defId=0;
+    const inner=avatar({...p,state:'healthy'},26);
+    return `<button data-tray="${p.id}" class="${state.traySel===p.id?'on':''}" title="${p.n}">
+      <svg width="46" height="52" viewBox="-23 -46 46 52"><defs>${DEFS}</defs>${inner}</svg></button>`;
+  }).join(''):'<span style="font-size:11px;color:var(--faint);padding:0 6px">모두 배치됨</span>')
+  +(state.sel?`<button style="width:auto;padding:0 12px;font-size:11.5px;font-weight:800;color:var(--muted)" data-unplace="1">↩ 선택 식물 치우기</button>`:'');
+
+  document.getElementById('legend').innerHTML = state.mode==='care'
+    ? `<span><b>💧 말풍선</b> 탭 → 물주기 (+10 GP)</span><span><b>식물</b> 탭 → 이름·레벨 확인</span>`
+    : `<span><b>식물</b> 탭 → 선택 후 <b>초록 점선 자리</b> 탭 → 이동</span><span><b>보유 식물</b> 탭 → 빈 자리에 배치</span><span>선반 ↔ 바닥 자유 이동</span>`;
+}
+
+/* ================= 인터랙션 ================= */
+const scene=document.getElementById('scene');
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),1800);}
+function fx(clientX,clientY,txt,cls){
+  const r=scene.getBoundingClientRect();
+  const d=document.createElement('div');d.className=cls;d.textContent=txt;
+  d.style.left=(clientX-r.left-8)+'px';d.style.top=(clientY-r.top-20)+'px';
+  scene.appendChild(d);setTimeout(()=>d.remove(),1000);}
+
+document.addEventListener('click',e=>{
+  const mode=e.target.closest('.modebar button');
+  if(mode){state.mode=mode.dataset.mode;state.sel=null;state.traySel=null;
+    document.querySelectorAll('.modebar button').forEach(b=>b.classList.toggle('on',b===mode));render();return;}
+
+  const trayBtn=e.target.closest('[data-tray]');
+  if(trayBtn){state.traySel=state.traySel===trayBtn.dataset.tray?null:trayBtn.dataset.tray;state.sel=null;render();return;}
+  const unp=e.target.closest('[data-unplace]');
+  if(unp&&state.sel){const p=state.plants.find(x=>x.id===state.sel);p.slot=null;state.sel=null;toast(`${p.n}을(를) 트레이로 옮겼어요`);render();return;}
+
+  const slot=e.target.closest('.slotmark');
+  if(slot){
+    const sid=slot.dataset.slot;
+    if(state.traySel){const p=state.plants.find(x=>x.id===state.traySel);p.slot=sid;state.traySel=null;
+      toast(`${p.n}을(를) 정원에 배치했어요 🌱`);}
+    else if(state.sel){const p=state.plants.find(x=>x.id===state.sel);p.slot=sid;
+      toast(`${p.n}을(를) 옮겼어요`);}
+    render();return;}
+
+  const pl=e.target.closest('.plant');
+  if(pl){
+    const p=state.plants.find(x=>x.id===pl.dataset.id);
+    if(state.mode==='care'){
+      if(p.state==='thirsty'){
+        fx(e.clientX,e.clientY,'💧','drop');
+        setTimeout(()=>{p.state='healthy';state.gp+=10;
+          fx(e.clientX,e.clientY-10,'+10 GP','gpfloat');
+          if(state.gp>=state.gpMax){state.lv++;state.gp-=state.gpMax;toast(`🎉 정원 Lv.${state.lv} 달성!`);}
+          else toast(`${p.n}에게 물을 주었어요`);
+          render();},420);
+      }else{state.sel=state.sel===p.id?null:p.id;render();}
+    }else{state.sel=state.sel===p.id?null:p.id;state.traySel=null;render();}
+    return;
+  }
+});
+render();
+</script>
+</body>
+</html>
