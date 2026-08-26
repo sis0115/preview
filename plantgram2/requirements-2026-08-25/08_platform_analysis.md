@@ -69,3 +69,36 @@ Flutter 3.4x (Impeller)
 - 채택 통계·사례: The Fix "Is Flutter Dying Out? The Surprising 2026 Industry Verdict", Tomáš Repčík "My take on Flutter in 2026"
 - Flame/Rive: flame-engine GitHub, pub.dev/packages/flame, Synfinity Dynamics "Flutter Game Development in 2026"
 - SceneKit deprecated·SpriteKit 우려: Apple Developer Forums, Paul Hudson (WWDC 2025)
+
+---
+
+## 부록: Claude Code 클라우드 환경 점검 (2026-08-26 실측)
+
+**결론: 이 환경에서 Flutter 웹 우선 개발 가능 — 전 파이프라인 검증 완료.**
+
+| 항목 | 결과 |
+|---|---|
+| 리소스 | 디스크 여유 ~27GB, RAM 15GB, 4코어 |
+| Flutter SDK | 미설치 → **3.47.1 stable 설치 성공** (다운로드+압축해제 약 3분, 2.3GB) |
+| 웹 빌드 | `flutter build web --release` 성공, 데모 앱 45초 |
+| ⚠ 필수 플래그 | **`--no-web-resources-cdn`** — 프록시가 gstatic CDN(CanvasKit)을 차단하므로 로컬 번들 필수. 없으면 흰 화면 |
+| 시각 점검 | 내장 Chromium(`/opt/pw-browsers/chromium-1194/...`) + Playwright로 모바일 뷰포트 렌더링·스크린샷 확인 ✅ |
+| 단위 테스트 | `flutter test` 통과 ✅ |
+| 미지원 | Android SDK / iOS 툴체인 없음 → **모바일 빌드는 로컬 머신 또는 CI(GitHub Actions·Codemagic)에서** |
+| 주의 | 세션 컨테이너는 휘발성 → 세션마다 SDK 재설치(~3분) 필요. 셋업 스크립트 또는 SessionStart 훅으로 자동화 권장 |
+
+### 확정 개발 워크플로 (웹 우선 → 앱 마감)
+```
+[클라우드 세션]  Flutter 코드 작성 → flutter test
+              → flutter build web --release --no-web-resources-cdn
+              → 헤드리스 Chromium 스크린샷 자가 점검
+              → build/web을 preview 저장소에 커밋 → Vercel 배포
+[사용자]        폰/PC 브라우저에서 확인 → 피드백
+[후반]          같은 코드베이스를 로컬/CI에서 iOS·Android 빌드
+```
+
+### 웹 우선 개발 시 유의점 (앱 전환 대비)
+- Firebase(Auth·Firestore·Storage·FCM): 웹 SDK 지원 — 웹에서 그대로 개발 가능
+- 소셜 로그인: 웹/앱 플로우가 다름(특히 Kakao) → 인증 모듈은 추상화 계층 두고 웹은 우선 스텁/이메일 대체 가능
+- 카메라·푸시·위젯·인앱결제: 앱 단계 과제로 명시 분리 (웹에서는 파일 업로드·알림 미리보기로 대체)
+- 정원·아바타·셀레브레이션(Rive/Lottie/Flame): 전부 웹 렌더링 지원 → **게임성 검증을 웹 단계에서 완료 가능**
