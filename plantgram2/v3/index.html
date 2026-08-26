@@ -322,13 +322,35 @@ function ghBlock(){
   /* 마당 */
   [[2.0,6.5,0,'flower',34,'#e0a08c'],[6.5,2.2,0,'pothos',38,'#c98a6a'],[5.6,6.4,0,'succulent',26,'#dcc9a8']]
     .forEach(p=>{o+=draw(...p);});
+  /* 물이 필요한 식물 말풍선 */
+  [[3.5,3.4,2.05],[1.6,3.1,1.35],[6.5,2.2,1.35]].forEach(([x,y,h])=>{
+    const [bx,by]=Pp(x,y,h);
+    o+=`<g transform="translate(${bx},${by})">
+      <rect x="-27" y="-14" width="54" height="22" rx="11" fill="#4d80e0" opacity=".92"/>
+      <path d="M-3.5 8 L0 13.5 L3.5 8Z" fill="#4d80e0" opacity=".92"/>
+      <text x="1" y="2.5" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">💧 D+1</text></g>`;
+  });
 
-  return `<div class="block-img" data-grow style="height:100%;min-height:300px;background:linear-gradient(176deg,#e6eff2,#f0efe2)">
-    <svg viewBox="0 6 390 254" style="width:100%;height:100%;display:block">${o}</svg>
-    <div class="pill glass" style="position:absolute;left:14px;top:14px">우리집 온실 · Lv.7</div>
-    <div class="pill glass" style="position:absolute;right:14px;top:14px;color:var(--pink)">${ic('drop',13)} 2</div>
-    <div class="pill glass" style="position:absolute;left:16px;bottom:16px">🪴 정원 가기</div>
-    <div class="pill glass" style="position:absolute;right:16px;bottom:16px">꾸미기</div>
+  return `<div class="block-img" style="flex:1;min-height:300px;display:flex;align-items:center;background:linear-gradient(176deg,#e6eff2,#f0efe2)">
+    <svg viewBox="0 6 390 254" style="width:100%;max-height:100%;display:block">${o}</svg>
+    <div style="position:absolute;left:13px;top:13px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);
+        border-radius:18px;padding:10px 14px 11px;box-shadow:0 4px 14px rgba(30,40,32,.08)">
+      <div style="display:flex;align-items:center;gap:7px">
+        <span style="font-size:13px">🏡</span><span style="font-size:13.5px;font-weight:800">우리집 온실</span>
+        <span style="background:var(--block);border-radius:99px;padding:2.5px 8px;font-size:10.5px;font-weight:800;color:var(--sage)">Lv.7</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:7px">
+        <div style="width:104px;height:5px;border-radius:99px;background:rgba(25,31,27,.10)"><div style="width:77%;height:100%;border-radius:99px;background:var(--sage)"></div></div>
+        <span style="font-size:10.5px;font-weight:700;color:var(--sub)">1,240/1,600 GP</span>
+      </div>
+    </div>
+    <div class="pill glass" style="position:absolute;right:14px;top:14px;color:var(--pink)">${ic('drop',13)} 3</div>
+    <div style="position:absolute;left:16px;bottom:16px;display:flex;gap:4px;background:rgba(255,255,255,.8);backdrop-filter:blur(8px);
+        border-radius:99px;padding:4px;box-shadow:0 6px 18px rgba(30,40,32,.10)">
+      <span style="background:var(--sage);color:#fff;border-radius:99px;padding:9px 16px;font-size:13px;font-weight:800">🌱 돌보기</span>
+      <span style="border-radius:99px;padding:9px 14px;font-size:13px;font-weight:800;color:var(--ink)">🔧 꾸미기</span>
+    </div>
+    <div class="pill glass" style="position:absolute;right:16px;bottom:18px">⤢</div>
   </div>`;
 }
 
@@ -387,53 +409,67 @@ function barcode(c){let s='';for(let i=0;i<14;i++){s+=`<i style="height:${8+((i*
 const screens=[];
 
 /* ---------- 1. 홈 ---------- */
-screens.push({label:'홈',note:'헤드라인이 오늘의 상태를 문장으로 말해줍니다. 정원 일러스트 블록이 화면 세로를 꽉 채우는 주인공 — 남는 높이를 전부 가져갑니다. 그 아래는 오늘 할 일만, 전체 목록은 조용한 버튼 뒤로.',
+screens.push({label:'홈 — 정원이 곧 홈',note:'정원 시뮬레이터 화면이 그대로 홈이 됩니다. 헤드라인 한 줄 아래로 온실 블록이 남은 세로를 전부 차지하고, 온실 위에 가든 레벨·GP 게이지, 물이 필요한 식물 수, 💧 말풍선(탭하면 물주기 +GP), 돌보기/꾸미기 모드 스위치가 얹힙니다. 오늘 할 일 목록은 없앴습니다 — 말풍선이 곧 할 일입니다.',
 html:`
 ${statusbar}
 <div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
   <div class="pagepad" style="display:flex;align-items:flex-start;padding-top:8px">
     <div style="flex:1">
       <div class="h-date">8월 26일 화요일</div>
-      <div class="h1">물이 필요한 식물이<br><span class="accent">2개</span> 있어요</div>
+      <div class="h1">물이 필요한 식물이<br><span class="accent">3개</span> 있어요</div>
     </div>
     <button class="iconbtn plain" style="margin-top:4px">${ic('bell',22,'#8b928c')}</button>
   </div>
 
-  <div class="pagepad" style="margin-top:18px;flex:1;display:flex;flex-direction:column;min-height:0">
+  <div class="pagepad" style="margin-top:16px;flex:1;display:flex;flex-direction:column;min-height:0;padding-bottom:14px">
     ${ghBlock()}
-  </div>
-
-  <div class="pagepad" style="margin-top:26px">
-    <div class="sec">오늘 할 일</div>
-    <div style="margin-top:4px">
-      <div class="row">
-        <div class="avatar" style="width:54px;height:54px">${plant('monstera',36)}</div>
-        <div class="grow">
-          <div class="t">몬스테라</div>
-          <div class="d">물주기 · 하루 지났어요</div>
-        </div>
-        <button class="iconbtn sage">${ic('drop',20)}</button>
-      </div>
-      <div class="row">
-        <div class="avatar" style="width:54px;height:54px">${plant('succulent',30,'#dcc9a8')}</div>
-        <div class="grow">
-          <div class="t">몽이</div>
-          <div class="d">물주기 · 오늘이에요</div>
-        </div>
-        <button class="iconbtn sage">${ic('drop',20)}</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="pagepad" style="margin-top:14px;padding-bottom:16px">
-    <button class="cta quiet" style="font-size:14.5px;padding:15px">내 식물 6개 모두 보기</button>
   </div>
 </div>
 ${nav('plant')}
 `});
 
-/* ---------- 2. 내 식물 ---------- */
-screens.push({label:'내 식물',note:'테두리도 카드도 없는 행. 왼쪽 원형 일러스트, 이름과 상태 한 줄, 오른쪽엔 D-day만. 물이 급한 식물만 핑크로 조용히 표시됩니다.',
+/* ---------- 2. 내 식물 — 꾸민 카드 보드 ---------- */
+const BOARD=[
+  {k:'monstera',pc:'#c98a6a',nm:'몬스테라',sp:'Monstera deliciosa',lv:4,dd:'D+1',due:1,bg:'sage',pattern:'none',font:'basic',ink:'auto',st:['🏆'],w:62,ih:118,nameTop:false},
+  {k:'succulent',pc:'#dcc9a8',nm:'몽이',sp:'Echeveria',lv:2,dd:'D-day',due:1,bg:'cream',pattern:'dots',font:'round',ink:'brown',st:['⭐'],w:46,ih:88,nameTop:true},
+  {k:'pothos',pc:'#e0a08c',nm:'초코',sp:'Pothos',lv:8,dd:'D-2',due:0,bg:'blush',pattern:'dots',font:'hand',ink:'pink',st:['🌸','✨'],w:56,ih:104,nameTop:false,tape:1},
+  {k:'sansevieria',pc:'#8fa89b',nm:'스투키',sp:'Sansevieria',lv:6,dd:'D-5',due:0,bg:'mint',pattern:'stripe',font:'serif',ink:'sage',st:[],w:56,ih:124,nameTop:false},
+  {k:'calathea',pc:'#b7a3c9',nm:'칼라데아',sp:'Calathea',lv:5,dd:'D-3',due:0,bg:'lav',pattern:'none',font:'basic',ink:'auto',st:['🦋'],w:54,ih:96,nameTop:true},
+  {k:'pothos',pc:'#9fb8d0',nm:'아이비',sp:'Hedera',lv:2,dd:'D-6',due:0,bg:'sky',pattern:'grid',font:'round',ink:'blue',st:[],w:52,ih:100,nameTop:false},
+];
+function miniCard(c){
+  const dark=!!CARD_DARK[c.bg];
+  const ink=dark?'#fff':'#20241f';
+  const faint=dark?'rgba(255,255,255,.55)':'rgba(32,36,31,.45)';
+  const F=FONTS[c.font]||FONTS.basic;
+  const nameColor=(c.ink&&c.ink!=='auto')?INKS[c.ink]:ink;
+  const name=`<div style="text-align:center;font-family:${F.fam};font-weight:${F.w};font-size:${Math.round(F.size*.62)}px;color:${nameColor};letter-spacing:-.4px;line-height:1.15">${c.nm}</div>`;
+  const window_=`<div style="position:relative;height:${c.ih}px;border-radius:15px;display:grid;place-items:center;
+      background:linear-gradient(155deg,rgba(255,255,255,.92),rgba(255,255,255,.55));
+      box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.9), inset 0 -12px 20px rgba(40,60,45,.06)">
+    <span style="position:absolute;left:9px;top:8px;width:34px;height:16px;border-radius:99px;
+      background:linear-gradient(120deg,rgba(255,255,255,.85),rgba(255,255,255,0));transform:rotate(-18deg)"></span>
+    ${plant(c.k,c.w,c.pc)}
+  </div>`;
+  const sticks=(c.st||[]).map((e,i)=>`<span style="position:absolute;${i?'left:-6px;bottom:52px':'right:-7px;top:'+(c.nameTop?34:8)+'px'};
+    font-size:22px;line-height:1;transform:rotate(${i?-12:12}deg);z-index:3;
+    filter:drop-shadow(0 0 1.3px #fff) drop-shadow(0 0 1.3px #fff) drop-shadow(0 4px 6px rgba(0,0,0,.22))">${e}</span>`).join('');
+  const tape=c.tape?`<span style="position:absolute;left:-9px;top:26px;width:48px;height:16px;transform:rotate(-9deg);z-index:2;opacity:.9;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.6) 0 5px,rgba(255,255,255,.42) 5px 10px);box-shadow:0 2px 4px rgba(0,0,0,.10)"></span>`:'';
+  return `<div style="break-inside:avoid;margin-bottom:12px;position:relative">
+    <div style="background:${CARD_BG[c.bg]};${CARD_PAT[c.pattern]};border-radius:19px;padding:10px 10px 12px;
+        box-shadow:0 10px 26px rgba(30,40,32,.10), inset 0 0 0 3px rgba(255,255,255,${dark?'.14':'.55'})">
+      ${c.nameTop?`<div style="padding:4px 0 8px">${name}</div>${window_}`:`${window_}<div style="padding:9px 0 0">${name}</div>`}
+      <div style="text-align:center;font-family:Georgia,serif;font-style:italic;font-size:9.5px;color:${faint};margin-top:${c.nameTop?'8px':'2px'}">${c.sp}</div>
+      <div style="display:flex;justify-content:center;gap:5px;margin-top:8px">
+        <span style="background:rgba(255,255,255,${dark?'.2':'.78'});border-radius:99px;padding:3px 9px;font-size:10px;font-weight:800;color:${dark?'#fff':'#3c463e'}">Lv.${c.lv}</span>
+        <span style="background:rgba(255,255,255,${dark?'.2':'.78'});border-radius:99px;padding:3px 9px;font-size:10px;font-weight:800;color:${c.due?'var(--pink)':(dark?'#fff':'#3c463e')}">💧 ${c.dd}</span>
+      </div>
+    </div>
+    ${tape}${sticks}
+  </div>`;
+}
+screens.push({label:'내 식물 — 카드 보드',note:'리스트 대신 꾸민 카드가 그대로 모이는 보드입니다(핀터레스트 무드보드 문법). 각 식물이 자기 테마·패턴·서체·스티커를 입은 미니 카드로 붙고, 상세에서 꾸민 결과가 목록에서도 보입니다. 물이 급한 카드만 💧칩이 핑크. 카드를 누르면 그 카드가 무대로 커지며 상세(3번)로 이어집니다.',
 html:`
 ${statusbar}
 <div style="flex:1;overflow:hidden">
@@ -443,30 +479,18 @@ ${statusbar}
     <button class="iconbtn plain">${ic('plus',22,'#8b928c')}</button>
   </div>
 
-  <div class="pagepad" style="margin-top:18px;display:flex;flex-direction:column;gap:6px">
-    ${[
-      ['monstera','#c98a6a','몬스테라','Monstera deliciosa · Lv.4','D+1',1,46],
-      ['succulent','#dcc9a8','몽이','Echeveria · Lv.2','D-day',1,38],
-      ['sansevieria','#8fa89b','스투키','Sansevieria · Lv.6','D-5',0,42],
-      ['calathea','#b7a3c9','칼라데아 뷰티스타','Calathea · Lv.5','D-3',0,44],
-      ['pothos','#e0a08c','초코','Pothos · Lv.8','D-2',0,46],
-      ['pothos','#a8785d','아이비','Hedera · Lv.2','D-6',0,44],
-    ].map(([k,pc,nm,sp,dd,due,w])=>`
-      <div class="row" style="min-height:76px">
-        <div class="avatar" style="width:62px;height:62px">${plant(k,w,pc)}</div>
-        <div class="grow">
-          <div class="t">${nm}</div>
-          <div class="d">${sp}</div>
-        </div>
-        <span class="pill ${due?'pink':'sage'}">${dd}</span>
-      </div>`).join('')}
+  <div style="margin-top:16px;padding:2px 16px 16px;columns:2;column-gap:12px">
+    ${BOARD.map(miniCard).join('')}
+    <div style="break-inside:avoid;margin-bottom:12px;border:2px dashed var(--hair);border-radius:19px;
+        padding:26px 10px;text-align:center;color:var(--faint)">
+      <div style="font-size:20px">＋</div>
+      <div style="font-size:12px;font-weight:700;margin-top:4px">새 식물</div>
+    </div>
   </div>
 </div>
 ${nav('plant')}
 `});
 
-/* ---------- 3. 식물 상세 ---------- */
-/* 상세 화면 자체가 테마 캔버스 — 기본은 아이덴티티 세이지 */
 /* ---------- 식물 상세: 꾸민 카드 스테이지 + 슬라이드 시트 ---------- */
 const PAGE_BG={sage:'#3d564b',blush:'#f9e9ed',mint:'#e7f4ec',cream:'#faf3e3',lav:'#efecf7',sky:'#e9f2f8'};
 function cardFace(st){
