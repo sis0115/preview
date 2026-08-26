@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>플랜트그램 목업 v3</title>
+<style>
+/* ============================================================
+   디자인 시스템 — 토스/앱스토어 문법
+   · 화면당 하나의 목적, 하나의 헤드라인
+   · 여백이 레이아웃: 섹션 간 40px, 요소 간 8의 배수
+   · 표면은 흰색. 회색(#f2f3f0)은 이미지 블록과 입력에만
+   · 색은 세이지 하나. 경고만 더스티 핑크
+   · 리스트는 카드가 아니라 행 — 테두리 없이 간격으로 구분
+   ============================================================ */
+:root{
+  --canvas:#f4f2ee;
+  --bg:#ffffff;
+  --block:#f2f3ef;          /* 이미지·입력 블록 전용 회색 */
+  --block2:#e9ede7;
+  --ink:#191f1b;
+  --sub:#8b928c;
+  --faint:#c2c7c1;
+  --sage:#3e5c4b;           /* 유일한 액센트 */
+  --sage-soft:#eaf0ea;
+  --pink:#c96f5e; --pink-soft:#faeae5;
+  --hair:#eeefec;
+  --r-block:26px;
+  --phone:#111411;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--canvas);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro KR","Apple SD Gothic Neo","Segoe UI","Noto Sans KR",sans-serif;
+  letter-spacing:-.15px;line-height:1.5}
+
+/* ---------- 프레젠테이션 페이지 ---------- */
+.intro{max-width:1280px;margin:0 auto;padding:56px 28px 8px}
+.intro .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--sage);text-transform:uppercase}
+.intro h1{margin:10px 0 12px;font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.2}
+.intro p{margin:0;color:var(--sub);font-size:14.5px;max-width:58ch;line-height:1.75}
+.gallery{display:grid;gap:56px 32px;grid-template-columns:repeat(auto-fill,minmax(390px,1fr));
+  max-width:1280px;margin:0 auto;padding:40px 28px 100px;align-items:start;justify-items:center}
+.gitem{width:390px;max-width:100%}
+.glabel{font-size:14px;font-weight:700;margin:0 6px 12px;color:var(--ink)}
+.glabel small{color:var(--faint);font-weight:600;margin-left:8px}
+.gnote{margin:14px 6px 0;font-size:13px;color:var(--sub);line-height:1.75}
+.phone{background:var(--phone);border-radius:48px;padding:10px;box-shadow:0 30px 80px rgba(30,40,32,.18)}
+.screen{position:relative;background:var(--bg);border-radius:39px;overflow:hidden;display:flex;flex-direction:column;min-height:844px}
+.status{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;
+  font-size:13px;font-weight:600;flex:0 0 auto}
+.status .r{font-size:11px;color:var(--sub);letter-spacing:1px}
+
+/* ---------- 공통 컴포넌트 ---------- */
+.pagepad{padding:0 24px}
+.h-date{font-size:13px;color:var(--sub);font-weight:600}
+.h1{font-size:27px;font-weight:800;letter-spacing:-.7px;line-height:1.32;margin:6px 0 0}
+.h1 .accent{color:var(--sage)}
+.sec{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.sub{color:var(--sub);font-size:13.5px}
+.tiny{color:var(--faint);font-size:12px}
+
+.row{display:flex;align-items:center;gap:14px;min-height:64px}
+.row .grow{flex:1;min-width:0}
+.row .t{font-size:15.5px;font-weight:700;letter-spacing:-.2px}
+.row .d{font-size:13px;color:var(--sub);margin-top:2px}
+.chev{color:var(--faint);font-size:14px;flex:0 0 auto}
+
+.avatar{border-radius:999px;background:var(--block);display:grid;place-items:center;flex:0 0 auto;position:relative}
+.iconbtn{width:44px;height:44px;border-radius:999px;background:var(--block);border:0;cursor:pointer;
+  display:grid;place-items:center;color:var(--ink);flex:0 0 auto}
+.iconbtn.sage{background:var(--sage-soft);color:var(--sage)}
+.iconbtn.plain{background:none}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 12px;
+  font-size:12.5px;font-weight:700}
+.pill.sage{background:var(--sage-soft);color:var(--sage)}
+.pill.pink{background:var(--pink-soft);color:var(--pink)}
+.pill.glass{background:rgba(255,255,255,.85);backdrop-filter:blur(8px);color:var(--ink);box-shadow:0 4px 14px rgba(30,40,32,.08)}
+
+.cta{border:0;border-radius:20px;background:var(--sage);color:#fff;font:inherit;font-weight:700;
+  font-size:16px;padding:17px;cursor:pointer;width:100%;letter-spacing:-.3px}
+.cta.quiet{background:var(--block);color:var(--ink)}
+.block-img{border-radius:var(--r-block);overflow:hidden;position:relative;background:var(--block)}
+
+svg.ic{display:block}
+
+/* ---------- 하단 탭 ---------- */
+.nav{flex:0 0 auto;display:flex;border-top:1px solid var(--hair);padding:10px 10px 22px;background:var(--bg)}
+.nav div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  color:var(--faint);font-size:10px;font-weight:600}
+.nav div.on{color:var(--ink)}
+.nav svg{width:23px;height:23px}
+
+/* ---------- 셀레브레이션 컨페티 ---------- */
+.cf{position:absolute;width:6px;height:10px;border-radius:3px;opacity:.8}
+
+/* ---------- 시트 ---------- */
+.dim{position:absolute;inset:0;background:rgba(20,26,22,.32);display:flex;align-items:flex-end;border-radius:39px}
+.sheet{background:var(--bg);width:100%;border-radius:30px 30px 39px 39px;padding:8px 24px 30px}
+.grab{width:36px;height:5px;border-radius:99px;background:var(--hair);margin:10px auto 22px}
+
+@media(max-width:720px){
+  .intro{padding:36px 18px 0}
+  .intro h1{font-size:24px}
+  .gallery{grid-template-columns:1fr;padding:28px 14px 70px;gap:44px}
+  .gitem{width:100%}
+  .phone{border-radius:36px;padding:8px}
+  .screen{border-radius:29px}
+}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="eyebrow">Plantgram · Mockup v3</div>
+  <h1>여백으로 다시 설계했습니다</h1>
+  <p>화면마다 목적 하나, 헤드라인 하나. 정보는 카드가 아니라 행과 간격으로 나누고,
+  색은 세이지 하나만 씁니다. 일러스트 블록이 화면의 이미지를 담당합니다 — 토스와 앱스토어 에디토리얼의 문법입니다.</p>
+</div>
+
+<div class="gallery" id="gallery"></div>
+
+<script>
+/* ============================================================
+   식물 일러스트 (파스텔 세이지 톤)
+   ============================================================ */
+function shade(hex,amt){
+  const n=parseInt(hex.slice(1),16), c=v=>Math.max(0,Math.min(255,v));
+  return '#'+((c((n>>16)+amt)<<16)|(c(((n>>8)&255)+amt)<<8)|c((n&255)+amt)).toString(16).padStart(6,'0');
+}
+function pot(color,w){
+  const d=shade(color,-22), l=shade(color,16);
+  return `<path d="M${-w*.30},0 L${-w*.24},${w*.30} Q${-w*.23},${w*.35} ${-w*.18},${w*.35} L${w*.18},${w*.35} Q${w*.23},${w*.35} ${w*.24},${w*.30} L${w*.30},0 Z" fill="${color}"/>
+  <path d="M${-w*.30},0 L${-w*.24},${w*.30} Q${-w*.23},${w*.35} ${-w*.18},${w*.35} L0,${w*.35} L0,0 Z" fill="${d}" opacity=".22"/>
+  <rect x="${-w*.34}" y="${-w*.055}" width="${w*.68}" height="${w*.11}" rx="${w*.05}" fill="${l}"/>`;
+}
+function leaf(x,y,rot,s,fill,vein){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+    <path d="M0,0 C-17,-7 -21,-29 0,-41 C21,-29 17,-7 0,0 Z" fill="${fill}"/>
+    <path d="M0,-2 L0,-38" stroke="${vein}" stroke-width="1.4" opacity=".5" fill="none"/>
+    <path d="M0,-14 L-9,-20 M0,-22 L-9,-28 M0,-14 L9,-20 M0,-22 L9,-28" stroke="${vein}" stroke-width="1.1" opacity=".3" fill="none"/>
+  </g>`;
+}
+const stem=(x,y,v)=>`<path d="M0,2 Q${x*.25},${y*.45} ${x},${y}" stroke="${v}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+const AV={
+  monstera(w){const a='#557f63',b='#699b78',v='#3c5c46';
+    const L=[[1,-w*.50,-4,w*.0145],[-16,-w*.34,-32,w*.0135],[17,-w*.36,30,w*.0125],[-9,-w*.20,-58,w*.0100],[11,-w*.19,54,w*.0095]];
+    let o='';L.forEach(([x,y])=>{o+=stem(x,y,v);});
+    L.forEach(([x,y,r,s],i)=>{o+=leaf(x,y,r,s,i%2?b:a,v);});
+    return o;},
+  sansevieria(w){const a='#5e8a6b',b='#71a07d',e='#cabd7e';let s='';
+    [[-13,-w*.52,-13,.92],[0,-w*.62,0,1.05],[13,-w*.54,13,.95],[-6,-w*.42,-6,.75],[7,-w*.44,7,.78]].forEach(([x,y,r,sc],i)=>{
+      s+=`<g transform="translate(${x},0) rotate(${r})">
+        <path d="M0,0 C${-5*sc},${y*.55} ${-4*sc},${y*.85} 0,${y} C${4*sc},${y*.85} ${5*sc},${y*.55} 0,0 Z" fill="${i%2?b:a}"/>
+        <path d="M0,0 C${-5*sc},${y*.55} ${-4*sc},${y*.85} 0,${y}" stroke="${e}" stroke-width="1.2" fill="none" opacity=".5"/></g>`;});
+    return s;},
+  succulent(w){const c=['#7fa98a','#8cb795','#9ac4a2','#a9d1af'];let s='';
+    for(let i=0;i<9;i++){s+=`<g transform="rotate(${i*40}) translate(0,${-w*.13})"><ellipse rx="${w*.055}" ry="${w*.105}" fill="${c[i%4]}"/></g>`;}
+    return `<g transform="translate(0,${-w*.10})">${s}<circle r="${w*.05}" fill="#6a9573"/></g>`;},
+  calathea(w){const a='#54806a',b='#66957a',vv='#dbe6cf';let s='';
+    [[-18,-w*.32,-40,.95],[0,-w*.46,-6,1.06],[18,-w*.34,38,.97],[-8,-w*.20,-62,.72],[10,-w*.21,58,.74]].forEach(([x,y,r,sc],i)=>{
+      s+=`<g transform="translate(${x},${y}) rotate(${r}) scale(${w*.012*sc})">
+        <ellipse cx="0" cy="-18" rx="12" ry="21" fill="${i%2?b:a}"/>
+        <ellipse cx="0" cy="-18" rx="5.5" ry="15" fill="${vv}" opacity=".5"/>
+        <path d="M0,2 L0,-34" stroke="${vv}" stroke-width="1.5" opacity=".6"/></g>`;});
+    return `<g><path d="M0,0 L0,${-w*.22}" stroke="#4c7059" stroke-width="2.2"/>${s}</g>`;},
+  pothos(w){const a='#5c936d',b='#6da57c',v='#40684d';let s='';
+    const L=[[0,-w*.40,0,.9],[-15,-w*.28,-30,.8],[15,-w*.30,30,.78],[-24,-w*.10,-72,.66],[24,-w*.12,70,.64],[-10,-w*.52,-14,.7]];
+    L.forEach(([x,y])=>{s+=stem(x,y+3,v);});
+    L.forEach(([x,y,r,sc],i)=>{s+=`<g transform="translate(${x},${y}) rotate(${r}) scale(${sc})">
+      <path d="M0,0 C-13,-6 -16,-22 0,-30 C16,-22 13,-6 0,0 Z" fill="${i%2?a:b}"/>
+      <path d="M0,-3 L0,-27" stroke="${v}" stroke-width="1.2" opacity=".45"/></g>`;});
+    return s;}
+};
+const plant=(kind,w,potc='#c98a6a')=>`<svg width="${w}" height="${w*1.22}" viewBox="${-w/2} ${-w*.85} ${w} ${w*1.22}" style="display:block;overflow:visible">
+  <ellipse cx="0" cy="${w*.37}" rx="${w*.28}" ry="${w*.05}" fill="rgba(70,90,70,.12)"/>
+  ${AV[kind]?AV[kind](w):''}${pot(potc,w)}</svg>`;
+
+/* ---------- 라인 아이콘 (SF 심볼 느낌) ---------- */
+const I={
+  feed:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4.5c-.8 0-1.2-1-.6-1.5l1.3-1.2A8 8 0 1 1 21 12z"/></svg>`,
+  leaf:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21C7.5 16.5 7 9.5 12 4.5c5 5 4.5 12 0 16.5z"/><path d="M12 21V9"/></svg>`,
+  book:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/></svg>`,
+  person:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.4-3.2 4-4.8 7-4.8s5.6 1.6 7 4.8"/></svg>`,
+  drop:`<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2c2.8 4 5.3 6.8 5.3 10a5.3 5.3 0 1 1-10.6 0c0-3.2 2.5-6 5.3-10z"/></svg>`,
+  search:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.2 4.2"/></svg>`,
+  back:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>`,
+  more:`<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg>`,
+  bell:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5a6 6 0 0 1 12 0c0 4 1.4 5.5 2 6.2H4c.6-.7 2-2.2 2-6.2z"/><path d="M10 19a2.2 2.2 0 0 0 4 0"/></svg>`,
+  plus:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`,
+  spark:`<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z"/></svg>`,
+  heart:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7.5 3c0 5.4-7.5 10-7.5 10z"/></svg>`,
+  cam:`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3.5" y="7" width="17" height="13" rx="3"/><path d="M9 7l1.2-2.4h3.6L15 7"/><circle cx="12" cy="13.2" r="3.4"/></svg>`,
+};
+const ic=(name,size=22,color='currentColor')=>I[name].replace('class="ic"',`class="ic" style="width:${size}px;height:${size}px;color:${color}"`);
+
+/* ---------- 하단 탭 ---------- */
+const nav=on=>`<div class="nav">
+  <div class="${on==='feed'?'on':''}">${ic('feed')}피드</div>
+  <div class="${on==='plant'?'on':''}">${ic('leaf')}내 식물</div>
+  <div class="${on==='book'?'on':''}">${ic('book')}도감</div>
+  <div class="${on==='me'?'on':''}">${ic('person')}계정</div>
+</div>`;
+const statusbar=`<div class="status"><span>9:41</span><span class="r">●●●●  ᯤ  ▮</span></div>`;
+
+/* ---------- 홈 정원 일러스트 블록 ---------- */
+function gardenBlock(h=300){
+  const TW=112,TH=56;
+  const Pp=(x,y)=>[(x-y)*TW/2+195,(x+y)*TH/2+58];
+  const ptss=a=>a.map(p=>p.join(',')).join(' ');
+  let o='';
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++){
+    o+=`<polygon points="${ptss([Pp(i,j),Pp(i+1,j),Pp(i+1,j+1),Pp(i,j+1)])}"
+      fill="${(i+j)%2?'#edeadf':'#f4f1e6'}" stroke="#e5e0d0" stroke-width=".8"/>`;
+  }
+  [[.5,.5,'sansevieria',46,'#8fa89b'],[1.5,.5,'succulent',40,'#dcc9a8'],
+   [2.5,.6,'calathea',46,'#b7a3c9'],[.6,1.6,'pothos',50,'#e0a08c'],
+   [1.5,1.6,'monstera',72,'#c98a6a'],[2.6,2.3,'pothos',52,'#a8785d']]
+  .sort((a,b)=>(a[0]+a[1])-(b[0]+b[1])).forEach(([x,y,k,w,pc])=>{
+    const [sx,sy]=Pp(x,y);
+    o+=`<g transform="translate(${sx},${sy})">
+      <ellipse cy="3" rx="${w*.3}" ry="${w*.07}" fill="rgba(70,90,70,.12)"/>
+      ${AV[k]?AV[k](w):''}${pot(pc,w)}</g>`;
+  });
+  return `<div class="block-img" style="height:${h}px;background:linear-gradient(176deg,#e9efe6,#f3f0e4)">
+    <svg viewBox="0 40 390 ${h}" style="width:100%;height:100%;display:block">${o}</svg>
+    <div style="position:absolute;left:16px;bottom:16px" class="pill glass">우리집 온실 · Lv.7</div>
+    <div style="position:absolute;right:16px;bottom:14px" class="pill glass">꾸미기</div>
+  </div>`;
+}
+
+/* ============================================================
+   화면 정의
+   ============================================================ */
+const screens=[];
+
+/* ---------- 1. 홈 ---------- */
+screens.push({label:'홈',note:'헤드라인이 오늘의 상태를 문장으로 말해줍니다. 정원 일러스트가 화면의 이미지 역할 — 탭하면 정원으로. 그 아래는 오늘 할 일만, 전체 목록은 조용한 버튼 뒤로.',
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+  <div class="pagepad" style="display:flex;align-items:flex-start;padding-top:10px">
+    <div style="flex:1">
+      <div class="h-date">8월 26일 화요일</div>
+      <div class="h1">물이 필요한 식물이<br><span class="accent">2개</span> 있어요</div>
+    </div>
+    <button class="iconbtn plain" style="margin-top:4px">${ic('bell',22,'#8b928c')}</button>
+  </div>
+
+  <div class="pagepad" style="margin-top:22px">${gardenBlock(268)}</div>
+
+  <div class="pagepad" style="margin-top:38px">
+    <div class="sec">오늘 할 일</div>
+    <div style="margin-top:6px">
+      <div class="row">
+        <div class="avatar" style="width:54px;height:54px">${plant('monstera',36)}</div>
+        <div class="grow">
+          <div class="t">몬스테라</div>
+          <div class="d">물주기 · 하루 지났어요</div>
+        </div>
+        <button class="iconbtn sage">${ic('drop',20)}</button>
+      </div>
+      <div class="row">
+        <div class="avatar" style="width:54px;height:54px">${plant('succulent',30,'#dcc9a8')}</div>
+        <div class="grow">
+          <div class="t">몽이</div>
+          <div class="d">물주기 · 오늘이에요</div>
+        </div>
+        <button class="iconbtn sage">${ic('drop',20)}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagepad" style="margin-top:26px">
+    <button class="cta quiet" style="font-size:14.5px;padding:15px">내 식물 6개 모두 보기</button>
+  </div>
+</div>
+${nav('plant')}
+`});
+
+/* ---------- 2. 내 식물 ---------- */
+screens.push({label:'내 식물',note:'테두리도 카드도 없는 행. 왼쪽 원형 일러스트, 이름과 상태 한 줄, 오른쪽엔 D-day만. 물이 급한 식물만 핑크로 조용히 표시됩니다.',
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden">
+  <div class="pagepad" style="display:flex;align-items:center;padding-top:10px">
+    <div class="h1" style="flex:1">내 식물 <span style="color:var(--faint);font-weight:700">6</span></div>
+    <button class="iconbtn plain">${ic('search',22,'#8b928c')}</button>
+    <button class="iconbtn plain">${ic('plus',22,'#8b928c')}</button>
+  </div>
+
+  <div class="pagepad" style="margin-top:18px;display:flex;flex-direction:column;gap:6px">
+    ${[
+      ['monstera','#c98a6a','몬스테라','Monstera deliciosa · Lv.4','D+1',1,46],
+      ['succulent','#dcc9a8','몽이','Echeveria · Lv.2','D-day',1,38],
+      ['sansevieria','#8fa89b','스투키','Sansevieria · Lv.6','D-5',0,42],
+      ['calathea','#b7a3c9','칼라데아 뷰티스타','Calathea · Lv.5','D-3',0,44],
+      ['pothos','#e0a08c','초코','Pothos · Lv.8','D-2',0,46],
+      ['pothos','#a8785d','아이비','Hedera · Lv.2','D-6',0,44],
+    ].map(([k,pc,nm,sp,dd,due,w])=>`
+      <div class="row" style="min-height:76px">
+        <div class="avatar" style="width:62px;height:62px">${plant(k,w,pc)}</div>
+        <div class="grow">
+          <div class="t">${nm}</div>
+          <div class="d">${sp}</div>
+        </div>
+        <span class="pill ${due?'pink':'sage'}">${dd}</span>
+      </div>`).join('')}
+  </div>
+</div>
+${nav('plant')}
+`});
+
+/* ---------- 3. 식물 상세 ---------- */
+screens.push({label:'식물 상세',note:'앱스토어 에디토리얼처럼 — 흰 배경, 큰 일러스트, 학명은 이탤릭 한 줄, 상태는 문장으로. 정보 3열은 카드 없이 헤어라인만. 물이 급할 때만 아래 CTA가 나타납니다.',
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+  <div class="pagepad" style="display:flex;justify-content:space-between;padding-top:6px">
+    <button class="iconbtn plain" style="margin-left:-12px">${ic('back',22)}</button>
+    <button class="iconbtn plain" style="margin-right:-12px">${ic('more',22,'#8b928c')}</button>
+  </div>
+
+  <div style="text-align:center;margin-top:8px">
+    <div class="avatar" style="width:190px;height:190px;margin:0 auto;background:radial-gradient(circle at 42% 32%,#f2f5ef,#e7ede4)">
+      ${plant('monstera',124)}
+    </div>
+    <div style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:var(--faint);margin-top:22px">Monstera deliciosa</div>
+    <div style="font-size:27px;font-weight:800;letter-spacing:-.6px;margin-top:2px">몬스테라</div>
+    <div class="sub" style="margin-top:8px">함께한 지 124일 · 잘 자라고 있어요</div>
+  </div>
+
+  <div class="pagepad" style="margin-top:32px">
+    <div style="display:flex;text-align:center">
+      <div style="flex:1"><div class="tiny">물주기</div><div style="font-size:16px;font-weight:800;margin-top:4px">7일마다</div></div>
+      <div style="flex:1;border-left:1px solid var(--hair);border-right:1px solid var(--hair)"><div class="tiny">레벨</div><div style="font-size:16px;font-weight:800;margin-top:4px">Lv.4</div></div>
+      <div style="flex:1"><div class="tiny">다음 분갈이</div><div style="font-size:16px;font-weight:800;margin-top:4px">64일 뒤</div></div>
+    </div>
+  </div>
+
+  <div class="pagepad" style="margin-top:28px">
+    <div style="background:var(--pink-soft);border-radius:20px;padding:16px 18px;display:flex;align-items:center;gap:12px">
+      <span style="color:var(--pink)">${ic('drop',20)}</span>
+      <div style="flex:1;font-size:14px;font-weight:700;color:var(--pink)">물 줄 날이 하루 지났어요</div>
+      <span style="font-size:13.5px;font-weight:800;color:var(--pink)">물주기</span>
+    </div>
+  </div>
+
+  <div class="pagepad" style="margin-top:38px">
+    <div style="display:flex;align-items:baseline">
+      <div class="sec" style="flex:1">기록</div>
+      <span class="tiny">전체보기</span>
+    </div>
+    <div style="margin-top:8px">
+      ${[
+        ['물주기','민수 · 오늘 오전 9:20','+10'],
+        ['사진과 메모','나 · 3일 전 · “새잎이 올라옴”','+5'],
+        ['상태 좋음','나 · 5일 전','+3'],
+      ].map(([t,d,gp])=>`
+        <div class="row" style="min-height:58px">
+          <div style="width:7px;height:7px;border-radius:99px;background:var(--sage);flex:0 0 auto;margin:0 6px"></div>
+          <div class="grow"><div class="t" style="font-size:14.5px">${t}</div><div class="d">${d}</div></div>
+          <span class="tiny" style="color:var(--sage);font-weight:700">${gp} GP</span>
+        </div>`).join('')}
+    </div>
+  </div>
+
+  <div style="flex:1"></div>
+  <div class="pagepad" style="padding-bottom:14px"><button class="cta">기록하기</button></div>
+</div>
+${nav('plant')}
+`});
+
+/* ---------- 4. 기록 시트 ---------- */
+screens.push({label:'기록 시트',note:'말로 하는 기록이 첫 번째 — 큰 입력 블록 하나. 아이콘 기록은 그 아래 3×2, 회색 블록에 아이콘과 라벨만. GP는 아주 작게.',
+overlay:true,
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden;filter:blur(2px);opacity:.5">
+  <div style="text-align:center;margin-top:60px">
+    <div class="avatar" style="width:190px;height:190px;margin:0 auto">${plant('monstera',124)}</div>
+    <div style="font-size:27px;font-weight:800;margin-top:24px">몬스테라</div>
+  </div>
+</div>
+${nav('plant')}
+<div class="dim"><div class="sheet">
+  <div class="grab"></div>
+  <div style="font-size:21px;font-weight:800;letter-spacing:-.5px">기록하기</div>
+  <div class="sub" style="margin-top:3px">몬스테라 · 오늘</div>
+
+  <div style="margin-top:20px;background:var(--block);border-radius:20px;padding:18px;display:flex;gap:12px;align-items:center">
+    <span style="color:var(--sage)">${ic('spark',19)}</span>
+    <div style="flex:1;font-size:14.5px;color:var(--sub)">“물 줬고 새잎이 올라왔어”</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px">
+    ${[['💧','물주기','10'],['🧪','영양제','15'],['🪴','분갈이','15'],['✏️','메모','5'],['📷','사진','5'],['🌡','상태','3']]
+      .map(([e,l,gp])=>`
+      <div style="background:var(--block);border-radius:20px;padding:18px 8px;text-align:center">
+        <div style="font-size:22px">${e}</div>
+        <div style="font-size:13px;font-weight:700;margin-top:7px">${l}</div>
+        <div style="font-size:10.5px;color:var(--sage);font-weight:700;margin-top:1px">+${gp} GP</div>
+      </div>`).join('')}
+  </div>
+</div></div>
+`});
+
+/* ---------- 5. 레벨업 ---------- */
+screens.push({label:'레벨업',note:'모달 카드가 아니라 화면 전체가 순간이 됩니다. 흰 배경, 큰 일러스트, 파스텔 컨페티 소량. 버튼은 하나만 진하게.',
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+  ${Array.from({length:18},(_,i)=>{
+    const cols=['#dfb571','#7d9587','#cf9a90','#a9c4b1','#e5d3b6'];
+    return `<i class="cf" style="background:${cols[i%5]};left:${8+((i*47)%84)}%;top:${6+((i*31)%52)}%;transform:rotate(${(i*67)%360}deg)"></i>`;
+  }).join('')}
+  <div style="font-size:12px;font-weight:800;letter-spacing:.24em;color:var(--sage)">LEVEL UP</div>
+  <div class="avatar" style="width:210px;height:210px;margin:26px 0 0;background:radial-gradient(circle at 42% 32%,#f2f5ef,#e7ede4)">
+    ${plant('monstera',138)}
+  </div>
+  <div style="font-size:30px;font-weight:800;letter-spacing:-.7px;margin-top:28px">몬스테라 Lv.5</div>
+  <div class="sub" style="margin-top:8px">잎이 한 장 더 자랐어요<br>새 화분 3종이 열렸어요</div>
+</div>
+<div class="pagepad" style="padding-bottom:26px;display:flex;flex-direction:column;gap:10px">
+  <button class="cta">피드에 자랑하기</button>
+  <div style="text-align:center;font-size:14px;font-weight:700;color:var(--sub);padding:6px">닫기</div>
+</div>
+`});
+
+/* ---------- 6. 피드 ---------- */
+screens.push({label:'피드',note:'앱스토어 Today 카드 — 이미지가 카드의 대부분을 차지하고 텍스트는 하단에 조금만. 뱃지 자랑도 같은 문법의 카드입니다.',
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden">
+  <div class="pagepad" style="display:flex;align-items:center;padding-top:10px">
+    <div class="h1" style="flex:1">피드</div>
+    <button class="iconbtn plain">${ic('cam',22,'#8b928c')}</button>
+  </div>
+
+  <div class="pagepad" style="margin-top:16px;display:flex;flex-direction:column;gap:22px">
+
+    <div class="block-img">
+      <div style="height:200px;background:linear-gradient(160deg,#f6ecd7,#efdfbc);display:grid;place-items:center">
+        <div style="width:110px;height:110px;border-radius:999px;background:radial-gradient(circle at 40% 30%,#f9ecc9,#eed49b);display:grid;place-items:center;font-size:52px;box-shadow:0 16px 36px rgba(200,165,90,.35)">🏆</div>
+      </div>
+      <div style="padding:18px 20px 20px;background:#fff">
+        <div class="tiny" style="color:var(--sage);font-weight:800;letter-spacing:.08em">뱃지 획득</div>
+        <div style="font-size:19px;font-weight:800;letter-spacing:-.4px;margin-top:4px">30일 연속 기록</div>
+        <div class="sub" style="margin-top:3px">초록집사님이 한 달을 하루도 빠짐없이 기록했어요</div>
+        <div style="display:flex;gap:16px;margin-top:14px;color:var(--sub);font-size:13px;font-weight:600;align-items:center">
+          <span style="display:flex;align-items:center;gap:5px">${ic('heart',16)}42</span>
+          <span>댓글 8</span>
+          <span style="margin-left:auto;color:var(--sage);font-weight:700">축하 보내기</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-img">
+      <div style="height:230px;background:radial-gradient(circle at 42% 34%,#eef3ec,#dfe8dd);display:grid;place-items:center">
+        ${plant('monstera',128)}
+      </div>
+      <div style="padding:16px 20px 18px;background:#fff">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar" style="width:34px;height:34px">${plant('pothos',20,'#e0a08c')}</div>
+          <div style="flex:1">
+            <div style="font-size:13.5px;font-weight:700">초보식물집사</div>
+            <div class="tiny">몬스테라 채널 · 2시간 전</div>
+          </div>
+        </div>
+        <div style="font-size:14.5px;line-height:1.65;margin-top:12px">새잎이 드디어 펼쳐졌어요. 무늬가 예쁘게 나왔네요 🌱</div>
+        <div style="display:flex;gap:16px;margin-top:12px;color:var(--sub);font-size:13px;font-weight:600;align-items:center">
+          <span style="display:flex;align-items:center;gap:5px">${ic('heart',16)}128</span>
+          <span>댓글 21</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="min-height:64px">
+      <div class="avatar" style="width:48px;height:48px">${plant('sansevieria',30,'#8fa89b')}</div>
+      <div class="grow">
+        <div class="t" style="font-size:14.5px">스투키가 Lv.6이 되었어요</div>
+        <div class="d">초록집사 · 1일 전</div>
+      </div>
+      <span class="tiny" style="display:flex;align-items:center;gap:4px;color:var(--sub)">${ic('heart',15)}31</span>
+    </div>
+
+  </div>
+</div>
+${nav('feed')}
+`});
+
+/* ---------- 7. 도감 ---------- */
+screens.push({label:'도감',note:'검색 하나, 큰 에디토리얼 카드 하나, 그리고 테마는 심플한 행. 그리드·배너·카운터 전부 덜어냈습니다.',
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden">
+  <div class="pagepad" style="padding-top:10px">
+    <div class="h1">도감</div>
+    <div style="margin-top:16px;background:var(--block);border-radius:999px;height:50px;display:flex;align-items:center;gap:10px;padding:0 18px;color:var(--faint)">
+      ${ic('search',19)}<span style="font-size:14.5px">식물 이름 검색</span>
+    </div>
+  </div>
+
+  <div class="pagepad" style="margin-top:30px">
+    <div class="tiny" style="color:var(--sage);font-weight:800;letter-spacing:.08em">오늘의 식물</div>
+    <div class="block-img" style="margin-top:10px">
+      <div style="height:250px;background:linear-gradient(165deg,#e9efe4,#dce7da);display:grid;place-items:center">
+        ${plant('calathea',132,'#b7a3c9')}
+      </div>
+      <div style="padding:18px 20px 20px;background:#fff">
+        <div style="font-size:21px;font-weight:800;letter-spacing:-.5px">칼라데아</div>
+        <div class="sub" style="margin-top:3px">밤이면 잎을 접는 기도하는 식물</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagepad" style="margin-top:36px">
+    <div class="sec">테마별로 찾기</div>
+    <div style="margin-top:8px">
+      ${[['😊','초보 집사도 키우기 쉬운','24종'],['🍃','공기를 맑게 하는','18종'],['🐕','반려동물이 있다면 피해야 할','11종'],['💤','물을 자주 안 줘도 되는','16종']]
+        .map(([e,t,c])=>`
+        <div class="row" style="min-height:62px">
+          <div style="width:44px;height:44px;border-radius:15px;background:var(--block);display:grid;place-items:center;font-size:19px;flex:0 0 auto">${e}</div>
+          <div class="grow"><div class="t" style="font-size:14.5px">${t}</div></div>
+          <span class="tiny">${c}</span><span class="chev">›</span>
+        </div>`).join('')}
+    </div>
+  </div>
+</div>
+${nav('book')}
+`});
+
+/* ---------- 8. 계정 ---------- */
+screens.push({label:'계정',note:'숫자가 주인공인 프로필. 뱃지는 가로 스크롤로 숨 쉬게, 설정은 목록 맨 아래 조용히.',
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden">
+  <div class="pagepad" style="text-align:center;padding-top:26px">
+    <div class="avatar" style="width:84px;height:84px;margin:0 auto;font-size:34px">🌿</div>
+    <div style="font-size:21px;font-weight:800;letter-spacing:-.4px;margin-top:14px">초록집사</div>
+    <div class="sub" style="margin-top:4px">정원사 · 우리집 온실 Lv.7</div>
+  </div>
+
+  <div class="pagepad" style="margin-top:30px">
+    <div style="display:flex;text-align:center">
+      <div style="flex:1"><div style="font-size:22px;font-weight:800;letter-spacing:-.5px">124</div><div class="tiny" style="margin-top:3px">함께한 날</div></div>
+      <div style="flex:1;border-left:1px solid var(--hair);border-right:1px solid var(--hair)"><div style="font-size:22px;font-weight:800;letter-spacing:-.5px">86</div><div class="tiny" style="margin-top:3px">누적 물주기</div></div>
+      <div style="flex:1"><div style="font-size:22px;font-weight:800;letter-spacing:-.5px">31</div><div class="tiny" style="margin-top:3px">연속 기록</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:38px">
+    <div class="pagepad" style="display:flex;align-items:baseline">
+      <div class="sec" style="flex:1">뱃지</div><span class="tiny">12 / 40</span>
+    </div>
+    <div style="display:flex;gap:16px;overflow:hidden;padding:14px 24px 0">
+      ${[['🌱','첫 식물',1],['💧','물주기 50',1],['🏆','한 달 개근',1],['👨‍👩‍👧','함께 30일',1],['🌸','개화',0],['🔟','식물 10',0]]
+        .map(([e,l,got])=>`
+        <div style="text-align:center;flex:0 0 auto">
+          <div style="width:62px;height:62px;border-radius:999px;display:grid;place-items:center;font-size:25px;
+            background:${got?'radial-gradient(circle at 40% 30%,#f7ecd2,#ecd7a4)':'var(--block)'};
+            ${got?'':'opacity:.5;filter:grayscale(1)'}">${e}</div>
+          <div class="tiny" style="margin-top:7px">${l}</div>
+        </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="pagepad" style="margin-top:38px">
+    <div class="sec">우리집 온실</div>
+    <div class="row" style="min-height:60px">
+      <div class="avatar" style="width:40px;height:40px;font-size:15px;background:var(--sage-soft);color:var(--sage);font-weight:800">초</div>
+      <div class="grow"><div class="t" style="font-size:14.5px">초록집사 <span class="tiny">정원 오너</span></div></div>
+      <span class="tiny">기여 62%</span>
+    </div>
+    <div class="row" style="min-height:60px">
+      <div class="avatar" style="width:40px;height:40px;font-size:15px;background:#f6ecd7;color:#a0793c;font-weight:800">민</div>
+      <div class="grow"><div class="t" style="font-size:14.5px">민수 <span class="tiny">가드너</span></div></div>
+      <span class="tiny">기여 38%</span>
+    </div>
+    <button class="cta quiet" style="margin-top:10px;font-size:14px;padding:14px">가드너 초대하기</button>
+  </div>
+
+  <div class="pagepad" style="margin-top:34px;padding-bottom:20px">
+    ${[['알림','오전 9:00'],['내 식물 공개','공개'],['AI 분석 크레딧','2회 남음'],['설정','']]
+      .map(([t,v])=>`
+      <div class="row" style="min-height:54px">
+        <div class="grow"><div class="t" style="font-size:14.5px;font-weight:600">${t}</div></div>
+        <span class="tiny">${v}</span><span class="chev">›</span>
+      </div>`).join('')}
+  </div>
+</div>
+${nav('me')}
+`});
+
+/* ---------- 렌더 ---------- */
+const g=document.getElementById('gallery');
+screens.forEach((s,i)=>{
+  const d=document.createElement('div');
+  d.className='gitem';
+  d.innerHTML=`<div class="glabel">${i+1}. ${s.label}${s.overlay?'<small>오버레이</small>':''}</div>
+    <div class="phone"><div class="screen">${s.html}</div></div>
+    <p class="gnote">${s.note}</p>`;
+  g.appendChild(d);
+});
+</script>
+</body>
+</html>
