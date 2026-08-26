@@ -474,7 +474,7 @@ function detailHero(st){
     <div class="pagepad" style="display:flex;align-items:center;padding-top:2px">
       <button class="iconbtn plain" style="margin-left:-12px">${ic('back',22)}</button>
       <div style="flex:1"></div>
-      <span class="pill" style="background:rgba(255,255,255,.75);font-weight:800">🎨 꾸미기</span>
+      <span class="pill" data-edit-open style="background:rgba(255,255,255,.75);font-weight:800;cursor:pointer">🎨 꾸미기</span>
       <button class="iconbtn plain" style="margin-right:-12px">${ic('more',22,'#8b928c')}</button>
     </div>
     <div style="padding:6px 24px 30px">
@@ -520,10 +520,10 @@ function detailHero(st){
     </div>
   </div>`;
 }
-screens.push({label:'식물 상세',note:'상세의 상단 전체가 곧 그 식물의 카드입니다 — 꾸미기가 이 영역(배경·패턴·화분·스티커)을 테마링하고, 식물마다 다른 카드를 갖습니다. 아래로 스크롤하면 칸으로 나뉜 상세 섹션: 요약 · 할 일 · 기록 · 도구. 꾸미기를 누르면 다음 화면처럼 그 자리에서 편집 시트가 열립니다.',
+screens.push({label:'식물 상세',interactive:true,note:'상세의 상단 전체가 곧 그 식물의 카드입니다 — 꾸미기가 이 영역(배경·패턴·화분·스티커)을 테마링하고, 식물마다 다른 카드를 갖습니다. 아래로 스크롤하면 칸으로 나뉜 상세 섹션: 요약 · 할 일 · 기록 · 도구. 우상단 🎨 꾸미기를 누르면 아래 섹션 자리가 편집 시트(테마·패턴·사진·스티커, 누끼 토글 포함)로 바뀌고 상단이 실시간으로 바뀝니다 — 이 화면에서 직접 해보세요. 완료를 누르면 섹션으로 돌아옵니다.',
 html:`
 <div id="detailHero" style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(CARD)}</div>
-<div style="flex:1;background:#f1f0ea;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
+<div id="detailSections" style="flex:1;background:#f1f0ea;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
   display:flex;flex-direction:column;gap:12px;padding:24px 16px 16px">
 
   <div style="background:#fff;border-radius:22px;padding:18px 16px">
@@ -571,18 +571,13 @@ html:`
 
   <div style="margin-top:2px"><button class="cta">기록하기</button></div>
 </div>
-${nav('plant')}
-`});
 
-screens.push({label:'식물 상세 · 꾸미기 모드',interactive:true,note:'별도 편집기 화면 없이 상세 그 자리에서 꾸밉니다 — 꾸미기를 누르면 아래 섹션 자리에 편집 시트가 올라오고 상단이 실시간으로 바뀝니다. 사진 탭에서 아바타↔내 사진 전환과 ✂️ 배경 지우기(누끼) 토글을 직접 눌러보세요. 이 화면은 실제로 동작합니다.',
-html:`
-<div id="edHero" style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(CARD)}</div>
-<div style="flex:1;background:#fff;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
-  display:flex;flex-direction:column;padding:10px 24px 24px">
+<div id="detailEdit" style="flex:1;display:none;background:#fff;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
+  flex-direction:column;padding:10px 24px 24px">
   <div style="display:flex;align-items:center;padding:4px 0 2px">
     <span style="font-size:15px;font-weight:800">꾸미기</span>
     <div style="flex:1"></div>
-    <span style="font-size:14px;font-weight:800;color:var(--sage)">완료</span>
+    <span data-edit-close style="font-size:14px;font-weight:800;color:var(--sage);cursor:pointer">완료</span>
   </div>
   <div class="ed-tabs" style="margin-top:10px;justify-content:flex-start">
     <button class="ed-tab on" data-cat="bg">테마</button>
@@ -592,6 +587,7 @@ html:`
   </div>
   <div id="edGrid" class="ed-grid"></div>
 </div>
+${nav('plant')}
 `});
 
 
@@ -869,9 +865,18 @@ function edRender(){
     document.querySelectorAll('.ed-tab').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
   }
   const h1=document.getElementById('detailHero'); if(h1) h1.innerHTML=detailHero(CARD);
-  const h2=document.getElementById('edHero'); if(h2) h2.innerHTML=detailHero(CARD);
 }
 document.addEventListener('click',e=>{
+  if(e.target.closest('[data-edit-open]')){
+    document.getElementById('detailSections').style.display='none';
+    const ed=document.getElementById('detailEdit'); ed.style.display='flex';
+    edRender(); return;
+  }
+  if(e.target.closest('[data-edit-close]')){
+    document.getElementById('detailEdit').style.display='none';
+    document.getElementById('detailSections').style.display='flex';
+    return;
+  }
   const tab=e.target.closest('.ed-tab');
   if(tab){edCat=tab.dataset.cat;edRender();return;}
   const img=e.target.closest('[data-img]');
