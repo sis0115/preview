@@ -21,7 +21,26 @@ h1{font-size:25px;margin:0 0 6px}
 .stagebox{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
 .scene{background:linear-gradient(178deg,#e3f0f7 0%,#ecf3e8 58%,#f3f0e6 100%);
   border-radius:14px;overflow:hidden;position:relative;user-select:none}
-.scene svg{display:block;width:100%;height:auto}
+.scene svg{display:block;width:100%;height:auto;touch-action:none}
+.zoomctl{position:absolute;right:10px;top:56px;display:flex;flex-direction:column;gap:5px}
+.zoomctl button{width:34px;height:34px;border:0;border-radius:11px;background:rgba(255,255,255,.9);
+  box-shadow:var(--shadow);font-size:16px;font-weight:800;color:var(--muted);cursor:pointer}
+
+@media(max-width:720px){
+  .wrap{padding:12px 10px 40px}
+  h1{font-size:19px}
+  .lede{font-size:12.5px;margin-bottom:12px}
+  .stagebox{padding:7px;border-radius:14px;margin:0 -4px}
+  .scene{height:76dvh}
+  .scene svg{width:100%;height:100%}
+  .hudcard{padding:6px 10px}
+  .hudcard .t{font-size:11.5px}
+  .gauge{width:76px}
+  .needcard{padding:6px 10px;font-size:10.5px}
+  .modebar button{padding:8px 11px;font-size:12px}
+  .tray{max-width:62vw;overflow-x:auto}
+  .zoomctl{top:auto;bottom:76px}
+}
 
 .hud{position:absolute;left:12px;top:11px;right:12px;display:flex;gap:8px;align-items:flex-start;pointer-events:none}
 .hudcard{background:rgba(255,255,255,.88);backdrop-filter:blur(6px);border-radius:13px;padding:8px 13px;box-shadow:var(--shadow)}
@@ -89,6 +108,11 @@ h1{font-size:25px;margin:0 0 6px}
       </div>
       <div class="tray" id="tray"></div>
       <div class="toast" id="toast"></div>
+      <div class="zoomctl">
+        <button id="zin">＋</button>
+        <button id="zout">－</button>
+        <button id="zfit" style="font-size:12px">⤢</button>
+      </div>
     </div>
     <div class="legend" id="legend"></div>
   </div>
@@ -461,8 +485,16 @@ function render(){
   all.filter(x=>x.s.kind==='outdoor').forEach(drawPlant);
 
   document.getElementById('garden').innerHTML=`<defs>${DEFS}</defs>${o}`;
-  const svg=document.getElementById('garden'), bb=svg.getBBox();
-  svg.setAttribute('viewBox',`${bb.x-10} ${bb.y-14} ${bb.width+20} ${bb.height+24}`);
+  const svg=document.getElementById('garden');
+  if(!VIEW.full){
+    const bb=svg.getBBox();
+    VIEW.full={x:bb.x-10,y:bb.y-14,w:bb.width+20,h:bb.height+24};
+    const mobile=window.matchMedia('(max-width:720px)').matches;
+    VIEW.cur=mobile
+      ? {x:VIEW.full.x+VIEW.full.w*.19,y:VIEW.full.y+VIEW.full.h*.14,w:VIEW.full.w*.62,h:VIEW.full.h*.62}
+      : {...VIEW.full};
+  }
+  applyView();
 
   /* HUD */
   const need=state.plants.filter(p=>p.slot&&p.state==='thirsty').length;
@@ -493,6 +525,59 @@ function render(){
        <span>배지: <b style="color:#168f80">소</b> · <b style="color:#c8912b">중</b> · <b style="color:#b45a4a">대</b>(위로 두 칸)</span>`;
 }
 
+/* ================= 뷰(줌·팬) ================= */
+const VIEW={full:null,cur:null};
+function applyView(){
+  if(!VIEW.cur)return;
+  document.getElementById('garden').setAttribute('viewBox',
+    `${n1(VIEW.cur.x)} ${n1(VIEW.cur.y)} ${n1(VIEW.cur.w)} ${n1(VIEW.cur.h)}`);
+}
+function zoomAt(factor,cx,cy){ /* cx,cy: svg 좌표 기준점 */
+  const f=VIEW.full,v=VIEW.cur;
+  const nw=Math.max(f.w*.3,Math.min(f.w*1.15,v.w*factor));
+  const k=nw/v.w;
+  v.x=cx-(cx-v.x)*k; v.y=cy-(cy-v.y)*k; v.w=nw; v.h=v.h*k;
+  clampView(); applyView();
+}
+function clampView(){
+  const f=VIEW.full,v=VIEW.cur,mx=f.w*.25,my=f.h*.25;
+  v.x=Math.max(f.x-mx,Math.min(f.x+f.w+mx-v.w,v.x));
+  v.y=Math.max(f.y-my,Math.min(f.y+f.h+my-v.h,v.y));
+}
+const svgEl=document.getElementById('garden');
+function svgPt(clientX,clientY){
+  const r=svgEl.getBoundingClientRect(),v=VIEW.cur;
+  return [v.x+(clientX-r.left)/r.width*v.w, v.y+(clientY-r.top)/r.height*v.h];
+}
+let ptrs=new Map(), dragged=false, pinchD=0;
+svgEl.addEventListener('pointerdown',e=>{ptrs.set(e.pointerId,[e.clientX,e.clientY]);dragged=false;
+  if(ptrs.size===2){const a=[...ptrs.values()];pinchD=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);}});
+svgEl.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId)||!VIEW.cur)return;
+  const prev=ptrs.get(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+  if(ptrs.size===1){
+    const dx=e.clientX-prev[0],dy=e.clientY-prev[1];
+    if(Math.abs(dx)+Math.abs(dy)>2)dragged=true;
+    const r=svgEl.getBoundingClientRect();
+    VIEW.cur.x-=dx/r.width*VIEW.cur.w; VIEW.cur.y-=dy/r.height*VIEW.cur.h;
+    clampView(); applyView();
+  }else if(ptrs.size===2){
+    dragged=true;
+    const a=[...ptrs.values()];
+    const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);
+    if(pinchD>0){const [cx,cy]=svgPt((a[0][0]+a[1][0])/2,(a[0][1]+a[1][1])/2);
+      zoomAt(pinchD/d,cx,cy);}
+    pinchD=d;
+  }});
+const endPtr=e=>{ptrs.delete(e.pointerId);pinchD=0;};
+svgEl.addEventListener('pointerup',endPtr);svgEl.addEventListener('pointercancel',endPtr);
+svgEl.addEventListener('wheel',e=>{e.preventDefault();
+  const [cx,cy]=svgPt(e.clientX,e.clientY);
+  zoomAt(e.deltaY>0?1.12:0.89,cx,cy);},{passive:false});
+document.getElementById('zin').addEventListener('click',()=>{const v=VIEW.cur;zoomAt(.8,v.x+v.w/2,v.y+v.h/2);});
+document.getElementById('zout').addEventListener('click',()=>{const v=VIEW.cur;zoomAt(1.25,v.x+v.w/2,v.y+v.h/2);});
+document.getElementById('zfit').addEventListener('click',()=>{VIEW.cur={...VIEW.full};applyView();});
+
 /* ================= 인터랙션 ================= */
 const scene=document.getElementById('scene');
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
@@ -504,6 +589,7 @@ function fx(clientX,clientY,txt,cls){
   scene.appendChild(d);setTimeout(()=>d.remove(),1000);}
 
 document.addEventListener('click',e=>{
+  if(dragged && e.target.closest('#garden')){dragged=false;return;} /* 팬 직후 탭 무시 */
   const mode=e.target.closest('.modebar button');
   if(mode){state.mode=mode.dataset.mode;state.sel=null;state.traySel=null;
     document.querySelectorAll('.modebar button').forEach(b=>b.classList.toggle('on',b===mode));render();return;}
