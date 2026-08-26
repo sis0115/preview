@@ -105,9 +105,9 @@ a{color:var(--teal)}
 
 <div class="wrap">
 <header class="hero">
-  <p class="eyebrow">Plantgram · Requirements v0.3 · 2026-08-26</p>
+  <p class="eyebrow">Plantgram · Requirements v1.0 · 2026-08-26 확정</p>
   <h1>다음 플랜트그램, 무엇을 만들 것인가</h1>
-  <p>4년 전 실제 운영했던 Flutter 앱 전체(187개 파일)와, 그간 preview 저장소에 쌓인 세 번의 재설계 시도를 전수 분석해 하나의 설계 정의로 종합했습니다. v0.2에서 메뉴 4탭이 확정됐고, v0.3에서 아바타·정원·점수제·가족 계정·AI 분석 서비스의 설계안이 더해졌습니다.</p>
+  <p>4년 전 실제 운영했던 Flutter 앱 전체(187개 파일)와, 그간 preview 저장소에 쌓인 세 번의 재설계 시도를 전수 분석해 하나의 설계 정의로 종합했습니다. 메뉴 4탭, 게임화·정원·가족 계정·AI 설계에 이어 결정 보드로 전 항목이 확정된 v1.0입니다. 다음 단계는 틸/그린 두 컬러 안의 화면 목업입니다.</p>
   <div class="meta">
     <span>분석: <b>레거시 96,500라인 + preview 3개 산출물</b></span>
     <span>문서: <b>preview/plantgram2/requirements-2026-08-25/</b></span>
@@ -294,24 +294,25 @@ a{color:var(--teal)}
   <div class="mrow"><span class="mtag">M4</span><span class="mdesc"><b>소셜 라이트</b> — 내 식물 공개, 키우는 사람들, 식물별 커뮤니티(+신고·차단)</span></div>
 </div>
 
-<h2><span class="no">05</span>결정이 필요한 항목</h2>
-<p class="lede">D-4·D-9·D-11·D-12는 확정됐습니다. 남은 항목(D-1~D-3, D-5~D-8, D-10, D-13)에 답하면 v1.0으로 확정됩니다. <a href="decisions.html"><b>→ 결정 보드에서 선택하고 복사하기</b></a></p>
-
-<div class="dgrid">
-  <div class="dcard"><div class="dno">D-9 · 꾸미기 해금 <span class="chip keep">확정</span></div><div class="q">꾸미기 아이템을 어떻게 얻게 할까?</div><div class="opts">ⓐ 전부 무료 · ⓑ 활동 포인트로 해금 · ⓒ 일부 유료</div><div class="rec">✔ ⓐ 전부 무료 — 일부 파츠는 레벨로 개방(무료 범위 내 수집 요소)</div></div>
-  <div class="dcard"><div class="dno">D-10 · 피드 구조 <span class="chip mod">대기</span></div><div class="q">팔로우 없이 주제 중심? 팔로우 부활?</div><div class="opts">ⓐ 주제(식물종·태그) 중심, 토스식 · ⓑ 팔로우 부활</div><div class="rec">추천 ⓐ — 레거시 팔로우 그래프 실패 경험, 토스 커뮤니티도 팔로우 없음</div></div>
-  <div class="dcard"><div class="dno">D-11 · 공동 관리 <span class="chip keep">확정</span></div><div class="q">공유 구조를 어떻게 잡을까?</div><div class="opts">부모-자식 계정 · 정원 단위 공유 · GP 합산</div><div class="rec">✔ 한 계정이 절대 부모(소유자), 자식은 합류해 공동 관리, 점수는 정원에 합산되어 공동 레벨업</div></div>
-  <div class="dcard"><div class="dno">D-12 · 집사 레벨 <span class="chip keep">확정</span></div><div class="q">식물 레벨 외에 유저(집사) 레벨도 둘까?</div><div class="opts">ⓐ 식물 레벨만 · ⓑ 집사 레벨 병행</div><div class="rec">✔ ⓑ 병행 — 식물 GP 합산 = 정원(계정) 레벨 + 칭호</div></div>
-  <div class="dcard"><div class="dno">D-13 · AI 과금 <span class="chip mod">NEW</span></div><div class="q">이미지 분석(AI-A/B)을 어떻게 과금할까?</div><div class="opts">ⓐ 무료 크레딧 월 N회 + 구독 · ⓑ 회당 결제 · ⓒ 전면 구독</div><div class="rec">추천 ⓐ — 무료로 가치 체험 후 구독 전환. 경량 AI(자연어 기록·요약)는 무료 유지</div></div>
-  <div class="dcard"><div class="dno">D-1 · 로그인</div><div class="q">Kakao 단일로 충분한가?</div><div class="opts">ⓐ Kakao만 · ⓑ Kakao+Apple · ⓒ Kakao+Google+Apple</div><div class="rec">추천 ⓑ — iOS 출시 시 Apple 로그인은 심사 필수 요건</div></div>
-  <div class="dcard"><div class="dno">D-2 · 게스트 모드</div><div class="q">비로그인 식물관리를 부활시킬까?</div><div class="opts">ⓐ 로그인 필수 · ⓑ 게스트 허용(레거시 방식)</div><div class="rec">추천 ⓐ — 단일 원본 구조와 충돌, MVP 단순화</div></div>
-  <div class="dcard"><div class="dno">D-3 · 기록 유형</div><div class="q">6종 확정? 레거시 8종 활동 복원?</div><div class="opts">ⓐ 6종 · ⓑ 8종(통풍·분무·가지·관찰 추가)</div><div class="rec">추천 ⓐ — 세분 활동은 자연어 기록+메모로 흡수</div></div>
-  <div class="dcard"><div class="dno">D-4 · 레벨 시스템 <span class="chip keep">확정</span></div><div class="q">plantgram2의 Lv.N 게임화를 유지할까?</div><div class="opts">ⓐ 유지 · ⓑ 제거</div><div class="rec">✔ ⓐ 유지 확정 — U-2 게임화 축의 기반으로 확장</div></div>
-  <div class="dcard"><div class="dno">D-5 · 날씨 카드</div><div class="q">OpenWeather 홈 카드를 유지할까?</div><div class="opts">ⓐ 유지 · ⓑ 제거</div><div class="rec">추천 ⓐ — 이미 구현, 홈의 생동감 요소</div></div>
-  <div class="dcard"><div class="dno">D-6 · 브랜드 컬러</div><div class="q">틸 vs 그린</div><div class="opts">ⓐ 틸 #168f80(레거시 teal 계승) · ⓑ 그린 #2f8f5b</div><div class="rec">취향 결정 — 목업 비교 후 선택 권장</div></div>
-  <div class="dcard"><div class="dno">D-7 · 수익화</div><div class="q">MVP에 광고 슬롯을 미리 설계할까?</div><div class="opts">ⓐ 무수익 · ⓑ 슬롯 설계만 선반영</div><div class="rec">D-13 구독 도입 시 "광고 없이 AI 구독"으로 사실상 방향 결정 — 광고는 불필요해짐</div></div>
-  <div class="dcard"><div class="dno">D-8 · 개발 베이스</div><div class="q">plantgram2 소스를 이어서? 새로 시작?</div><div class="opts">ⓐ plantgram2 계속 · ⓑ 신규(설계만 계승)</div><div class="rec">v0.2 기준 ⓑ로 기울어짐 — 피드·게임화·공동 관리는 plantgram2에 없던 축. 관리 코어 코드는 참조 자산</div></div>
-</div>
+<h2><span class="no">05</span>결정 완료 — v1.0 확정</h2>
+<p class="lede">2026-08-26 결정 보드를 통해 전 항목이 확정되어 이 요건 정의는 <b>v1.0</b>입니다. 통합 최종 문서는 <code>07_final_requirements_v1.0.md</code>.</p>
+<div class="tablewrap"><table>
+<tr><th>#</th><th>항목</th><th>확정 내용</th></tr>
+<tr><td class="num">D-1</td><td>로그인</td><td><span class="chip keep">확정</span> Kakao + Google + Apple 소셜 3종</td></tr>
+<tr><td class="num">D-2</td><td>게스트 모드</td><td><span class="chip keep">확정</span> 로그인 필수 (게스트 없음)</td></tr>
+<tr><td class="num">D-3</td><td>기록 유형</td><td><span class="chip keep">확정</span> 6종 — 물·영양제·분갈이·메모·상태·사진</td></tr>
+<tr><td class="num">D-4</td><td>레벨 시스템</td><td><span class="chip keep">확정</span> 유지·확장 (GP 기반)</td></tr>
+<tr><td class="num">D-5</td><td>날씨 카드</td><td><span class="chip keep">확정</span> 유지 — 정원 뷰 날씨 연출과 연동</td></tr>
+<tr><td class="num">D-6</td><td>브랜드 컬러</td><td><span class="chip hold">목업 이관</span> 틸 #168f80 vs 그린 #2f8f5b 두 안을 목업으로 비교 후 결정</td></tr>
+<tr><td class="num">D-7</td><td>광고</td><td><span class="chip keep">확정</span> 없음 — 수익화는 AI 구독으로</td></tr>
+<tr><td class="num">D-8</td><td>개발 베이스</td><td><span class="chip keep">확정</span> 신규 시작 (설계·코드 참조만 계승)</td></tr>
+<tr><td class="num">D-9</td><td>꾸미기</td><td><span class="chip keep">확정</span> 전부 무료 (일부 파츠 레벨 개방)</td></tr>
+<tr><td class="num">D-10</td><td>피드 구조</td><td><span class="chip keep">확정</span> 팔로우 없음, 주제(식물종·태그) 중심</td></tr>
+<tr><td class="num">D-11</td><td>공동 관리</td><td><span class="chip keep">확정</span> 부모-자식 계정 · 정원 단위 · GP 합산 공동 레벨업</td></tr>
+<tr><td class="num">D-12</td><td>집사 레벨</td><td><span class="chip keep">확정</span> 병행 — 정원(계정) 레벨 + 칭호</td></tr>
+<tr><td class="num">D-13</td><td>AI 과금</td><td><span class="chip keep">확정</span> 무료 크레딧 월 N회 + 구독 (경량 AI 무료)</td></tr>
+</table></div>
+<p style="font-size:13.5px;color:var(--muted)">보류 메모: 정원 배경·식물 아바타 아트 스타일은 사용자가 스타일 이미지 공유 후 확정. 다음 액션: <b>틸/그린 두 안 병행 화면 목업 제작</b> → D-6 최종 결정.</p>
 
 <footer>
   근거 문서: <code>preview/plantgram2/requirements-2026-08-25/</code> (01 레거시 인벤토리 · 02 preview 정리 · 03 판정 매트릭스 · 04 설계 정의 초안) — 브랜치 <code>claude/plantgram-requirements-design-cuqasr</code>
