@@ -364,9 +364,9 @@ function gardenBlock(h=300){
 const CARD={bg:'sage',pattern:'none',pot:'#c98a6a',stickers:[],font:'basic',inkColor:'auto',img:'avatar',cutout:true};
 const STICKER_SET=['🏆','⭐','💧','🎀','✨','🌸','🦋','🍀','🐞','💚','🌈','📌'];
 const STICKER_POS=[
-  {css:'right:44px;top:2px',rot:12},{css:'left:34px;top:58px',rot:-12},
-  {css:'right:24px;top:148px',rot:8},{css:'left:46px;top:196px',rot:-8},
-  {css:'right:66px;top:238px',rot:14},{css:'left:24px;top:2px',rot:-14}];
+  {css:'right:-8px;top:54px',rot:14},{css:'left:-12px;top:148px',rot:-12},
+  {css:'right:8px;top:250px',rot:8},{css:'left:12px;top:56px',rot:-10},
+  {css:'right:-10px;top:336px',rot:12},{css:'left:-8px;top:300px',rot:-14}];
 const FONTS={
   basic:{name:'기본',fam:"-apple-system,'Apple SD Gothic Neo',sans-serif",w:800,size:26},
   serif:{name:'명조',fam:"'Gowun Batang',Georgia,serif",w:700,size:25},
@@ -382,21 +382,7 @@ const CARD_PAT={
   grid:'background-image:linear-gradient(rgba(255,255,255,.4) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.4) 1.5px,transparent 1.5px);background-size:26px 26px;'
 };
 const CARD_POTS=['#c98a6a','#8fa89b','#dcc9a8','#b7a3c9','#e0a08c','#9fb8d0'];
-function barcode(){let s='';for(let i=0;i<14;i++){s+=`<i style="height:${8+((i*7)%9)}px"></i>`;}return s;}
-function plantCard(st){
-  return `<div class="tcard" style="background:${CARD_BG[st.bg]};${CARD_PAT[st.pattern]}">
-    <div class="hole"></div>
-    <div class="brand"><span class="bl">PLANTGRAM</span><span class="bc">${barcode()}</span></div>
-    <div class="plate"><span class="nm">몬스테라</span><span class="hd">@초록집사</span></div>
-    <div class="bubble">${plant('monstera',132,st.pot)}
-      ${st.sticker&&st.sticker!=='없음'?`<span class="sticker" style="right:12px;top:10px">${st.sticker}</span>`:''}
-    </div>
-    <div class="cfoot">
-      <span class="cpill">Lv.4</span><span class="cpill">함께한 지 124일</span>
-      <span class="sp">Monstera deliciosa</span>
-    </div>
-  </div>`;
-}
+function barcode(c){let s='';for(let i=0;i<14;i++){s+=`<i style="height:${8+((i*7)%9)}px${c?`;background:${c}`:''}"></i>`;}return s;}
 
 const screens=[];
 
@@ -481,57 +467,80 @@ ${nav('plant')}
 
 /* ---------- 3. 식물 상세 ---------- */
 /* 상세 화면 자체가 테마 캔버스 — 기본은 아이덴티티 세이지 */
-function detailHero(st){
+/* ---------- 식물 상세: 꾸민 카드 스테이지 + 슬라이드 시트 ---------- */
+const PAGE_BG={sage:'#3d564b',blush:'#f9e9ed',mint:'#e7f4ec',cream:'#faf3e3',lav:'#efecf7',sky:'#e9f2f8'};
+function cardFace(st){
+  const dark=!!CARD_DARK[st.bg];
+  const ink=dark?'#fff':'#20241f';
+  const faint=dark?'rgba(255,255,255,.55)':'rgba(32,36,31,.45)';
+  const F=FONTS[st.font]||FONTS.basic;
+  const nameColor=(st.inkColor&&st.inkColor!=='auto')?INKS[st.inkColor]:ink;
+  let img='';
+  if(st.img==='photo' && !st.cutout){
+    img=`<div style="position:absolute;inset:10px;border-radius:16px;overflow:hidden;
+        background:linear-gradient(168deg,#e3e7e2 0%,#d3dbd2 55%,#c7d0c6 100%)">
+      <div style="position:absolute;left:9%;top:9%;width:36%;height:52%;border-radius:6px;background:linear-gradient(165deg,#eef4f6,#d8e4e8);box-shadow:inset 0 0 0 4px #f2efe8"></div>
+      <div style="position:absolute;left:0;right:0;bottom:16%;height:3px;background:rgba(120,110,90,.25)"></div>
+      <div style="position:absolute;left:50%;bottom:6%;transform:translateX(-50%)">${plant('monstera',118,st.pot)}</div>
+      <span style="position:absolute;left:9px;bottom:8px;background:rgba(0,0,0,.4);color:#fff;font-size:9.5px;font-weight:700;border-radius:99px;padding:3px 9px">📷 내 사진</span>
+    </div>`;
+  }else if(st.img==='photo' && st.cutout){
+    img=`<span style="filter:drop-shadow(0 14px 18px rgba(30,40,32,.25))">${plant('monstera',148,st.pot)}</span>
+      <span style="position:absolute;left:12px;bottom:10px;background:rgba(0,0,0,.30);color:#fff;font-size:9.5px;font-weight:700;border-radius:99px;padding:3px 9px">✂️ 내 사진</span>`;
+  }else{
+    img=`<span style="filter:drop-shadow(0 12px 16px rgba(30,40,32,.18))">${plant('monstera',140,st.pot)}</span>`;
+  }
+  const stickers=(st.stickers||[]).map((e,i)=>{const p=STICKER_POS[i%STICKER_POS.length];
+    return `<span style="position:absolute;${p.css};font-size:33px;line-height:1;transform:rotate(${p.rot}deg);z-index:3;
+      filter:drop-shadow(0 0 1.6px #fff) drop-shadow(0 0 1.6px #fff) drop-shadow(0 7px 9px rgba(0,0,0,.25))">${e}</span>`;}).join('');
+  return `<div style="position:relative;width:288px;margin:0 auto;filter:drop-shadow(0 26px 34px rgba(20,30,24,${dark?'.38':'.22'}))">
+    <div class="tcard" style="background:${CARD_BG[st.bg]};${CARD_PAT[st.pattern]};padding:15px 16px 16px;border-radius:26px;
+      box-shadow:inset 0 0 0 5px rgba(255,255,255,${dark?'.14':'.6'})">
+      <div class="hole" style="background:rgba(0,0,0,${dark?'.28':'.10'})"></div>
+      <div class="brand" style="color:${ink}"><span class="bl">PLANTGRAM</span>
+        <span class="bc">${barcode(dark?'rgba(255,255,255,.72)':'rgba(0,0,0,.55)')}</span></div>
+      <div class="bubble" style="height:226px;margin-top:12px">
+        ${img}
+        <svg viewBox="0 0 24 24" style="position:absolute;left:13px;bottom:12px;width:20px;opacity:.5" fill="none" stroke="#7a8a7e" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>
+        <svg viewBox="0 0 40 14" style="position:absolute;right:15px;top:13px;width:32px;opacity:.45" fill="none" stroke="#7a8a7e" stroke-width="2.4" stroke-linecap="round"><path d="M2 10c5-8 8 6 13-2s8 6 13-2"/></svg>
+      </div>
+      <div style="margin-top:12px;text-align:center">
+        <div style="font-family:Georgia,serif;font-style:italic;font-size:11.5px;color:${faint}">Monstera deliciosa</div>
+        <div style="font-family:${F.fam};font-weight:${F.w};font-size:${Math.round(F.size*.85)}px;color:${nameColor};letter-spacing:-.5px;line-height:1.15;margin-top:1px">몬스테라</div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:6px;margin-top:10px">
+        <span class="cpill" style="background:rgba(255,255,255,${dark?'.2':'.75'});color:${dark?'#fff':'#3c463e'}">Lv.4</span>
+        <span class="cpill" style="background:rgba(255,255,255,${dark?'.2':'.75'});color:${dark?'#fff':'#3c463e'}">D+124</span>
+        <span class="cpill" style="background:rgba(255,255,255,${dark?'.2':'.75'});color:var(--pink)">💧 D-1</span>
+      </div>
+    </div>
+    <span style="position:absolute;left:-13px;top:44px;width:74px;height:23px;transform:rotate(-9deg);z-index:2;opacity:.9;
+      background:repeating-linear-gradient(90deg,rgba(255,255,255,.6) 0 6px,rgba(255,255,255,.42) 6px 12px);box-shadow:0 2px 5px rgba(0,0,0,.10)"></span>
+    <span style="position:absolute;right:-12px;bottom:78px;width:66px;height:21px;transform:rotate(10deg);z-index:2;opacity:.9;
+      background:repeating-linear-gradient(90deg,rgba(214,148,166,.55) 0 6px,rgba(214,148,166,.38) 6px 12px);box-shadow:0 2px 5px rgba(0,0,0,.10)"></span>
+    ${stickers}
+  </div>`;
+}
+function stageInner(st,live=true){
   const dark=!!CARD_DARK[st.bg];
   const ink=dark?'#fff':'#191f1b';
   const sub=dark?'rgba(255,255,255,.72)':'rgba(25,31,27,.55)';
-  const faint=dark?'rgba(255,255,255,.5)':'rgba(25,31,27,.38)';
-  let img='';
-  if(st.img==='photo' && !st.cutout){
-    img=`<div style="width:238px;height:190px;margin:6px auto 0;border-radius:20px;overflow:hidden;position:relative;
-        background:linear-gradient(168deg,#e3e7e2 0%,#d3dbd2 55%,#c7d0c6 100%);box-shadow:0 16px 38px rgba(0,0,0,${dark?'.22':'.10'})">
-      <div style="position:absolute;left:9%;top:9%;width:36%;height:52%;border-radius:6px;background:linear-gradient(165deg,#eef4f6,#d8e4e8);box-shadow:inset 0 0 0 4px #f2efe8"></div>
-      <div style="position:absolute;left:0;right:0;bottom:16%;height:3px;background:rgba(120,110,90,.25)"></div>
-      <div style="position:absolute;left:50%;bottom:5%;transform:translateX(-50%)">${plant('monstera',108,st.pot)}</div>
-      <span style="position:absolute;left:10px;bottom:8px;background:rgba(0,0,0,.4);color:#fff;font-size:10px;font-weight:700;border-radius:99px;padding:3px 9px">내 사진</span>
-    </div>`;
-  }else if(st.img==='photo' && st.cutout){
-    img=`<div style="height:196px;display:grid;place-items:center;margin-top:4px">
-      <span style="filter:drop-shadow(0 18px 24px rgba(0,0,0,${dark?'.35':'.2'}))">${plant('monstera',140,st.pot)}</span>
-    </div>`;
-  }else{
-    img=`<div style="width:184px;height:184px;border-radius:999px;margin:4px auto 0;display:grid;place-items:center;
-        background:radial-gradient(circle at 42% 32%,#f4f6f1,#e3ebe1);box-shadow:0 18px 44px rgba(0,0,0,${dark?'.20':'.10'})">
-      ${plant('monstera',118,st.pot)}
-    </div>`;
-  }
-  const F=FONTS[st.font]||FONTS.basic;
-  const nameColor=(st.inkColor&&st.inkColor!=='auto')?INKS[st.inkColor]:ink;
-  const stickers=(st.stickers||[]).map((e,i)=>{const p=STICKER_POS[i%STICKER_POS.length];
-    return `<span style="position:absolute;${p.css};font-size:31px;filter:drop-shadow(0 5px 9px rgba(0,0,0,.22));transform:rotate(${p.rot}deg);z-index:2">${e}</span>`;}).join('');
-  return `<div style="background:${CARD_BG[st.bg]};${CARD_PAT[st.pattern]}">
+  const faint=dark?'rgba(255,255,255,.45)':'rgba(25,31,27,.35)';
+  return `<div style="position:absolute;inset:0;background:${PAGE_BG[st.bg]};${CARD_PAT[st.pattern]}">
     <div class="status" style="color:${ink}"><span>9:41</span><span class="r" style="color:${faint}">●●●●  ᯤ  ▮</span></div>
     <div class="pagepad" style="display:flex;align-items:center;padding-top:2px">
       <button class="iconbtn plain" style="margin-left:-12px;color:${ink}">${ic('back',22)}</button>
       <div style="flex:1"></div>
-      <span class="pill" data-edit-open style="background:rgba(255,255,255,${dark?'.18':'.8'});color:${ink};font-weight:800;cursor:pointer;backdrop-filter:blur(6px)">🎨 꾸미기</span>
+      <span class="pill" ${live?'data-edit-open':''} style="background:rgba(255,255,255,${dark?'.18':'.85'});color:${dark?'#fff':'#191f1b'};font-weight:800;cursor:pointer;backdrop-filter:blur(6px)">🎨 꾸미기</span>
       <button class="iconbtn plain" style="margin-right:-12px;color:${sub}">${ic('more',22)}</button>
     </div>
-    <div style="text-align:center;padding:2px 24px 36px;position:relative">
-      ${stickers}
-      ${img}
-      <div style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:${faint};margin-top:20px">Monstera deliciosa</div>
-      <div style="font-family:${F.fam};font-weight:${F.w};font-size:${F.size}px;letter-spacing:-.6px;margin-top:2px;color:${nameColor};line-height:1.2">몬스테라</div>
-      <div style="font-size:13.5px;color:${sub};margin-top:8px">함께한 지 124일 · 잘 자라고 있어요 · Lv.4</div>
-    </div>
+    <div style="padding-top:14px">${cardFace(st)}</div>
+    <div style="text-align:center;margin-top:20px;color:${faint};font-size:12px;font-weight:700;letter-spacing:-.2px">
+      <div style="font-size:15px;line-height:1;margin-bottom:3px">⌃</div>위로 올려서 자세히 보기</div>
   </div>`;
 }
-screens.push({label:'식물 상세',interactive:true,note:'식물 상세 화면 자체를 카드처럼 꾸밉니다 — 별도의 카드를 관리하지 않습니다. 기본은 아이덴티티 세이지 그린이고, 꾸미면 그 테마가 곧 이 식물의 상세 화면이 됩니다. 아래로 스크롤하면 칸으로 나뉜 상세 섹션: 요약 · 할 일 · 기록 · 도구. 우상단 🎨 꾸미기를 누르면 아래 섹션 자리가 편집 시트(테마·패턴·사진·스티커·글자)로 바뀌고 상단이 실시간으로 바뀝니다 — 스티커는 여러 개 붙일 수 있고, 글자 탭에서 이름 서체(명조·라운드·손글씨)와 글자색을 바꿉니다. 사진 탭에는 ✂️ 누끼 토글. 이 화면에서 직접 해보세요. 완료를 누르면 섹션으로 돌아옵니다.',
-html:`
-<div id="detailHero" style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(CARD)}</div>
-<div id="detailSections" style="flex:1;background:#f1f0ea;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
-  display:flex;flex-direction:column;gap:12px;padding:24px 16px 16px">
-
+function detailSections(){
+  return `
   <div style="background:#fff;border-radius:22px;padding:18px 16px">
     <div style="display:flex;text-align:center">
       <div style="flex:1"><div class="tiny">물주기</div><div style="font-size:15.5px;font-weight:800;margin-top:4px">7일마다</div></div>
@@ -539,13 +548,11 @@ html:`
       <div style="flex:1"><div class="tiny">다음 분갈이</div><div style="font-size:15.5px;font-weight:800;margin-top:4px">64일 뒤</div></div>
     </div>
   </div>
-
   <div style="background:var(--pink-soft);border-radius:22px;padding:16px 18px;display:flex;align-items:center;gap:12px">
     <span style="color:var(--pink)">${ic('drop',20)}</span>
     <div style="flex:1;font-size:14px;font-weight:700;color:var(--pink)">물 줄 날이 하루 지났어요</div>
     <span style="font-size:13.5px;font-weight:800;color:var(--pink)">물주기</span>
   </div>
-
   <div style="background:#fff;border-radius:22px;padding:6px 16px 10px">
     <div style="display:flex;align-items:baseline;padding:12px 2px 0">
       <div class="sec" style="flex:1;font-size:15px">기록</div><span class="tiny">전체보기</span>
@@ -561,7 +568,6 @@ html:`
         <span class="tiny" style="color:var(--sage);font-weight:700">${gp} GP</span>
       </div>`).join('')}
   </div>
-
   <div style="display:flex;gap:12px">
     <div style="flex:1;background:#fff;border-radius:22px;padding:15px;display:flex;align-items:center;gap:10px">
       <div style="font-size:19px">🎨</div>
@@ -574,52 +580,72 @@ html:`
       <span class="chev">›</span>
     </div>
   </div>
-
-  <div style="margin-top:2px"><button class="cta">기록하기</button></div>
-</div>
-
-<div id="detailEdit" style="flex:1;display:none;background:#fff;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
-  flex-direction:column;padding:10px 24px 24px">
-  <div style="display:flex;align-items:center;padding:4px 0 2px">
-    <span style="font-size:15px;font-weight:800">꾸미기</span>
-    <div style="flex:1"></div>
-    <span data-edit-close style="font-size:14px;font-weight:800;color:var(--sage);cursor:pointer">완료</span>
+  <div style="margin-top:2px;flex:0 0 auto"><button class="cta">기록하기</button></div>`;
+}
+screens.push({label:'식물 상세 — 카드 진입',interactive:true,note:'상세에 들어오면 먼저 내가 꾸민 카드가 무대 위에 뜹니다(부동산 앱처럼). 아래 시트를 위로 끌어올리면(핸들 드래그 또는 탭) 요약·할 일·기록·도구 본 내용이 올라오고, 다시 내리면 카드로 돌아갑니다. 🎨 꾸미기를 누르면 시트 자리가 편집 시트(테마·패턴·사진·스티커·글자)로 바뀌고 카드가 실시간으로 바뀝니다 — 이 화면에서 직접 해보세요.',
+html:`
+<div id="detailWrap" style="flex:1;position:relative;overflow:hidden;border-radius:39px">
+  <div id="detailStage" style="position:absolute;inset:0">${stageInner(CARD)}</div>
+  <div id="detailSheet" style="position:absolute;left:0;right:0;top:0;height:100%;z-index:5;
+      background:#f1f0ea;border-radius:28px 28px 0 0;box-shadow:0 -14px 44px rgba(20,30,24,.20);
+      transform:translateY(calc(100% - 176px));display:flex;flex-direction:column">
+    <div id="sheetHandle" style="cursor:grab;touch-action:none;user-select:none;padding:0 16px;flex:0 0 auto;background:#fff;border-radius:28px 28px 0 0">
+      <div class="grab" style="margin:10px auto 12px"></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:0 6px 15px">
+        <span style="font-size:16.5px;font-weight:800;letter-spacing:-.3px">몬스테라</span>
+        <span class="cpill" style="background:var(--block)">Lv.4</span>
+        <div style="flex:1"></div>
+        <span class="cpill" style="background:var(--pink-soft);color:var(--pink)">💧 하루 지남</span>
+      </div>
+    </div>
+    <div id="sheetBody" style="flex:1;overflow:hidden;padding:12px 16px 22px;display:flex;flex-direction:column;gap:12px">
+      ${detailSections()}
+    </div>
   </div>
-  <div class="ed-tabs" style="margin-top:10px;justify-content:flex-start">
-    <button class="ed-tab on" data-cat="bg">테마</button>
-    <button class="ed-tab" data-cat="pattern">패턴</button>
-    <button class="ed-tab" data-cat="photo">사진</button>
-    <button class="ed-tab" data-cat="sticker">스티커</button>
-    <button class="ed-tab" data-cat="text">글자</button>
+  <div id="detailEdit" style="position:absolute;left:0;right:0;bottom:0;z-index:6;display:none;background:#fff;border-radius:28px 28px 0 0;
+    box-shadow:0 -14px 44px rgba(20,30,24,.20);flex-direction:column;padding:10px 24px 26px">
+    <div style="display:flex;align-items:center;padding:4px 0 2px">
+      <span style="font-size:15px;font-weight:800">꾸미기</span>
+      <div style="flex:1"></div>
+      <span data-edit-close style="font-size:14px;font-weight:800;color:var(--sage);cursor:pointer">완료</span>
+    </div>
+    <div class="ed-tabs" style="margin-top:10px;justify-content:flex-start">
+      <button class="ed-tab on" data-cat="bg">테마</button>
+      <button class="ed-tab" data-cat="pattern">패턴</button>
+      <button class="ed-tab" data-cat="photo">사진</button>
+      <button class="ed-tab" data-cat="sticker">스티커</button>
+      <button class="ed-tab" data-cat="text">글자</button>
+    </div>
+    <div id="edGrid" class="ed-grid"></div>
   </div>
-  <div id="edGrid" class="ed-grid"></div>
 </div>
-${nav('plant')}
 `});
 
-/* 개념 확인용: 같은 상세 화면의 '꾸미기 열림' 상태 (핑크 도트로 꾸민 예시) */
+/* 개념 확인용: 같은 화면의 '꾸미기 열림' 상태 (핑크 도트 + 스티커 + 손글씨 예시) */
 const EX={bg:'blush',pattern:'dots',pot:'#c98a6a',stickers:['🏆','🌸','✨'],font:'hand',inkColor:'pink',img:'avatar',cutout:true};
-screens.push({label:'식물 상세 — 꾸미기 열림 (같은 화면)',note:'별도 화면이 아닙니다 — 3번과 같은 화면의 두 번째 상태입니다. 🎨 꾸미기를 누르면 아래 섹션 자리가 이렇게 편집 시트로 바뀌고, 고르는 즉시 화면 전체가 바뀝니다. 예시는 핑크 도트 테마에 스티커 여러 개(🏆🌸✨)를 붙이고 이름을 손글씨 서체·핑크색으로 꾸민 모습. 실제 동작은 3번에서 해보세요.',
+screens.push({label:'식물 상세 — 꾸미기 열림 (같은 화면)',note:'별도 화면이 아닙니다 — 3번과 같은 화면의 편집 상태입니다. 🎨 꾸미기를 누르면 시트 자리가 편집 시트로 바뀌고, 고르는 즉시 카드가 바뀝니다. 예시는 핑크 도트 테마 카드에 스티커(🏆🌸✨)를 붙이고 이름을 손글씨·핑크로 꾸민 모습. 실제 동작은 3번에서 해보세요.',
 html:`
-<div style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(EX)}</div>
-<div style="flex:1;background:#fff;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
-  display:flex;flex-direction:column;padding:10px 24px 24px">
-  <div style="display:flex;align-items:center;padding:4px 0 2px">
-    <span style="font-size:15px;font-weight:800">꾸미기</span>
-    <div style="flex:1"></div>
-    <span style="font-size:14px;font-weight:800;color:var(--sage)">완료</span>
+<div style="flex:1;position:relative;overflow:hidden;border-radius:39px">
+  <div style="position:absolute;inset:0">${stageInner(EX,false)}</div>
+  <div style="position:absolute;left:0;right:0;bottom:0;z-index:6;background:#fff;border-radius:28px 28px 0 0;
+    box-shadow:0 -14px 44px rgba(20,30,24,.20);padding:10px 24px 24px">
+    <div style="display:flex;align-items:center;padding:4px 0 2px">
+      <span style="font-size:15px;font-weight:800">꾸미기</span>
+      <div style="flex:1"></div>
+      <span style="font-size:14px;font-weight:800;color:var(--sage)">완료</span>
+    </div>
+    <div class="ed-tabs" style="margin-top:10px;justify-content:flex-start">
+      <button class="ed-tab">테마</button>
+      <button class="ed-tab">패턴</button>
+      <button class="ed-tab">사진</button>
+      <button class="ed-tab on">스티커</button>
+      <button class="ed-tab">글자</button>
+    </div>
+    <div class="ed-grid">
+      ${STICKER_SET.slice(0,8).map(x=>`<div class="ed-opt ${EX.stickers.includes(x)?'on':''}" style="font-size:26px">${x}</div>`).join('')}
+    </div>
+    <p class="tiny" style="margin-top:14px">스티커는 <b style="color:var(--sub)">여러 개</b> 붙일 수 있고, 글자 탭에서 <b style="color:var(--sub)">이름 서체·글자색</b>을 바꿉니다 · 사진 탭에는 ✂️ 배경 지우기(누끼) 토글</p>
   </div>
-  <div class="ed-tabs" style="margin-top:10px;justify-content:flex-start">
-    <button class="ed-tab">테마</button>
-    <button class="ed-tab">패턴</button>
-    <button class="ed-tab">사진</button>
-    <button class="ed-tab on">스티커</button>
-    <button class="ed-tab">글자</button>
-  </div>
-  <div class="ed-grid">
-    ${STICKER_SET.slice(0,8).map(s=>`<div class="ed-opt ${EX.stickers.includes(s)?'on':''}" style="font-size:26px">${s}</div>`).join('')}
-  </div>
-  <p class="tiny" style="margin-top:14px">스티커는 <b style="color:var(--sub)">여러 개</b> 골라 붙일 수 있고, 글자 탭에서는 <b style="color:var(--sub)">이름 서체와 글자색</b>을 바꿉니다 · 사진 탭에는 ✂️ 배경 지우기(누끼) 토글</p>
 </div>
 `});
 
@@ -879,7 +905,7 @@ function edRender(){
           <span data-stk-clear style="font-size:12.5px;font-weight:800;color:var(--sub);cursor:pointer;white-space:nowrap">모두 지우기</span>
         </div>`;
       document.querySelectorAll('.ed-tab[data-cat]').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
-      const h0=document.getElementById('detailHero'); if(h0) h0.innerHTML=detailHero(CARD);
+      updStage();
       return;
     }
     if(edCat==='text'){
@@ -903,7 +929,7 @@ function edRender(){
         </div>
         <div class="tiny" style="margin-top:10px;padding:0 4px">자동은 테마에 맞는 색으로 · 식물 이름의 서체와 색이 바뀌어요</div>`;
       document.querySelectorAll('.ed-tab[data-cat]').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
-      const h0=document.getElementById('detailHero'); if(h0) h0.innerHTML=detailHero(CARD);
+      updStage();
       return;
     }
     if(edCat==='photo'){
@@ -934,17 +960,18 @@ function edRender(){
     } else { grid.style.display='grid'; grid.innerHTML=h; }
     document.querySelectorAll('.ed-tab[data-cat]').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
   }
-  const h1=document.getElementById('detailHero'); if(h1) h1.innerHTML=detailHero(CARD);
+  updStage();
 }
+function updStage(){const st=document.getElementById('detailStage'); if(st) st.innerHTML=stageInner(CARD);}
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-edit-open]')){
-    document.getElementById('detailSections').style.display='none';
-    const ed=document.getElementById('detailEdit'); ed.style.display='flex';
+    hideSheet();
+    const ed=document.getElementById('detailEdit'); if(ed) ed.style.display='flex';
     edRender(); return;
   }
   if(e.target.closest('[data-edit-close]')){
-    document.getElementById('detailEdit').style.display='none';
-    document.getElementById('detailSections').style.display='flex';
+    const ed=document.getElementById('detailEdit'); if(ed) ed.style.display='none';
+    sheetOpen=false; applySheet();
     return;
   }
   const tab=e.target.closest('.ed-tab');
@@ -968,6 +995,42 @@ document.addEventListener('click',e=>{
   const opt=e.target.closest('.ed-opt');
   if(opt&&opt.dataset.v!==undefined){CARD[edCat]=opt.dataset.v;edRender();return;}
 });
+
+/* ---------- 상세 시트: 드래그로 카드 ↔ 본 내용 ---------- */
+const sheetEl=document.getElementById('detailSheet');
+let sheetOpen=false;
+const OPEN_Y=58, PEEK_H=176;
+function sheetTopY(open){const h=sheetEl.parentElement.clientHeight;return open?OPEN_Y:h-PEEK_H;}
+function applySheet(anim=true){
+  if(!sheetEl) return;
+  sheetEl.style.transition=anim?'transform .38s cubic-bezier(.22,.9,.26,1)':'none';
+  sheetEl.style.transform=`translateY(${sheetTopY(sheetOpen)}px)`;
+  const body=document.getElementById('sheetBody');
+  if(body){body.style.overflowY=sheetOpen?'auto':'hidden'; if(!sheetOpen) body.scrollTop=0;}
+}
+function hideSheet(){if(sheetEl){sheetEl.style.transition='transform .3s ease';sheetEl.style.transform='translateY(105%)';}}
+if(sheetEl){
+  const handle=document.getElementById('sheetHandle');
+  let sy=null,base=0,moved=0;
+  handle.addEventListener('pointerdown',ev=>{
+    sy=ev.clientY;base=sheetTopY(sheetOpen);moved=0;
+    handle.setPointerCapture(ev.pointerId);sheetEl.style.transition='none';});
+  handle.addEventListener('pointermove',ev=>{
+    if(sy==null)return;
+    moved=ev.clientY-sy;
+    const h=sheetEl.parentElement.clientHeight;
+    const y=Math.min(Math.max(base+moved,OPEN_Y),h-PEEK_H);
+    sheetEl.style.transform=`translateY(${y}px)`;});
+  const done=()=>{
+    if(sy==null)return;
+    if(Math.abs(moved)<8) sheetOpen=!sheetOpen;
+    else if(moved<-60) sheetOpen=true;
+    else if(moved>60) sheetOpen=false;
+    sy=null;applySheet();};
+  handle.addEventListener('pointerup',done);
+  handle.addEventListener('pointercancel',done);
+  applySheet(false);
+}
 edRender();
 </script>
 </body>
