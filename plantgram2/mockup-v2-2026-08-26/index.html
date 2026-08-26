@@ -1,0 +1,1125 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>플랜트그램 목업 v2 · 파스텔</title>
+<style>
+:root{
+  /* 레거시 플랜트그램 팔레트 */
+  --bg:#f5f0ea;            /* 웜 베이지 (마케팅 배경) */
+  --paper:#ffffff;
+  --cream:#f7efe3;
+  --sage:#7d9587; --sage-deep:#42604f; --sage-hero:#4a675a;
+  --sage-soft:#e6ede7; --sage-chip:#d3ddd4;
+  --pink:#cf9a90; --pink-soft:#f3e1dc;
+  --sun:#dfb571; --sun-soft:#f6ecd6;
+  --gray-soft:#efece7; --tab:#d8d2c8;
+  --ink:#3a453e; --muted:#8f9a92; --faint:#bcc4bd; --line:#ece7df;
+  --phone:#1c1f1d;
+  --shadow:0 18px 40px rgba(70,80,72,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro KR","Apple SD Gothic Neo","Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+  letter-spacing:-.1px;line-height:1.5}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:60;background:rgba(245,240,234,.9);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);padding:12px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar .tt{font-size:15px;font-weight:700;margin-right:auto}
+.topbar .tt small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.seg{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:none;font:inherit;font-size:12px;font-weight:700;color:var(--muted);
+  padding:7px 14px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--sage-deep);color:#fff}
+
+/* ---------- gallery ---------- */
+#galleryWrap{display:none}
+body.gal #galleryWrap{display:block}
+body.gal .stage{display:none}
+.ghead{max-width:1320px;margin:0 auto;padding:26px 22px 2px}
+.ghead h1{margin:0 0 6px;font-size:23px;font-weight:800;letter-spacing:-.4px}
+.ghead p{margin:0;color:var(--muted);font-size:13px;max-width:64ch;line-height:1.7}
+.gallery{display:grid;gap:34px 26px;grid-template-columns:repeat(auto-fill,minmax(392px,1fr));
+  max-width:1320px;margin:0 auto;padding:22px 22px 80px;align-items:start}
+.gitem{justify-self:center;width:392px;max-width:100%}
+.glabel{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;margin:0 2px 10px}
+.glabel b{background:var(--sage-deep);color:#fff;width:22px;height:22px;border-radius:999px;
+  display:grid;place-items:center;font-size:11px;flex:0 0 auto;font-weight:700}
+.glabel .ov{background:var(--sun-soft);color:#a0793c;border-radius:999px;padding:1px 9px;font-size:10.5px;font-weight:700}
+.gnote{margin:12px 2px 0;font-size:12.5px;color:var(--muted);line-height:1.7}
+.gitem .phone{width:100%}
+.gitem .screen{height:auto;min-height:860px}
+.gitem .view{overflow:visible}
+.gitem .pane{min-height:796px}
+.gitem .ovl{position:absolute;inset:0}
+.gitem .sheet,.gitem .celebrate{animation:none}
+.gallery,.gallery *{cursor:default}
+
+/* ---------- stage / phone ---------- */
+.stage{display:grid;grid-template-columns:280px minmax(0,1fr);gap:26px;
+  max-width:1040px;margin:0 auto;padding:30px 22px 60px;align-items:start}
+.panel{position:sticky;top:80px}
+.panel h2{margin:0 0 10px;font-size:12px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;font-weight:700}
+.slist{display:flex;flex-direction:column;gap:3px;background:var(--paper);border:1px solid var(--line);
+  border-radius:20px;padding:10px;box-shadow:var(--shadow)}
+.slist button{border:0;background:none;text-align:left;padding:8px 12px;border-radius:12px;cursor:pointer;
+  font:inherit;font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.slist button.on{background:var(--sage-soft);color:var(--sage-deep);font-weight:700}
+.slist button span.n{font-size:10px;color:var(--faint);width:14px}
+.phonewrap{display:flex;justify-content:center}
+.phone{width:390px;background:var(--phone);border-radius:46px;padding:11px;box-shadow:0 30px 70px rgba(40,48,42,.30)}
+.screen{position:relative;height:820px;background:var(--paper);border-radius:37px;overflow:hidden;display:flex;flex-direction:column}
+.statusbar{height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 24px 0 28px;
+  font-size:12.5px;font-weight:600;flex:0 0 auto;position:relative;z-index:5}
+.statusbar .dots{font-size:10px;letter-spacing:.5px;color:var(--muted)}
+.view{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:none}
+.view::-webkit-scrollbar{display:none}
+.pane{display:none;min-height:100%;flex-direction:column}
+.pane.on{display:flex}
+
+/* ---------- shared: 레거시 감성 컴포넌트 ---------- */
+.appbar{display:flex;align-items:center;gap:9px;padding:8px 20px 10px;flex:0 0 auto}
+.logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:800;letter-spacing:-.4px}
+.logo .leaf{width:26px;height:26px;border-radius:9px;background:linear-gradient(140deg,#78b98a,#4e9a68);
+  display:grid;place-items:center;color:#fff;font-size:13px}
+.appbar .sp{flex:1}
+.ibtn{width:36px;height:36px;border-radius:999px;background:var(--gray-soft);display:grid;place-items:center;
+  color:var(--ink);font-size:14.5px;border:0;cursor:pointer;flex:0 0 auto}
+.body{padding:0 20px 24px;display:flex;flex-direction:column;gap:14px}
+
+.pilltabs{display:flex;gap:4px;justify-content:center;padding:2px 20px 10px}
+.pilltabs span{font-size:13.5px;font-weight:600;color:var(--faint);padding:7px 16px;border-radius:999px}
+.pilltabs span.on{background:var(--tab);color:#fff;font-weight:700}
+
+.dpill{display:inline-block;background:var(--sage-soft);color:var(--sage-deep);border-radius:12px;
+  padding:4px 12px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.dpill.due{background:var(--pink-soft);color:var(--pink)}
+.drops{display:flex;gap:2.5px;margin-top:7px}
+.drops i{width:8px;height:10px;background:var(--sage);display:block;
+  clip-path:path('M4 0 C4 3 8 5.5 8 7.6 A4 4 0 1 1 0 7.6 C0 5.5 4 3 4 0 Z');opacity:.9}
+.drops i.off{background:#e3e0d8}
+.suns{display:flex;gap:2.5px;margin-top:5px;justify-content:center}
+.suns i{width:7px;height:7px;border-radius:99px;background:var(--sun)}
+.suns i.off{background:#e8e4da}
+
+.circle{border-radius:999px;display:grid;place-items:center;position:relative;flex:0 0 auto}
+.circle.mint{background:radial-gradient(circle at 38% 30%,#eef4ee,#dbe7dd)}
+.circle.cream{background:radial-gradient(circle at 38% 30%,#f9f3e8,#efe4d1)}
+.circle.blush{background:radial-gradient(circle at 38% 30%,#f8ece8,#eeddd6)}
+.waterbtn{position:absolute;right:-2px;bottom:2px;width:34px;height:34px;border-radius:999px;border:0;cursor:pointer;
+  background:rgba(255,255,255,.92);box-shadow:0 4px 12px rgba(70,80,72,.18);display:grid;place-items:center;font-size:15px}
+
+.plantrow{display:flex;align-items:center;gap:16px;padding:6px 0}
+.plantrow .meta-l{width:74px;text-align:left}
+.plantrow .names{flex:1;text-align:right}
+.plantrow .names .en{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:0}
+.plantrow .names .ko{font-size:13px;color:var(--muted);margin-top:2px}
+.plantrow .names .lvl{display:inline-block;margin-top:7px;font-size:11px;font-weight:700;color:var(--sage-deep);
+  background:var(--sage-soft);border-radius:999px;padding:2px 9px}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:16px}
+.card.soft{background:var(--cream);border-color:transparent}
+.card.sage{background:var(--sage-soft);border-color:transparent}
+.rowt{display:flex;align-items:baseline;gap:8px;margin:6px 2px 0}
+.rowt h3{margin:0;font-size:15px;font-weight:700;letter-spacing:-.2px}
+.rowt .more{margin-left:auto;font-size:12px;color:var(--faint);font-weight:600}
+.muted{color:var(--muted);font-size:12.5px}
+.tiny{font-size:11px;color:var(--faint)}
+.btn{border:0;border-radius:18px;background:var(--sage-deep);color:#fff;font:inherit;font-weight:700;
+  font-size:15px;padding:15px;cursor:pointer;width:100%;letter-spacing:-.2px}
+.btn.ghost{background:var(--gray-soft);color:var(--ink)}
+.gauge{height:6px;border-radius:99px;background:#e7e3da;overflow:hidden}
+.gauge i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--sage),var(--sage-deep))}
+
+/* squircle 카테고리 (Plant Book) */
+.sqgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px;text-align:center}
+.sq{width:100%;aspect-ratio:1;border-radius:26px;display:grid;place-items:center;font-size:22px}
+.sq+.lb{font-size:11px;color:var(--muted);margin-top:6px;display:block;font-weight:600}
+
+/* bottom nav */
+.bnav{flex:0 0 auto;display:flex;background:rgba(255,255,255,.94);border-top:1px solid var(--line);
+  padding:10px 6px 16px;position:relative;z-index:4;backdrop-filter:blur(8px)}
+.bnav button{flex:1;border:0;background:none;cursor:pointer;font:inherit;display:flex;flex-direction:column;
+  align-items:center;gap:4px;color:var(--faint);font-size:10px;font-weight:600;padding:2px 0}
+.bnav button .ic{font-size:19px;line-height:1;filter:grayscale(1) opacity(.45)}
+.bnav button.on{color:var(--sage-deep)}
+.bnav button.on .ic{filter:none}
+.fab{position:absolute;right:20px;bottom:92px;width:56px;height:56px;border-radius:999px;border:0;cursor:pointer;
+  background:var(--sage-deep);color:#fff;font-size:22px;display:grid;place-items:center;
+  box-shadow:0 12px 26px rgba(66,96,79,.35);z-index:3}
+
+/* ---------- 상세 히어로 (딥 세이지) ---------- */
+.hero-sage{background:var(--sage-hero);color:#fff;padding:10px 20px 22px;position:relative}
+.hero-sage .top{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.hero-sage .ibtn{background:rgba(255,255,255,.16);color:#fff}
+.hero-sage .photo{margin:6px auto 0}
+.hero-sage .species{text-align:center;font-family:Georgia,'Times New Roman',serif;font-style:italic;
+  font-size:12.5px;color:rgba(255,255,255,.66);margin-top:14px;letter-spacing:.2px}
+.hero-sage h3{margin:2px 0 0;font-size:21px;font-weight:700;text-align:center;letter-spacing:-.3px}
+.glasscard{background:rgba(255,255,255,.14);border-radius:20px;padding:14px 16px;margin-top:16px}
+.glasscard .say{text-align:center;font-size:13px;font-weight:600;letter-spacing:-.2px}
+.glasscard .cols{display:flex;border-top:1px solid rgba(255,255,255,.22);margin-top:12px;padding-top:12px}
+.glasscard .col{flex:1;text-align:center}
+.glasscard .col .l{font-size:10.5px;color:rgba(255,255,255,.6)}
+.glasscard .col .v{font-size:14px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+.ddrow{display:flex;gap:14px;justify-content:center}
+.ddc{text-align:center}
+.ddc .c{width:64px;height:64px;border-radius:999px;display:grid;place-items:center;
+  font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.ddc.g .c{background:var(--sage-soft);color:var(--sage-deep)}
+.ddc.p .c{background:var(--pink-soft);color:var(--pink)}
+.ddc.y .c{background:var(--sun-soft);color:#a0793c}
+.ddc .l{font-size:11px;color:var(--muted);margin-top:6px;font-weight:600}
+.tl{display:flex;gap:12px}
+.tl .ln{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;padding-top:4px}
+.tl .dot{width:8px;height:8px;border-radius:50%;background:var(--sage)}
+.tl .bar{flex:1;width:1.5px;background:var(--line);margin:4px 0}
+.tl .ct{padding-bottom:15px}
+.tl .ct .h{font-size:13.5px;font-weight:700}
+.tl .ct .m{font-size:12px;color:var(--muted);margin-top:1px}
+.actor{display:inline-flex;align-items:center;gap:3px;background:var(--sun-soft);color:#a0793c;
+  border-radius:999px;padding:1px 8px;font-size:10.5px;font-weight:700;margin-left:5px}
+.stick{position:sticky;bottom:0;background:linear-gradient(transparent,var(--paper) 30%);padding:16px 20px 18px;margin-top:auto}
+.haspin .body{padding-bottom:88px}
+
+/* 피드 */
+.storyrow{display:flex;gap:16px;overflow-x:auto;padding:4px 20px 6px;margin:0 -20px;scrollbar-width:none}
+.storyrow::-webkit-scrollbar{display:none}
+.story{text-align:center;flex:0 0 auto}
+.story .nm{font-size:11.5px;color:var(--ink);margin-top:6px;font-weight:600}
+.post{background:var(--paper);border-radius:24px;border:1px solid var(--line);overflow:hidden}
+.phead{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
+.phead .nm{font-size:13px;font-weight:700}
+.phead .tm{font-size:11px;color:var(--faint);margin-top:1px}
+.pbody{padding:0 16px 12px;font-size:13.5px;line-height:1.7}
+.pimg{height:170px;display:grid;place-items:center}
+.pfoot{display:flex;gap:18px;padding:11px 16px 13px;font-size:12.5px;color:var(--muted);font-weight:600}
+.brag{background:linear-gradient(160deg,#fbf4e4,#f6ead2);border-radius:24px;padding:20px;text-align:center}
+.brag .bd{width:74px;height:74px;border-radius:999px;margin:0 auto 10px;display:grid;place-items:center;font-size:32px;
+  background:radial-gradient(circle at 38% 30%,#f7e7c3,#ecd39a);box-shadow:0 10px 22px rgba(200,165,90,.28)}
+.brag .t{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.brag .d{font-size:12.5px;color:#a0793c;margin-top:4px}
+.lvup{background:var(--sage-soft);border-radius:24px;padding:16px;display:flex;gap:14px;align-items:center}
+
+/* 뱃지 */
+.bgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.badge{text-align:center}
+.badge .cir{width:100%;aspect-ratio:1;border-radius:999px;display:grid;place-items:center;font-size:22px;
+  background:radial-gradient(circle at 38% 30%,#f7ecd2,#ecd7a4);box-shadow:0 6px 14px rgba(200,165,90,.22)}
+.badge.lock .cir{background:var(--gray-soft);box-shadow:none;font-size:17px;opacity:.7}
+.badge .nm{font-size:10.5px;margin-top:6px;font-weight:600;color:var(--muted);line-height:1.35}
+.stat3{display:flex;text-align:center}
+.stat3>div{flex:1}
+.stat3 .v{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.stat3 .l{font-size:11px;color:var(--muted);margin-top:2px}
+.mlist{display:flex;flex-direction:column}
+.mitem{display:flex;align-items:center;gap:12px;padding:13px 2px;font-size:14px;border-bottom:1px solid var(--line);font-weight:600}
+.mitem:last-child{border-bottom:0}
+.mitem .ar{margin-left:auto;color:var(--faint);font-size:12px;font-weight:500}
+
+/* AI */
+.aishot{height:170px;border-radius:22px;background:linear-gradient(160deg,#edeae2,#e2e0d6);
+  display:grid;place-items:center;position:relative;overflow:hidden}
+.aitag{position:absolute;border:1.6px dashed var(--sage);border-radius:999px;font-size:10px;font-weight:700;
+  color:var(--sage-deep);background:rgba(255,255,255,.9);padding:2px 9px}
+.score{display:flex;align-items:center;gap:15px}
+.ring{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;
+  background:conic-gradient(var(--sun) 0 68%, #eae6dd 0);position:relative}
+.ring::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--paper)}
+.ring b{position:relative;z-index:1;font-size:19px;font-weight:800}
+.finding{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px;line-height:1.6}
+.finding:last-child{border-bottom:0}
+.finding .fi{width:34px;height:34px;border-radius:999px;display:grid;place-items:center;font-size:14px;flex:0 0 auto}
+
+/* 시트 & 오버레이 */
+.ovl{position:absolute;inset:0;background:rgba(40,48,42,.4);display:none;z-index:20;
+  align-items:flex-end;justify-content:center;border-radius:37px}
+.ovl.on{display:flex}
+.sheet{background:var(--paper);width:100%;border-radius:28px 28px 37px 37px;padding:10px 22px 26px;
+  animation:up .28s cubic-bezier(.2,.8,.3,1)}
+@keyframes up{from{transform:translateY(26px);opacity:.4}to{transform:none;opacity:1}}
+.grab{width:40px;height:4.5px;border-radius:99px;background:var(--line);margin:8px auto 14px}
+.sheet h3{margin:0 0 3px;font-size:17px;font-weight:800;letter-spacing:-.3px}
+.rec6{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:16px 0 4px}
+.rec{border:0;border-radius:24px;padding:16px 6px;cursor:pointer;font:inherit;text-align:center}
+.rec .ic{font-size:23px}
+.rec .lb{font-size:12.5px;font-weight:700;margin-top:6px}
+.rec .gp{font-size:10.5px;color:var(--sage-deep);font-weight:700;margin-top:2px}
+.ovl.center{align-items:center;padding:28px}
+.celebrate{background:var(--paper);border-radius:30px;padding:28px 24px;text-align:center;width:100%;position:relative;overflow:hidden}
+.celebrate .burst{position:absolute;inset:0;pointer-events:none;z-index:0}
+.celebrate>*:not(.burst){position:relative;z-index:1}
+.celebrate .cf{position:absolute;width:7px;height:11px;border-radius:3px;opacity:.85}
+.celebrate .big{font-size:11px;font-weight:800;color:var(--sage);letter-spacing:.22em}
+.celebrate h3{margin:8px 0 2px;font-size:22px;font-weight:800;letter-spacing:-.4px}
+.custom .parts{display:flex;gap:9px;overflow-x:auto;margin:12px -22px 0;padding:0 22px 4px;scrollbar-width:none}
+.custom .parts::-webkit-scrollbar{display:none}
+.part{flex:0 0 auto;width:58px;height:58px;border-radius:20px;background:var(--gray-soft);border:2px solid transparent;
+  display:grid;place-items:center;cursor:pointer;font-size:21px}
+.part.on{border-color:var(--sage);background:var(--sage-soft)}
+
+/* 정원 씬 (홈) */
+.garden{position:relative;flex:1;display:flex;flex-direction:column;
+  background:linear-gradient(178deg,#e9eee6 0%,#f2efe6 60%,#f6f0e4 100%)}
+.gtop{padding:4px 20px 8px;display:flex;align-items:center;gap:10px}
+.gname{font-size:16.5px;font-weight:800;letter-spacing:-.3px}
+.gtop .wx{margin-left:auto;background:rgba(255,255,255,.8);border-radius:999px;padding:6px 13px;
+  font-size:11.5px;font-weight:600;color:var(--muted)}
+.gplevel{padding:0 20px 6px}
+.gplevel .r{display:flex;align-items:baseline;gap:7px;margin-bottom:6px}
+.gplevel .r b{font-size:12.5px;font-weight:800}
+.gplevel .r .ttl{background:var(--sun-soft);color:#a0793c;border-radius:999px;padding:1px 9px;font-size:10.5px;font-weight:700}
+.gplevel .r span.gp{font-size:10.5px;color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+.members{display:flex;align-items:center;padding:0 20px 6px}
+.mav{width:24px;height:24px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;
+  font-size:10px;font-weight:800;color:#fff;margin-right:-7px}
+.members .mlabel{margin-left:13px;font-size:11px;color:var(--muted);font-weight:600}
+.gscene{flex:1;position:relative}
+.gscene svg{width:100%;height:100%;display:block}
+.gbar{position:absolute;left:0;right:0;bottom:0;padding:12px 18px 14px;
+  background:linear-gradient(transparent,rgba(255,255,255,.94) 40%);display:flex;gap:9px;align-items:center}
+.viewtog{display:flex;background:rgba(255,255,255,.95);border-radius:999px;padding:3px;gap:2px;box-shadow:var(--shadow)}
+.viewtog button{border:0;background:none;font:inherit;font-size:12px;font-weight:700;color:var(--muted);
+  padding:8px 14px;border-radius:999px;cursor:pointer}
+.viewtog button.on{background:var(--sage-deep);color:#fff}
+.gbar .waterall{margin-left:auto;border:0;border-radius:999px;background:var(--sage-deep);color:#fff;font:inherit;
+  font-weight:700;font-size:13px;padding:12px 17px;cursor:pointer;display:flex;gap:7px;align-items:center;
+  box-shadow:0 10px 22px rgba(66,96,79,.3)}
+.waterall .cnt{background:#fff;color:var(--sage-deep);border-radius:999px;font-size:11px;padding:0 7px;font-weight:800}
+.bub{position:absolute;background:#fff;color:var(--sage-deep);font-size:10px;font-weight:800;
+  border-radius:999px;padding:3px 9px;box-shadow:0 5px 14px rgba(70,80,72,.2);white-space:nowrap}
+
+/* 도감 상세 */
+.hero-book{background:linear-gradient(170deg,#eef2ea,#f6f1e6);padding:10px 20px 22px}
+.info4{display:flex;gap:9px}
+.i4{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:12px 4px;text-align:center}
+.i4 .ic{font-size:16px}
+.i4 .lb{font-size:10px;color:var(--muted);margin-top:4px;font-weight:600}
+.i4 .vl{font-size:12px;font-weight:800;margin-top:1px}
+.tagchip{display:inline-block;border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700}
+
+/* mobile */
+.mobbar{display:none}
+@media(max-width:940px){
+  .stage{grid-template-columns:1fr;padding:0;gap:0;max-width:none}
+  .panel{display:none}
+  .phonewrap{display:block}
+  .phonewrap .phone{width:100%;border-radius:0;padding:0;box-shadow:none}
+  .phonewrap .screen{height:100dvh;border-radius:0;padding-top:env(safe-area-inset-top)}
+  .phonewrap .ovl{border-radius:0}
+  .phonewrap .statusbar{display:none}
+  .topbar{padding:10px 14px;gap:8px}
+  .topbar .tt{font-size:13px;width:100%;margin:0 0 2px}
+  .ghead{padding:16px 16px 0}
+  .ghead h1{font-size:19px}
+  .gallery{grid-template-columns:1fr;padding:14px 12px 50px;gap:28px}
+  .gitem{width:100%}
+  .gitem .phone{border-radius:26px;padding:7px}
+  .gitem .screen{border-radius:20px;min-height:0}
+  .gitem .pane{min-height:720px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tt">플랜트그램 목업 v2 · 파스텔<small>레거시 플랜트그램 디자인 감성 · 2026-08-26</small></div>
+  <div class="seg" id="modeSeg">
+    <button data-mode="gal" class="on">▦ 전체 화면</button>
+    <button data-mode="proto">▶ 프로토타입</button>
+  </div>
+  <a href="../mockup-v1-2026-08-26/" style="font-size:12px;color:var(--muted);font-weight:600;text-decoration:none">v1 보기 ›</a>
+</div>
+
+<div id="galleryWrap">
+  <div class="ghead">
+    <h1>전체 화면 보기</h1>
+    <p>구 플랜트그램의 디자인 언어(원형 사진 · 파스텔 세이지와 더스티 핑크 · 알약 탭 · 물방울 도트 · 딥 세이지 히어로 · 스쿼클 카테고리)를 v1.0 기능 구조에 입힌 재구성입니다. 프로토타입 모드로 바꾸면 탭하며 이동할 수 있어요.</p>
+  </div>
+  <div class="gallery" id="gallery"></div>
+</div>
+
+<div class="stage">
+  <aside class="panel">
+    <h2>화면</h2>
+    <div class="slist" id="slist"></div>
+  </aside>
+
+  <div class="phonewrap">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span class="dots">●●●●● ᯤ ▮</span></div>
+
+      <div class="view" id="view">
+
+        <!-- ============ 1. 정원 (홈) ============ -->
+        <section class="pane" id="p-garden">
+          <div class="garden">
+            <div class="gtop">
+              <div class="logo"><div class="leaf">☘</div>Plantgram</div>
+              <div class="wx">☀️ 24° · 58%</div>
+            </div>
+            <div class="gplevel">
+              <div class="r"><b>우리집 온실 Lv.7</b><span class="ttl">🌿 정원사</span><span class="gp">1,240 / 1,600 GP</span></div>
+              <div class="gauge"><i style="width:72%"></i></div>
+            </div>
+            <div class="members">
+              <div class="mav" style="background:#7d9587">초</div>
+              <div class="mav" style="background:#dfb571">민</div>
+              <div class="mlabel">민수와 함께 관리 중</div>
+            </div>
+            <div class="gscene">
+              <svg id="miniGarden" viewBox="0 0 390 430"></svg>
+              <div class="bub" style="left:26%;top:26%">몬스테라 · 목말라요 💧</div>
+              <div class="gbar">
+                <div class="viewtog">
+                  <button class="on">🪴 정원</button>
+                  <button data-go="list">☰ 리스트</button>
+                </div>
+                <button class="waterall" data-sheet="celebrate">💧 일괄 물주기 <span class="cnt">2</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 2. 리스트 (레거시 MyPlants) ============ -->
+        <section class="pane" id="p-list">
+          <div class="appbar">
+            <div class="logo"><div class="leaf">☘</div>Plantgram</div>
+            <div class="sp"></div>
+            <button class="ibtn">🔍</button>
+            <button class="ibtn" data-go="garden">🪴</button>
+            <button class="ibtn">＋</button>
+          </div>
+          <div class="pilltabs"><span class="on">MyPlants</span><span>Album</span></div>
+          <div class="body" style="gap:20px;padding-top:8px">
+
+            <div class="plantrow" data-go="detail">
+              <div class="meta-l">
+                <span class="dpill due">D+1</span>
+                <div class="drops"><i></i><i></i><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
+              </div>
+              <div class="circle mint" style="width:110px;height:110px">
+                <span data-av="monstera" data-size="72" data-pot="#c98a6a"></span>
+                <button class="waterbtn" data-sheet="celebrate">🚿</button>
+              </div>
+              <div class="names">
+                <div class="en">Monstera</div><div class="ko">몬스테라</div>
+                <span class="lvl">Lv.4</span>
+              </div>
+            </div>
+
+            <div class="plantrow">
+              <div class="meta-l">
+                <span class="dpill">D-5</span>
+                <div class="drops"><i></i><i></i><i></i><i></i><i></i><i></i><i class="off"></i></div>
+              </div>
+              <div class="circle cream" style="width:110px;height:110px">
+                <span data-av="sansevieria" data-size="64" data-pot="#8fa89b"></span>
+                <button class="waterbtn" style="opacity:.45">🚿</button>
+              </div>
+              <div class="names">
+                <div class="en">Sansevieria</div><div class="ko">스투키</div>
+                <span class="lvl">Lv.6</span>
+              </div>
+            </div>
+
+            <div class="plantrow">
+              <div class="meta-l">
+                <span class="dpill due">D-day</span>
+                <div class="drops"><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
+              </div>
+              <div class="circle blush" style="width:110px;height:110px">
+                <span data-av="succulent" data-size="58" data-pot="#dcc9a8"></span>
+                <button class="waterbtn" data-sheet="celebrate">🚿</button>
+              </div>
+              <div class="names">
+                <div class="en">Echeveria</div><div class="ko">몽이</div>
+                <span class="lvl">Lv.2</span>
+              </div>
+            </div>
+
+            <div class="plantrow">
+              <div class="meta-l">
+                <span class="dpill">D-3</span>
+                <div class="drops"><i></i><i></i><i></i><i></i><i></i><i class="off"></i><i class="off"></i></div>
+              </div>
+              <div class="circle mint" style="width:110px;height:110px">
+                <span data-av="calathea" data-size="66" data-pot="#b7a3c9"></span>
+                <button class="waterbtn" style="opacity:.45">🚿</button>
+              </div>
+              <div class="names">
+                <div class="en">Calathea</div><div class="ko">칼라데아 뷰티스타</div>
+                <span class="lvl">Lv.5</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 3. 식물 상세 (딥 세이지 히어로) ============ -->
+        <section class="pane haspin" id="p-detail">
+          <div class="hero-sage">
+            <div class="top">
+              <button class="ibtn" data-go="list">‹</button>
+              <div class="sp"></div>
+              <button class="ibtn" data-sheet="custom">🎨</button>
+              <button class="ibtn">⋯</button>
+            </div>
+            <div class="circle mint photo" style="width:150px;height:150px;box-shadow:0 14px 34px rgba(0,0,0,.18)">
+              <span data-av="monstera" data-size="98" data-pot="#c98a6a"></span>
+            </div>
+            <div class="species">Monstera deliciosa</div>
+            <h3>몬스테라</h3>
+            <div class="glasscard">
+              <div class="say">'몬스테라와 함께한 지 124일이 지났어요!'</div>
+              <div class="cols">
+                <div class="col"><div class="l">물주기</div><div class="v">7 Day</div></div>
+                <div class="col"><div class="l">마지막 물준날</div><div class="v">08-25</div></div>
+                <div class="col"><div class="l">레벨</div><div class="v">Lv.4 · 82%</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="body" style="padding-top:18px">
+            <div class="rowt"><h3>D-Day</h3></div>
+            <div class="ddrow">
+              <div class="ddc p"><div class="c">D+1</div><div class="l">물주기</div></div>
+              <div class="ddc g"><div class="c">D-12</div><div class="l">영양제</div></div>
+              <div class="ddc y"><div class="c">D-64</div><div class="l">분갈이</div></div>
+            </div>
+
+            <div class="card soft" style="font-size:13px;line-height:2;margin-top:4px">
+              🌿 물은 <b>7일에 한 번</b>씩 주고 있어요<br>
+              ☀️ 밝은 간접광 · 18~26℃가 알맞아요<br>
+              📌 새잎이 올라오는 중
+            </div>
+
+            <div class="rowt"><h3>최근 기록</h3><span class="more">전체보기 ›</span></div>
+            <div class="card">
+              <div class="tl">
+                <div class="ln"><div class="dot"></div><div class="bar"></div></div>
+                <div class="ct"><div class="h">물주기 <span class="actor">민수</span></div>
+                  <div class="m">오늘 오전 9:20 · +10 GP</div></div>
+              </div>
+              <div class="tl">
+                <div class="ln"><div class="dot" style="background:var(--sun)"></div><div class="bar"></div></div>
+                <div class="ct"><div class="h">사진 · 메모 <span class="actor">나</span></div>
+                  <div class="m">3일 전 · "새잎이 올라옴" · +5 GP</div></div>
+              </div>
+              <div class="tl">
+                <div class="ln"><div class="dot" style="background:var(--faint)"></div></div>
+                <div class="ct" style="padding-bottom:0"><div class="h">상태 · 좋음</div>
+                  <div class="m">5일 전 · +3 GP</div></div>
+              </div>
+            </div>
+
+            <div class="card sage" style="display:flex;gap:12px;align-items:center">
+              <div style="font-size:21px">🤖</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:700">이 자리, 이 식물에 맞을까요?</div>
+                <div class="tiny">사진 한 장으로 채광·통풍을 분석해드려요</div>
+              </div>
+              <button class="ibtn" style="background:#fff" data-go="ai">›</button>
+            </div>
+          </div>
+          <div class="stick"><button class="btn" data-sheet="record">기록하기</button></div>
+        </section>
+
+        <!-- ============ 4. 피드 ============ -->
+        <section class="pane" id="p-feed">
+          <div class="appbar">
+            <div class="logo"><div class="leaf">☘</div>Plantgram</div>
+            <div class="sp"></div>
+            <button class="ibtn">📷</button>
+            <button class="ibtn">🔔</button>
+          </div>
+          <div class="pilltabs"><span class="on">All</span><span>몬스테라</span><span>다육이</span><span>꽃나무</span></div>
+          <div class="body" style="padding-top:6px">
+
+            <div class="storyrow">
+              <div class="story">
+                <div class="circle mint" style="width:84px;height:84px"><span data-av="pothos" data-size="52" data-pot="#c98a6a"></span></div>
+                <div class="nm">스킨답서스</div>
+                <div class="suns"><i></i><i></i><i></i><i class="off"></i><i class="off"></i></div>
+                <div class="drops" style="justify-content:center;margin-top:3px"><i></i><i></i><i></i><i></i><i class="off"></i></div>
+              </div>
+              <div class="story">
+                <div class="circle cream" style="width:84px;height:84px"><span data-av="monstera" data-size="56" data-pot="#8fa89b"></span></div>
+                <div class="nm">몬스테라</div>
+                <div class="suns"><i></i><i></i><i></i><i></i><i class="off"></i></div>
+                <div class="drops" style="justify-content:center;margin-top:3px"><i></i><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="story">
+                <div class="circle blush" style="width:84px;height:84px"><span data-av="calathea" data-size="54" data-pot="#b7a3c9"></span></div>
+                <div class="nm">피토니아 핑크스</div>
+                <div class="suns"><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
+                <div class="drops" style="justify-content:center;margin-top:3px"><i></i><i></i><i></i><i class="off"></i><i class="off"></i></div>
+              </div>
+              <div class="story">
+                <div class="circle mint" style="width:84px;height:84px"><span data-av="succulent" data-size="48" data-pot="#dcc9a8"></span></div>
+                <div class="nm">루비</div>
+                <div class="suns"><i></i><i></i><i></i><i class="off"></i><i class="off"></i></div>
+                <div class="drops" style="justify-content:center;margin-top:3px"><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
+              </div>
+            </div>
+
+            <div class="brag">
+              <div class="bd">🏆</div>
+              <div class="t">30일 연속 기록 달성!</div>
+              <div class="d">초록집사님이 <b>꾸준함 · 한 달 개근</b> 뱃지를 얻었어요</div>
+              <div style="display:flex;gap:18px;justify-content:center;margin-top:14px;font-size:12.5px;color:#a0793c;font-weight:700">
+                <span>♥ 42</span><span>💬 8</span><span>축하 보내기</span>
+              </div>
+            </div>
+
+            <div class="post">
+              <div class="phead">
+                <div class="circle mint" style="width:38px;height:38px;font-size:16px">🌿</div>
+                <div style="flex:1"><div class="nm">초보식물집사</div><div class="tm">몬스테라 채널 · 2시간 전</div></div>
+                <div style="color:var(--faint)">⋯</div>
+              </div>
+              <div class="pbody">행복한 식물집사 생활 😍🪴<br>나의 첫 식물 이쁘게 자라보자🙆🥰</div>
+              <div class="pimg" style="background:radial-gradient(circle at 42% 34%,#f2f6f0,#dfe9df)">
+                <span data-av="monstera" data-size="110" data-pot="#c98a6a"></span>
+              </div>
+              <div class="pfoot"><span>♥ 128</span><span>💬 21</span><span style="margin-left:auto;color:var(--faint)">몬스테라 채널</span></div>
+            </div>
+
+            <div class="lvup">
+              <div class="circle cream" style="width:56px;height:56px"><span data-av="sansevieria" data-size="38" data-pot="#8fa89b"></span></div>
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:700">스투키가 Lv.6이 되었어요 🎉</div>
+                <div class="muted">초록집사 · 1일 전</div>
+              </div>
+              <div style="font-size:12.5px;color:var(--sage-deep);font-weight:800">♥ 31</div>
+            </div>
+          </div>
+          <button class="fab">✎</button>
+        </section>
+
+        <!-- ============ 5. 도감 (Plant Book) ============ -->
+        <section class="pane" id="p-dict">
+          <div class="appbar">
+            <div class="logo"><div class="leaf">☘</div>Plant Book</div>
+            <div class="sp"></div>
+            <button class="ibtn">🔍</button>
+          </div>
+          <div class="body" style="padding-top:6px">
+
+            <div class="card" style="background:linear-gradient(150deg,#f6e8dd,#efe0d0);border:0;padding:22px;position:relative;overflow:hidden">
+              <div style="font-family:Georgia,serif;font-style:italic;font-size:11px;letter-spacing:.16em;color:#ac7f62">PLANTGRAM</div>
+              <div style="font-size:16px;font-weight:800;letter-spacing:.02em;color:#8a6247;margin-top:3px">오늘의 식물 큐레이션</div>
+              <div style="position:absolute;right:6px;bottom:-8px;opacity:.9"><span data-av="calathea" data-size="76" data-pot="#b7a3c9"></span></div>
+              <div style="display:flex;gap:4px;margin-top:14px"><i style="width:6px;height:6px;border-radius:99px;background:#ac7f62"></i><i style="width:6px;height:6px;border-radius:99px;background:#e3cdbb"></i></div>
+            </div>
+
+            <div class="sqgrid">
+              <div><div class="sq" style="background:var(--sun-soft)">😊</div><span class="lb">#초보집사</span></div>
+              <div><div class="sq" style="background:var(--sage-soft)">🍃</div><span class="lb">#공기정화</span></div>
+              <div><div class="sq" style="background:var(--pink-soft)">🐕</div><span class="lb">#반려동물</span></div>
+              <div><div class="sq" style="background:var(--gray-soft)">🏠</div><span class="lb">#집꾸미기</span></div>
+              <div><div class="sq" style="background:var(--gray-soft)">💤</div><span class="lb">#게으른</span></div>
+              <div><div class="sq" style="background:var(--sun-soft)">⛅</div><span class="lb">#어두운집</span></div>
+              <div><div class="sq" style="background:var(--sage-soft)">🚿</div><span class="lb">#물조금만</span></div>
+              <div><div class="sq" style="background:var(--pink-soft)">🌡</div><span class="lb">#겨울나기</span></div>
+            </div>
+
+            <div class="card" style="padding:0;overflow:hidden" data-go="dictDetail">
+              <div style="display:flex;align-items:center">
+                <div style="flex:1;padding:20px">
+                  <div class="tiny" style="font-weight:700;color:var(--sage)">올리브나무</div>
+                  <div style="font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.25;margin-top:2px">오늘의<br>식물</div>
+                </div>
+                <div class="circle mint" style="width:120px;height:120px;margin:14px"><span data-av="monstera" data-size="76" data-pot="#c98a6a"></span></div>
+              </div>
+            </div>
+
+            <div class="rowt"><h3>초보 집사에게 추천</h3><span class="more">식물 124종 ›</span></div>
+            <div style="display:flex;gap:12px;overflow-x:auto;margin:0 -20px;padding:2px 20px 6px;scrollbar-width:none">
+              <div class="story"><div class="circle mint" style="width:96px;height:96px"><span data-av="monstera" data-size="60" data-pot="#c98a6a"></span></div><div class="nm">몬스테라</div><div class="tiny">물 보통 · 간접광</div></div>
+              <div class="story"><div class="circle cream" style="width:96px;height:96px"><span data-av="sansevieria" data-size="56" data-pot="#8fa89b"></span></div><div class="nm">산세베리아</div><div class="tiny">물 적게 · 반음지</div></div>
+              <div class="story"><div class="circle blush" style="width:96px;height:96px"><span data-av="succulent" data-size="50" data-pot="#dcc9a8"></span></div><div class="nm">다육식물</div><div class="tiny">물 적게 · 햇빛</div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 6. 도감 상세 ============ -->
+        <section class="pane haspin" id="p-dictDetail">
+          <div class="hero-book">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="ibtn" data-go="dict">‹</button>
+              <div class="sp" style="flex:1"></div>
+              <button class="ibtn">♡</button>
+            </div>
+            <div class="circle mint" style="width:140px;height:140px;margin:8px auto 0"><span data-av="monstera" data-size="92" data-pot="#c98a6a"></span></div>
+            <div style="text-align:center;font-family:Georgia,serif;font-style:italic;font-size:12px;color:var(--muted);margin-top:12px">Monstera deliciosa</div>
+            <div style="text-align:center;font-size:20px;font-weight:800;letter-spacing:-.3px">몬스테라</div>
+          </div>
+          <div class="body" style="padding-top:16px">
+            <div class="info4">
+              <div class="i4"><div class="ic">💧</div><div class="lb">물주기</div><div class="vl">7일</div></div>
+              <div class="i4"><div class="ic">☀️</div><div class="lb">햇빛</div><div class="vl">간접광</div></div>
+              <div class="i4"><div class="ic">💦</div><div class="lb">수분</div><div class="vl">보통</div></div>
+              <div class="i4"><div class="ic">🌡</div><div class="lb">온도</div><div class="vl">18~26°</div></div>
+            </div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap">
+              <span class="tagchip" style="background:var(--sage-soft);color:var(--sage-deep)">#초보집사</span>
+              <span class="tagchip" style="background:var(--sun-soft);color:#a0793c">#공기정화</span>
+              <span class="tagchip" style="background:var(--pink-soft);color:var(--pink)">#반려동물주의</span>
+            </div>
+            <div class="rowt"><h3>관리 팁</h3></div>
+            <div class="card soft" style="font-size:13px;line-height:2">
+              🌱 겉흙이 마르면 흠뻑 주세요<br>
+              ☀️ 직사광선은 잎을 태울 수 있어요<br>
+              🍃 잎이 노래지면 과습을 의심해보세요
+            </div>
+            <div class="card sage" style="display:flex;gap:12px;align-items:center">
+              <div style="font-size:19px">💬</div>
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:700">몬스테라 이야기</div>
+                <div class="tiny">게시글 328개 · 오늘 12개</div>
+              </div>
+              <button class="ibtn" style="background:#fff" data-go="feed">›</button>
+            </div>
+            <div class="rowt"><h3>이 식물을 키우는 사람들</h3><span class="more">1,204명</span></div>
+            <div style="display:flex">
+              <div class="circle mint" style="width:40px;height:40px;font-size:16px;border:2px solid #fff">🌿</div>
+              <div class="circle cream" style="width:40px;height:40px;font-size:16px;border:2px solid #fff;margin-left:-9px">🪴</div>
+              <div class="circle blush" style="width:40px;height:40px;font-size:16px;border:2px solid #fff;margin-left:-9px">🌵</div>
+              <div class="circle" style="width:40px;height:40px;background:var(--gray-soft);font-size:10px;font-weight:800;color:var(--muted);border:2px solid #fff;margin-left:-9px">+1.2k</div>
+            </div>
+          </div>
+          <div class="stick"><button class="btn">내 식물로 등록하기</button></div>
+        </section>
+
+        <!-- ============ 7. 계정 ============ -->
+        <section class="pane" id="p-account">
+          <div class="appbar">
+            <div class="logo"><div class="leaf">☘</div>My Garden</div>
+            <div class="sp"></div><button class="ibtn">⚙️</button>
+          </div>
+          <div class="body">
+            <div style="display:flex;gap:15px;align-items:center">
+              <div class="circle mint" style="width:66px;height:66px;font-size:27px">🌿</div>
+              <div style="flex:1">
+                <div style="font-size:17px;font-weight:800;letter-spacing:-.3px">초록집사</div>
+                <div style="margin-top:4px"><span class="tagchip" style="background:var(--sun-soft);color:#a0793c;font-size:11px;padding:3px 10px">🌿 정원사 · 온실 Lv.7</span></div>
+                <div class="gauge" style="margin-top:9px"><i style="width:72%"></i></div>
+              </div>
+            </div>
+
+            <div class="card stat3">
+              <div><div class="v">124</div><div class="l">함께한 날</div></div>
+              <div style="border-left:1px solid var(--line);border-right:1px solid var(--line)"><div class="v">86</div><div class="l">누적 물주기</div></div>
+              <div><div class="v">31</div><div class="l">연속 기록</div></div>
+            </div>
+
+            <div class="rowt"><h3>뱃지</h3><span class="more">12 / 40 ›</span></div>
+            <div class="bgrid">
+              <div class="badge"><div class="cir">🌱</div><div class="nm">첫 식물</div></div>
+              <div class="badge"><div class="cir">💧</div><div class="nm">물주기 50</div></div>
+              <div class="badge"><div class="cir">🏆</div><div class="nm">한 달 개근</div></div>
+              <div class="badge"><div class="cir">👨‍👩‍👧</div><div class="nm">함께 30일</div></div>
+              <div class="badge lock"><div class="cir">🔒</div><div class="nm">100일</div></div>
+              <div class="badge lock"><div class="cir">🔒</div><div class="nm">개화</div></div>
+              <div class="badge lock"><div class="cir">🔒</div><div class="nm">Lv.10</div></div>
+              <div class="badge lock"><div class="cir">🔒</div><div class="nm">식물 10</div></div>
+            </div>
+
+            <div class="rowt"><h3>우리집 온실</h3><span class="more">관리 ›</span></div>
+            <div class="card">
+              <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+                <div class="mav" style="background:#7d9587;margin:0">초</div>
+                <div style="flex:1;margin-left:4px">
+                  <div style="font-size:13px;font-weight:700">초록집사 <span class="tiny">· 정원 오너</span></div>
+                  <div class="tiny">이번 달 기여 62%</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <div class="mav" style="background:#dfb571;margin:0">민</div>
+                <div style="flex:1;margin-left:4px">
+                  <div style="font-size:13px;font-weight:700">민수 <span class="tiny">· 가드너</span></div>
+                  <div class="tiny">이번 달 기여 38%</div>
+                </div>
+              </div>
+              <button class="btn ghost" style="margin-top:14px;font-size:13.5px;padding:12px">+ 가드너 초대하기</button>
+            </div>
+
+            <div class="card" style="background:linear-gradient(150deg,#eef2f8,#e8edf6);border:0;display:flex;gap:11px;align-items:center">
+              <div style="font-size:20px">🤖</div>
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:700">AI 분석 크레딧</div>
+                <div class="tiny">이번 달 2회 남음 · 매월 3회 무료</div>
+              </div>
+              <span class="tagchip" style="background:#5f7ba6;color:#fff;font-size:11px">플러스</span>
+            </div>
+
+            <div class="card mlist">
+              <div class="mitem">🔔 알림 설정<span class="ar">오전 9:00 ›</span></div>
+              <div class="mitem">🌐 내 식물 공개<span class="ar">공개 ›</span></div>
+              <div class="mitem">📄 약관 · 개인정보<span class="ar">›</span></div>
+              <div class="mitem">↩ 로그아웃<span class="ar">›</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 8. AI 환경 분석 ============ -->
+        <section class="pane" id="p-ai">
+          <div class="appbar">
+            <button class="ibtn" data-go="detail">‹</button>
+            <div style="font-size:17px;font-weight:800;letter-spacing:-.3px">AI 환경 분석</div>
+            <div class="sp"></div>
+          </div>
+          <div class="body">
+            <div class="aishot">
+              <div style="font-size:42px;opacity:.4">🪟</div>
+              <div class="aitag" style="left:16px;top:18px">창 · 남향 추정</div>
+              <div class="aitag" style="right:16px;bottom:46px;border-color:var(--sun);color:#a0793c">직사광 구간</div>
+              <div class="aitag" style="left:26px;bottom:20px">현재 위치</div>
+            </div>
+            <div class="card score">
+              <div class="ring"><b>68</b></div>
+              <div style="flex:1">
+                <div style="font-size:14.5px;font-weight:800;letter-spacing:-.2px">몬스테라에게 괜찮은 자리예요</div>
+                <div class="muted" style="margin-top:3px">다만 <b>통풍</b>과 <b>물주기 주기</b>를 조금 조정하면 더 좋아져요</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="finding">
+                <div class="fi" style="background:var(--sun-soft)">☀️</div>
+                <div><b>채광 · 양호</b><br><span class="muted">창에서 1.5m 이내 밝은 간접광으로 보여요. 몬스테라에 알맞습니다.</span></div>
+              </div>
+              <div class="finding">
+                <div class="fi" style="background:var(--pink-soft)">💨</div>
+                <div><b>통풍 · 주의</b><br><span class="muted">창을 등진 구석이라 공기 흐름이 약해 보여요. 과습 위험이 올라갑니다.</span></div>
+              </div>
+              <div class="finding">
+                <div class="fi" style="background:var(--sage-soft)">💧</div>
+                <div><b>과습 위험 · 중간</b><br><span class="muted">최근 기록상 7일 주기로 주고 계신데, 이 자리 조건에는 조금 잦을 수 있어요.</span></div>
+              </div>
+            </div>
+            <div class="card sage">
+              <div style="font-size:13.5px;font-weight:800;margin-bottom:3px">추천 · 물주기 주기 조정</div>
+              <div class="muted" style="margin-bottom:12px">7일 → <b style="color:var(--sage-deep)">9일</b>로 늘려보는 걸 권해요</div>
+              <button class="btn" style="font-size:14px">이대로 적용하기 <span style="font-size:11px;opacity:.85">+10 GP</span></button>
+            </div>
+            <p class="tiny" style="text-align:center;line-height:1.7;margin:0">
+              AI 분석은 참고용 안내이며 확정 진단이 아니에요.<br>이번 달 남은 크레딧 1회
+            </p>
+          </div>
+        </section>
+
+      </div><!-- /view -->
+
+      <!-- ===== 기록 시트 ===== -->
+      <div class="ovl" id="ovl-record">
+        <div class="sheet">
+          <div class="grab"></div>
+          <h3>오늘 어떤 돌봄을 했나요?</h3>
+          <p class="muted" style="margin:0">몬스테라 · 기록하면 GP를 얻어요</p>
+          <div class="card soft" style="margin-top:14px;display:flex;gap:10px;align-items:center;border-radius:18px">
+            <div style="font-size:17px">🤖</div>
+            <div style="flex:1;font-size:12.5px;color:var(--muted)">"물 줬고 새잎이 올라왔어" 처럼 말해보세요</div>
+            <span class="tagchip" style="background:var(--sage-deep);color:#fff;font-size:10.5px;padding:3px 10px">AI</span>
+          </div>
+          <div class="rec6">
+            <button class="rec" style="background:var(--sage-soft)" data-sheet="celebrate"><div class="ic">💧</div><div class="lb">물주기</div><div class="gp">+10 GP</div></button>
+            <button class="rec" style="background:var(--sun-soft)"><div class="ic">🧪</div><div class="lb">영양제</div><div class="gp">+15 GP</div></button>
+            <button class="rec" style="background:var(--pink-soft)"><div class="ic">🪴</div><div class="lb">분갈이</div><div class="gp">+15 GP</div></button>
+            <button class="rec" style="background:var(--gray-soft)"><div class="ic">✎</div><div class="lb">메모</div><div class="gp">+5 GP</div></button>
+            <button class="rec" style="background:var(--gray-soft)"><div class="ic">📷</div><div class="lb">사진</div><div class="gp">+5 GP</div></button>
+            <button class="rec" style="background:var(--gray-soft)"><div class="ic">🌡</div><div class="lb">상태</div><div class="gp">+3 GP</div></button>
+          </div>
+          <button class="btn ghost" style="margin-top:14px" data-close>닫기</button>
+        </div>
+      </div>
+
+      <!-- ===== 레벨업 셀레브레이션 ===== -->
+      <div class="ovl center" id="ovl-celebrate">
+        <div class="celebrate">
+          <div class="burst" id="burst"></div>
+          <div class="big">LEVEL UP</div>
+          <h3>몬스테라 Lv.5</h3>
+          <p class="muted" style="margin:3px 0 0">물주기 +10 GP · 잎이 한 장 더 자랐어요</p>
+          <div class="circle mint" style="width:150px;height:150px;margin:18px auto 8px">
+            <span data-av="monstera" data-size="96" data-pot="#c98a6a"></span>
+          </div>
+          <div class="card soft" style="display:flex;gap:10px;align-items:center;text-align:left;border-radius:18px">
+            <div style="font-size:19px">🎨</div>
+            <div style="flex:1;font-size:12.5px"><b>새 화분 3종</b>이 열렸어요</div>
+          </div>
+          <div style="display:flex;gap:9px;margin-top:14px">
+            <button class="btn ghost" style="flex:1;font-size:14px" data-close>닫기</button>
+            <button class="btn" style="flex:1.4;font-size:14px" data-go="feed" data-close>피드에 자랑하기</button>
+          </div>
+          <p class="tiny" style="margin:12px 0 0">※ 실제 앱에서는 폭죽·아바타 성장이 애니메이션으로 재생됩니다</p>
+        </div>
+      </div>
+
+      <!-- ===== 아바타 꾸미기 ===== -->
+      <div class="ovl" id="ovl-custom">
+        <div class="sheet custom">
+          <div class="grab"></div>
+          <h3>몬스테라 꾸미기</h3>
+          <p class="muted" style="margin:0">모두 무료 · 레벨이 오르면 더 열려요</p>
+          <div class="circle mint" style="width:140px;height:140px;margin:16px auto 4px">
+            <span data-av="monstera" data-size="92" data-pot="#c98a6a" id="customPreview"></span>
+          </div>
+          <div style="font-size:11.5px;font-weight:700;color:var(--muted);margin-top:10px">화분</div>
+          <div class="parts" id="potParts">
+            <button class="part on" data-pot="#c98a6a" style="color:#c98a6a">●</button>
+            <button class="part" data-pot="#8fa89b" style="color:#8fa89b">●</button>
+            <button class="part" data-pot="#dcc9a8" style="color:#dcc9a8">●</button>
+            <button class="part" data-pot="#b7a3c9" style="color:#b7a3c9">●</button>
+            <button class="part" data-pot="#e0a08c" style="color:#e0a08c">●</button>
+            <button class="part" data-pot="#9fb8d0" style="color:#9fb8d0">🔒</button>
+          </div>
+          <div style="font-size:11.5px;font-weight:700;color:var(--muted);margin-top:13px">크기</div>
+          <div class="parts">
+            <button class="part">S</button><button class="part on">M</button><button class="part">L</button>
+          </div>
+          <div style="font-size:11.5px;font-weight:700;color:var(--muted);margin-top:13px">소품</div>
+          <div class="parts">
+            <button class="part on">없음</button><button class="part">🏷️</button><button class="part">🪵</button><button class="part">✨</button><button class="part">🔒</button>
+          </div>
+          <div style="display:flex;gap:9px;margin-top:18px">
+            <button class="btn ghost" style="flex:1;font-size:14px" data-close>취소</button>
+            <button class="btn" style="flex:1.4;font-size:14px" data-close>저장하기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- bottom nav -->
+      <nav class="bnav" id="bnav">
+        <button data-tab="feed"><span class="ic">🗨️</span>피드</button>
+        <button data-tab="garden" class="on"><span class="ic">🪴</span>내 식물</button>
+        <button data-tab="dict"><span class="ic">📖</span>도감</button>
+        <button data-tab="account"><span class="ic">👤</span>계정</button>
+      </nav>
+
+    </div></div>
+  </div>
+</div>
+
+<script>
+/* ---------- 아바타 (레이어드 SVG · v1과 동일 파이프라인) ---------- */
+function shade(hex,amt){
+  const n=parseInt(hex.slice(1),16), c=v=>Math.max(0,Math.min(255,v));
+  return '#'+((c((n>>16)+amt)<<16)|(c(((n>>8)&255)+amt)<<8)|c((n&255)+amt)).toString(16).padStart(6,'0');
+}
+function pot(color,w){
+  const d=shade(color,-22), l=shade(color,18);
+  return `<path d="M${-w*.30},0 L${-w*.24},${w*.30} Q${-w*.23},${w*.35} ${-w*.18},${w*.35} L${w*.18},${w*.35} Q${w*.23},${w*.35} ${w*.24},${w*.30} L${w*.30},0 Z" fill="${color}"/>
+  <path d="M${-w*.30},0 L${-w*.24},${w*.30} Q${-w*.23},${w*.35} ${-w*.18},${w*.35} L0,${w*.35} L0,0 Z" fill="${d}" opacity=".25"/>
+  <rect x="${-w*.34}" y="${-w*.055}" width="${w*.68}" height="${w*.11}" rx="${w*.05}" fill="${l}"/>`;
+}
+function leaf(x,y,rot,s,fill,vein){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+    <path d="M0,0 C-17,-7 -21,-29 0,-41 C21,-29 17,-7 0,0 Z" fill="${fill}"/>
+    <path d="M0,-2 L0,-38" stroke="${vein}" stroke-width="1.4" opacity=".5" fill="none"/>
+    <path d="M0,-14 L-9,-20 M0,-22 L-9,-28 M0,-14 L9,-20 M0,-22 L9,-28" stroke="${vein}" stroke-width="1.1" opacity=".3" fill="none"/>
+  </g>`;
+}
+const stem=(x,y,v)=>`<path d="M0,2 Q${x*.25},${y*.45} ${x},${y}" stroke="${v}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+const AV={
+  monstera(w){const a='#557f63',b='#699b78',v='#3c5c46';
+    const L=[[1,-w*.50,-4,w*.0145],[-16,-w*.34,-32,w*.0135],[17,-w*.36,30,w*.0125],[-9,-w*.20,-58,w*.0100],[11,-w*.19,54,w*.0095]];
+    let o='';L.forEach(([x,y])=>{o+=stem(x,y,v);});
+    L.forEach(([x,y,r,s],i)=>{o+=leaf(x,y,r,s,i%2?b:a,v);});
+    return o;},
+  sansevieria(w){const a='#5e8a6b',b='#71a07d',e='#cabd7e';let s='';
+    [[-13,-w*.52,-13,.92],[0,-w*.62,0,1.05],[13,-w*.54,13,.95],[-6,-w*.42,-6,.75],[7,-w*.44,7,.78]].forEach(([x,y,r,sc],i)=>{
+      s+=`<g transform="translate(${x},0) rotate(${r})">
+        <path d="M0,0 C${-5*sc},${y*.55} ${-4*sc},${y*.85} 0,${y} C${4*sc},${y*.85} ${5*sc},${y*.55} 0,0 Z" fill="${i%2?b:a}"/>
+        <path d="M0,0 C${-5*sc},${y*.55} ${-4*sc},${y*.85} 0,${y}" stroke="${e}" stroke-width="1.2" fill="none" opacity=".55"/></g>`;});
+    return s;},
+  succulent(w){const c=['#7fa98a','#8cb795','#9ac4a2','#a9d1af'];let s='';
+    for(let i=0;i<9;i++){s+=`<g transform="rotate(${i*40}) translate(0,${-w*.13})"><ellipse rx="${w*.055}" ry="${w*.105}" fill="${c[i%4]}"/></g>`;}
+    return `<g transform="translate(0,${-w*.10})">${s}<circle r="${w*.05}" fill="#6a9573"/></g>`;},
+  calathea(w){const a='#54806a',b='#66957a',vv='#dbe6cf';let s='';
+    [[-18,-w*.32,-40,.95],[0,-w*.46,-6,1.06],[18,-w*.34,38,.97],[-8,-w*.20,-62,.72],[10,-w*.21,58,.74]].forEach(([x,y,r,sc],i)=>{
+      s+=`<g transform="translate(${x},${y}) rotate(${r}) scale(${w*.012*sc})">
+        <ellipse cx="0" cy="-18" rx="12" ry="21" fill="${i%2?b:a}"/>
+        <ellipse cx="0" cy="-18" rx="5.5" ry="15" fill="${vv}" opacity=".5"/>
+        <path d="M0,2 L0,-34" stroke="${vv}" stroke-width="1.5" opacity=".65"/></g>`;});
+    return `<g><path d="M0,0 L0,${-w*.22}" stroke="#4c7059" stroke-width="2.2"/>${s}</g>`;},
+  pothos(w){const a='#5c936d',b='#6da57c',v='#40684d';let s='';
+    const L=[[0,-w*.40,0,.9],[-15,-w*.28,-30,.8],[15,-w*.30,30,.78],[-24,-w*.10,-72,.66],[24,-w*.12,70,.64],[-10,-w*.52,-14,.7]];
+    L.forEach(([x,y])=>{s+=stem(x,y+3,v);});
+    L.forEach(([x,y,r,sc],i)=>{s+=`<g transform="translate(${x},${y}) rotate(${r}) scale(${sc})">
+      <path d="M0,0 C-13,-6 -16,-22 0,-30 C16,-22 13,-6 0,0 Z" fill="${i%2?a:b}"/>
+      <path d="M0,-3 L0,-27" stroke="${v}" stroke-width="1.2" opacity=".45"/></g>`;});
+    return s;}
+};
+function renderAvatars(root){
+  (root||document).querySelectorAll('[data-av]').forEach(el=>{
+    const kind=el.dataset.av, w=+(el.dataset.size||80), potc=el.dataset.pot||'#c98a6a';
+    const h=w*1.22;
+    el.innerHTML=`<svg width="${w}" height="${h}" viewBox="${-w/2} ${-h*.70} ${w} ${h}" style="display:block;overflow:visible">
+      <ellipse cx="0" cy="${w*.37}" rx="${w*.28}" ry="${w*.05}" fill="rgba(70,90,70,.14)"/>
+      ${AV[kind]?AV[kind](w):''}
+      ${pot(potc,w)}
+    </svg>`;
+  });
+}
+renderAvatars();
+
+/* ---------- 미니 정원 씬 (홈) ---------- */
+function drawMiniGarden(){
+  const svg=document.getElementById('miniGarden'); if(!svg)return;
+  const TW=118,TH=59,OX=195,OY=120;
+  const Pp=(x,y)=>[(x-y)*TW/2+OX,(x+y)*TH/2+OY];
+  const ptss=a=>a.map(p=>p.join(',')).join(' ');
+  let o='';
+  o+=`<polygon points="${ptss([Pp(-.4,-.4),Pp(3.4,-.4),Pp(3.4,3.4),Pp(-.4,3.4)])}" fill="#dfe7d8"/>`;
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++){
+    o+=`<polygon points="${ptss([Pp(i,j),Pp(i+1,j),Pp(i+1,j+1),Pp(i,j+1)])}"
+      fill="${(i+j)%2?'#efe9db':'#f6f1e4'}" stroke="#e4ddcc" stroke-width=".8"/>`;
+  }
+  const items=[[.5,.5,'sansevieria',44,'#8fa89b'],[1.5,.5,'succulent',38,'#dcc9a8'],
+    [2.5,.6,'calathea',44,'#b7a3c9'],[.6,1.6,'pothos',48,'#e0a08c'],
+    [1.5,1.6,'monstera',70,'#c98a6a'],[2.5,2.4,'pothos',50,'#a8785d']];
+  items.sort((a,b)=>(a[0]+a[1])-(b[0]+b[1])).forEach(([x,y,k,w,pc])=>{
+    const [sx,sy]=Pp(x,y);
+    o+=`<g transform="translate(${sx},${sy})" data-mini>
+      <ellipse cy="3" rx="${w*.3}" ry="${w*.07}" fill="rgba(70,90,70,.13)"/>
+      <g transform="translate(0,0)">${AV[k]?AV[k](w):''}${pot(pc,w)}</g></g>`;
+  });
+  svg.innerHTML=o;
+}
+drawMiniGarden();
+
+/* ---------- 화면 목록 & 내비 ---------- */
+const SCREENS=[
+  ['garden','정원 (홈)','정원 뷰가 기본 홈. 파스텔 배경 위에 아바타 배치, 상단은 로고+날씨 필, 온실 레벨 게이지와 멤버. 아래 토글로 리스트 뷰 전환.'],
+  ['list','리스트 (MyPlants)','레거시 시그니처 화면의 재현 — 원형 식물 사진, D-day 알약, 물방울 도트 게이지, 사진에 겹친 물뿌리개 버튼, 우측 이름(영문+한글)과 레벨 필.'],
+  ['detail','식물 상세','레거시의 딥 세이지 히어로 + 원형 사진 + 이탤릭 학명. "함께한 지 N일" 반투명 카드, D-Day 원형 배지(세이지/핑크/크림), 행위자 표시 기록.'],
+  ['feed','피드','스토리 줄(원형 사진 + 해/물방울 도트)이 레거시 감성. 알약 탭(All/채널), 뱃지 자랑 카드는 크림 톤.'],
+  ['dict','도감 (Plant Book)','레거시 Plant Book 그대로 — 배너, 스쿼클 해시태그 8종(#초보집사…#겨울나기), 오늘의 식물 카드.'],
+  ['dictDetail','도감 상세','원형 사진 + 이탤릭 학명, 관리 정보 4칸, 파스텔 해시태그 칩.'],
+  ['account','계정','파스텔 뱃지 진열장, 온실 멤버·기여도, AI 크레딧, 미니멀 설정 리스트.'],
+  ['ai','AI 환경 분석','분석 태그는 알약형 점선, 소견 아이콘은 파스텔 원형.']
+];
+const TAB_OF={garden:'garden',list:'garden',detail:'garden',ai:'garden',feed:'feed',dict:'dict',dictDetail:'dict',account:'account'};
+let cur='garden';
+const slist=document.getElementById('slist');
+SCREENS.forEach(([id,label],i)=>{
+  const b=document.createElement('button');
+  b.innerHTML=`<span class="n">${i+1}</span>${label}`;
+  b.dataset.go=id; slist.appendChild(b);
+});
+function go(id){
+  if(!document.getElementById('p-'+id)) return;
+  cur=id;
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+id));
+  document.querySelectorAll('#bnav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===TAB_OF[id]));
+  document.querySelectorAll('#slist button').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+  document.getElementById('view').scrollTop=0;
+}
+
+/* ---------- 갤러리 ---------- */
+const OVERLAYS=[
+  ['record','detail','기록 시트','기록 6종이 파스텔 스쿼클 타일로. 상단에 자연어 AI 입력, 각 항목에 획득 GP.'],
+  ['celebrate','detail','레벨업 셀레브레이션','파스텔 컨페티 + 원형 아바타. 실제 앱에서는 Lottie/Rive 애니메이션으로 재생.'],
+  ['custom','detail','아바타 꾸미기','화분·크기·소품 파츠 선택. 화분 색을 누르면 미리보기가 실제로 바뀝니다.']
+];
+function fillConfetti(b){
+  if(!b) return;
+  const cols=['#dfb571','#7d9587','#cf9a90','#a9c4b1','#e5d3b6'];
+  b.innerHTML='';
+  for(let i=0;i<24;i++){
+    const d=document.createElement('div');
+    d.className='cf';
+    d.style.background=cols[i%cols.length];
+    d.style.left=(6+Math.random()*88)+'%';
+    d.style.top=(6+Math.random()*66)+'%';
+    d.style.transform=`rotate(${Math.random()*360}deg)`;
+    b.appendChild(d);
+  }
+}
+function buildGallery(){
+  const g=document.getElementById('gallery'); if(!g) return;
+  g.innerHTML='';
+  const items=[
+    ...SCREENS.map((s,i)=>({n:i+1,id:s[0],label:s[1],note:s[2]})),
+    ...OVERLAYS.map((o,i)=>({n:SCREENS.length+i+1,id:o[1],ovl:o[0],label:o[2],note:o[3]}))
+  ];
+  items.forEach(it=>{
+    const base=document.getElementById('p-'+it.id); if(!base) return;
+    const pane=base.cloneNode(true); pane.removeAttribute('id'); pane.classList.add('on');
+    pane.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    const nav=document.getElementById('bnav').cloneNode(true); nav.removeAttribute('id');
+    nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.tab===TAB_OF[it.id]));
+    const item=document.createElement('div');
+    item.className='gitem';
+    item.innerHTML=`<div class="glabel"><b>${it.n}</b>${it.label}${it.ovl?'<span class="ov">오버레이</span>':''}</div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="dots">●●●●● ᯤ ▮</span></div>
+        <div class="view"></div>
+      </div></div>
+      <p class="gnote">${it.note||''}</p>`;
+    const screen=item.querySelector('.screen');
+    item.querySelector('.view').appendChild(pane);
+    if(it.ovl){
+      const o=document.getElementById('ovl-'+it.ovl).cloneNode(true);
+      o.removeAttribute('id'); o.classList.add('on');
+      o.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+      screen.appendChild(o);
+    }
+    screen.appendChild(nav);
+    g.appendChild(item);
+  });
+  renderAvatars(g);
+  /* 갤러리 내 미니 정원·컨페티 다시 그림 */
+  g.querySelectorAll('svg[viewBox="0 0 390 430"]').forEach(s=>{
+    const src=document.getElementById('miniGarden');
+    if(src) s.innerHTML=src.innerHTML;
+  });
+  g.querySelectorAll('.burst').forEach(fillConfetti);
+}
+function setMode(m){
+  document.body.classList.toggle('gal',m==='gal');
+  document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+  if(m==='gal') buildGallery();
+  window.scrollTo(0,0);
+}
+
+/* ---------- 클릭 ---------- */
+document.addEventListener('click',e=>{
+  const mode=e.target.closest('[data-mode]');
+  if(mode){ setMode(mode.dataset.mode); return; }
+  if(e.target.closest('#gallery')) return;
+
+  const go_=e.target.closest('[data-go]');
+  const sheet=e.target.closest('[data-sheet]');
+  const close=e.target.closest('[data-close]');
+  const tab=e.target.closest('#bnav button');
+
+  if(close){ document.querySelectorAll('.ovl').forEach(o=>o.classList.remove('on')); }
+  if(sheet){ e.preventDefault();
+    document.querySelectorAll('.ovl').forEach(o=>o.classList.remove('on'));
+    const o=document.getElementById('ovl-'+sheet.dataset.sheet);
+    if(o){ o.classList.add('on'); if(sheet.dataset.sheet==='celebrate') fillConfetti(document.getElementById('burst')); }
+    if(!go_) return;
+  }
+  if(tab){ go(tab.dataset.tab); return; }
+  if(go_){ go(go_.dataset.go); return; }
+  const ovl=e.target.closest('.ovl');
+  if(ovl && e.target===ovl) ovl.classList.remove('on');
+});
+
+/* 화분 색 미리보기 */
+document.getElementById('potParts')?.addEventListener('click',e=>{
+  const p=e.target.closest('.part'); if(!p||!p.dataset.pot) return;
+  document.querySelectorAll('#potParts .part').forEach(x=>x.classList.remove('on'));
+  p.classList.add('on');
+  const pv=document.getElementById('customPreview');
+  pv.dataset.pot=p.dataset.pot; renderAvatars(pv.parentElement);
+});
+
+go('garden');
+setMode('gal');
+</script>
+</body>
+</html>
