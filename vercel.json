@@ -1,0 +1,7 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "claude/plantgram-requirements-design-cuqasr": false
+    }
+  }
+}
