@@ -149,10 +149,14 @@ svg.ic{display:block}
 <body>
 
 <div class="intro">
-  <div class="eyebrow">Plantgram · Mockup v3 · <span style="background:#3e5c4b;color:#fff;border-radius:99px;padding:2px 10px;letter-spacing:0">업데이트 v3.4 — 상세+꾸미기 통합</span></div>
-  <h1>여백으로 다시 설계했습니다</h1>
-  <p>화면마다 목적 하나, 헤드라인 하나. 정보는 카드가 아니라 행과 간격으로 나누고,
-  색은 세이지 하나만 씁니다. 일러스트 블록이 화면의 이미지를 담당합니다 — 토스와 앱스토어 에디토리얼의 문법입니다.</p>
+  <div class="eyebrow">Plantgram · Mockup v3 · <span style="background:#3e5c4b;color:#fff;border-radius:99px;padding:2px 10px;letter-spacing:0">업데이트 v3.5 — 디자인 사상 정리</span></div>
+  <h1>다섯 가지 원칙으로 정리했습니다</h1>
+  <p style="max-width:64ch">
+  <b style="color:var(--ink)">① 여백이 레이아웃</b> — 화면마다 목적 하나, 헤드라인 하나. 정보는 카드 대신 행과 간격으로 나눕니다.&ensp;
+  <b style="color:var(--ink)">② 색은 세이지 하나</b> — 경고만 더스티 핑크, 물은 블루. 나머지는 흰 표면과 회색 블록.&ensp;
+  <b style="color:var(--ink)">③ 정원이 곧 홈</b> — 아이소메트릭 온실이 첫 화면의 주인공이고, 말풍선이 곧 할 일입니다.&ensp;
+  <b style="color:var(--ink)">④ 화면이 곧 카드</b> — 식물 상세는 내가 꾸민 카드로 열리고, 테마·스티커·글자가 화면 전체를 물들입니다.&ensp;
+  <b style="color:var(--ink)">⑤ 보드는 에디토리얼</b> — 내 식물은 정사각 3열 그리드에 칸마다 다른 타이포 구성. 취향 따라 리스트로 전환.</p>
 </div>
 
 <div class="gallery" id="gallery"></div>
@@ -354,32 +358,6 @@ function ghBlock(){
   </div>`;
 }
 
-/* ---------- 홈 정원 일러스트 블록 ---------- */
-function gardenBlock(h=300){
-  const TW=112,TH=56;
-  const Pp=(x,y)=>[(x-y)*TW/2+195,(x+y)*TH/2+58];
-  const ptss=a=>a.map(p=>p.join(',')).join(' ');
-  let o='';
-  for(let i=0;i<3;i++)for(let j=0;j<3;j++){
-    o+=`<polygon points="${ptss([Pp(i,j),Pp(i+1,j),Pp(i+1,j+1),Pp(i,j+1)])}"
-      fill="${(i+j)%2?'#edeadf':'#f4f1e6'}" stroke="#e5e0d0" stroke-width=".8"/>`;
-  }
-  [[.5,.5,'sansevieria',46,'#8fa89b'],[1.5,.5,'succulent',40,'#dcc9a8'],
-   [2.5,.6,'calathea',46,'#b7a3c9'],[.6,1.6,'pothos',50,'#e0a08c'],
-   [1.5,1.6,'monstera',72,'#c98a6a'],[2.6,2.3,'pothos',52,'#a8785d']]
-  .sort((a,b)=>(a[0]+a[1])-(b[0]+b[1])).forEach(([x,y,k,w,pc])=>{
-    const [sx,sy]=Pp(x,y);
-    o+=`<g transform="translate(${sx},${sy})">
-      <ellipse cy="3" rx="${w*.3}" ry="${w*.07}" fill="rgba(70,90,70,.12)"/>
-      ${AV[k]?AV[k](w):''}${pot(pc,w)}</g>`;
-  });
-  return `<div class="block-img" style="height:${h}px;background:linear-gradient(176deg,#e9efe6,#f3f0e4)">
-    <svg viewBox="0 40 390 ${h}" style="width:100%;height:100%;display:block">${o}</svg>
-    <div style="position:absolute;left:16px;bottom:16px" class="pill glass">우리집 온실 · Lv.7</div>
-    <div style="position:absolute;right:16px;bottom:14px" class="pill glass">꾸미기</div>
-  </div>`;
-}
-
 /* ============================================================
    화면 정의
    ============================================================ */
@@ -571,7 +549,21 @@ ${statusbar}
     <p class="tiny" style="padding:12px 20px 0">상세에서 꾸민 테마·스티커가 이 보드 칸에 그대로 반영돼요</p>
   </div>
   <div id="pvList" style="display:none">
-    <div class="pagepad" style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
+    <div class="pagepad" style="margin-top:14px">
+      <div style="background:linear-gradient(135deg,#eaf2f6,#f2f0e5);border-radius:20px;padding:15px 18px;display:flex;align-items:center;gap:13px">
+        <span style="font-size:26px">⛅️</span>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:800">28° 구름 조금 · 습도 64%</div>
+          <div class="tiny" style="margin-top:1px">한낮 직사광은 피하고, 저녁에 물 주기 좋아요</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;background:var(--pink-soft);border-radius:20px;padding:14px 18px;display:flex;align-items:center;gap:11px">
+        <span style="color:var(--pink)">${ic('drop',18)}</span>
+        <div style="flex:1;font-size:13.5px;font-weight:700;color:var(--pink)">물 줄 식물 2개</div>
+        <span style="font-size:13px;font-weight:800;color:var(--pink)">한 번에 물주기</span>
+      </div>
+    </div>
+    <div class="pagepad" style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
       ${plantListRows()}
     </div>
   </div>
@@ -682,12 +674,12 @@ function detailSections(){
   </div>
   <div style="display:flex;gap:12px">
     <div style="flex:1;background:#fff;border-radius:22px;padding:15px;display:flex;align-items:center;gap:10px">
-      <div style="font-size:19px">🎨</div>
-      <div style="flex:1"><div style="font-size:13px;font-weight:800">꾸미기</div><div class="tiny">테마·사진·스티커</div></div>
+      <div style="font-size:19px">🩺</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:800">AI 식물 검사</div><div class="tiny">사진으로 상태 리포트</div></div>
       <span class="chev">›</span>
     </div>
     <div style="flex:1;background:#fff;border-radius:22px;padding:15px;display:flex;align-items:center;gap:10px">
-      <div style="font-size:19px">🤖</div>
+      <div style="font-size:19px">🌤</div>
       <div style="flex:1"><div style="font-size:13px;font-weight:800">환경 분석</div><div class="tiny">이 자리 맞을까?</div></div>
       <span class="chev">›</span>
     </div>
@@ -793,6 +785,8 @@ ${nav('plant')}
         <div style="font-size:10.5px;color:var(--sage);font-weight:700;margin-top:1px">+${gp} GP</div>
       </div>`).join('')}
   </div>
+  <button class="cta" style="margin-top:16px">저장하기</button>
+  <p class="tiny" style="text-align:center;margin:10px 0 0">AI가 말로 한 기록을 초안으로 만들어요 — 확인 후에만 저장됩니다</p>
 </div></div>
 `});
 
@@ -819,13 +813,19 @@ ${statusbar}
 `});
 
 /* ---------- 6. 피드 ---------- */
-screens.push({label:'피드',note:'앱스토어 Today 카드 — 이미지가 카드의 대부분을 차지하고 텍스트는 하단에 조금만. 뱃지 자랑도 같은 문법의 카드입니다.',
+screens.push({label:'피드',note:'팔로우 없는 주제 중심 피드 — 상단 채널 칩(전체·식물종·주제)으로 이동합니다. 앱스토어 Today 카드 문법: 이미지가 카드의 대부분, 텍스트는 하단에 조금만. 뱃지 획득·레벨업은 자동 카드로 올라옵니다.',
 html:`
 ${statusbar}
 <div style="flex:1;overflow:hidden">
   <div class="pagepad" style="display:flex;align-items:center;padding-top:10px">
     <div class="h1" style="flex:1">피드</div>
     <button class="iconbtn plain">${ic('cam',22,'#8b928c')}</button>
+  </div>
+
+  <div style="display:flex;gap:7px;padding:14px 24px 0;overflow:hidden">
+    ${[['전체',1],['몬스테라',0],['개화 🌸',0],['스투키',0],['초보 집사',0]]
+      .map(([t,on])=>`<span style="flex:0 0 auto;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:700;
+        ${on?'background:var(--ink);color:#fff':'background:var(--block);color:var(--sub)'}">${t}</span>`).join('')}
   </div>
 
   <div class="pagepad" style="margin-top:16px;display:flex;flex-direction:column;gap:22px">
@@ -972,7 +972,7 @@ ${statusbar}
   </div>
 
   <div class="pagepad" style="margin-top:34px;padding-bottom:20px">
-    ${[['알림','오전 9:00'],['내 식물 공개','공개'],['AI 분석 크레딧','2회 남음'],['설정','']]
+    ${[['알림','오전 9:00'],['내 식물 공개','공개'],['AI 분석 크레딧','2회 남음 · 플러스 구독'],['설정','']]
       .map(([t,v])=>`
       <div class="row" style="min-height:54px">
         <div class="grow"><div class="t" style="font-size:14.5px;font-weight:600">${t}</div></div>
