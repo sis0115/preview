@@ -234,11 +234,11 @@ function gardenBlock(h=300){
 const screens=[];
 
 /* ---------- 1. 홈 ---------- */
-screens.push({label:'홈',note:'헤드라인이 오늘의 상태를 문장으로 말해줍니다. 정원 일러스트가 화면의 이미지 역할 — 탭하면 정원으로. 그 아래는 오늘 할 일만, 전체 목록은 조용한 버튼 뒤로.',
+screens.push({label:'홈',note:'헤드라인이 오늘의 상태를 문장으로 말해줍니다. 정원 일러스트 블록이 화면 세로를 꽉 채우는 주인공 — 남는 높이를 전부 가져갑니다. 그 아래는 오늘 할 일만, 전체 목록은 조용한 버튼 뒤로.',
 html:`
 ${statusbar}
 <div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
-  <div class="pagepad" style="display:flex;align-items:flex-start;padding-top:10px">
+  <div class="pagepad" style="display:flex;align-items:flex-start;padding-top:8px">
     <div style="flex:1">
       <div class="h-date">8월 26일 화요일</div>
       <div class="h1">물이 필요한 식물이<br><span class="accent">2개</span> 있어요</div>
@@ -246,11 +246,13 @@ ${statusbar}
     <button class="iconbtn plain" style="margin-top:4px">${ic('bell',22,'#8b928c')}</button>
   </div>
 
-  <div class="pagepad" style="margin-top:22px">${gardenBlock(268)}</div>
+  <div class="pagepad" style="margin-top:18px;flex:1;display:flex;flex-direction:column;min-height:0">
+    ${gardenBlock(340).replace('height:340px','height:100%;min-height:300px').replace('class="block-img"','class="block-img" data-grow')}
+  </div>
 
-  <div class="pagepad" style="margin-top:38px">
+  <div class="pagepad" style="margin-top:26px">
     <div class="sec">오늘 할 일</div>
-    <div style="margin-top:6px">
+    <div style="margin-top:4px">
       <div class="row">
         <div class="avatar" style="width:54px;height:54px">${plant('monstera',36)}</div>
         <div class="grow">
@@ -270,7 +272,7 @@ ${statusbar}
     </div>
   </div>
 
-  <div class="pagepad" style="margin-top:26px">
+  <div class="pagepad" style="margin-top:14px;padding-bottom:16px">
     <button class="cta quiet" style="font-size:14.5px;padding:15px">내 식물 6개 모두 보기</button>
   </div>
 </div>
@@ -311,25 +313,29 @@ ${nav('plant')}
 `});
 
 /* ---------- 3. 식물 상세 ---------- */
-screens.push({label:'식물 상세',note:'앱스토어 에디토리얼처럼 — 흰 배경, 큰 일러스트, 학명은 이탤릭 한 줄, 상태는 문장으로. 정보 3열은 카드 없이 헤어라인만. 물이 급할 때만 아래 CTA가 나타납니다.',
+screens.push({label:'식물 상세',note:'레거시 아이덴티티의 딥 세이지 히어로로 — 초록 배경에 원형 일러스트와 이탤릭 학명, 상태는 반투명 문장. 아래 흰 시트는 v3 여백 문법 그대로: 헤어라인 3열, 급할 때만 나타나는 핑크 배너.',
 html:`
-${statusbar}
+<div style="background:var(--sage);border-radius:39px 39px 0 0">
+  <div class="status" style="color:#fff"><span>9:41</span><span class="r" style="color:rgba(255,255,255,.6)">●●●●  ᯤ  ▮</span></div>
+</div>
 <div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
-  <div class="pagepad" style="display:flex;justify-content:space-between;padding-top:6px">
-    <button class="iconbtn plain" style="margin-left:-12px">${ic('back',22)}</button>
-    <button class="iconbtn plain" style="margin-right:-12px">${ic('more',22,'#8b928c')}</button>
-  </div>
-
-  <div style="text-align:center;margin-top:8px">
-    <div class="avatar" style="width:190px;height:190px;margin:0 auto;background:radial-gradient(circle at 42% 32%,#f2f5ef,#e7ede4)">
-      ${plant('monstera',124)}
+  <div style="background:var(--sage);color:#fff;padding-bottom:34px">
+    <div class="pagepad" style="display:flex;justify-content:space-between;padding-top:2px">
+      <button class="iconbtn plain" style="margin-left:-12px;color:#fff">${ic('back',22)}</button>
+      <button class="iconbtn plain" style="margin-right:-12px;color:rgba(255,255,255,.8)">${ic('more',22)}</button>
     </div>
-    <div style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:var(--faint);margin-top:22px">Monstera deliciosa</div>
-    <div style="font-size:27px;font-weight:800;letter-spacing:-.6px;margin-top:2px">몬스테라</div>
-    <div class="sub" style="margin-top:8px">함께한 지 124일 · 잘 자라고 있어요</div>
+    <div style="text-align:center;margin-top:4px">
+      <div class="avatar" style="width:180px;height:180px;margin:0 auto;background:radial-gradient(circle at 42% 32%,#f4f6f1,#e3ebe1);box-shadow:0 18px 44px rgba(0,0,0,.18)">
+        ${plant('monstera',118)}
+      </div>
+      <div style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:rgba(255,255,255,.55);margin-top:22px">Monstera deliciosa</div>
+      <div style="font-size:26px;font-weight:800;letter-spacing:-.6px;margin-top:2px">몬스테라</div>
+      <div style="font-size:13.5px;color:rgba(255,255,255,.72);margin-top:8px">함께한 지 124일 · 잘 자라고 있어요</div>
+    </div>
   </div>
 
-  <div class="pagepad" style="margin-top:32px">
+  <div style="background:var(--bg);border-radius:30px 30px 0 0;margin-top:-24px;flex:1;display:flex;flex-direction:column;padding-top:30px">
+  <div class="pagepad">
     <div style="display:flex;text-align:center">
       <div style="flex:1"><div class="tiny">물주기</div><div style="font-size:16px;font-weight:800;margin-top:4px">7일마다</div></div>
       <div style="flex:1;border-left:1px solid var(--hair);border-right:1px solid var(--hair)"><div class="tiny">레벨</div><div style="font-size:16px;font-weight:800;margin-top:4px">Lv.4</div></div>
@@ -366,6 +372,7 @@ ${statusbar}
 
   <div style="flex:1"></div>
   <div class="pagepad" style="padding-bottom:14px"><button class="cta">기록하기</button></div>
+  </div>
 </div>
 ${nav('plant')}
 `});
