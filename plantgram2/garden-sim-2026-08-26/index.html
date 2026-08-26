@@ -15,11 +15,11 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
-.wrap{max-width:1020px;margin:0 auto;padding:30px 20px 70px}
+.wrap{max-width:1060px;margin:0 auto;padding:30px 20px 70px}
 h1{font-size:25px;margin:0 0 6px}
-.lede{color:var(--muted);font-size:13.5px;margin:0 0 18px;max-width:66ch}
+.lede{color:var(--muted);font-size:13.5px;margin:0 0 18px;max-width:68ch}
 .stagebox{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
-.scene{background:linear-gradient(178deg,#e6f1f6 0%,#edf3e9 58%,#f3f0e6 100%);
+.scene{background:linear-gradient(178deg,#e3f0f7 0%,#ecf3e8 58%,#f3f0e6 100%);
   border-radius:14px;overflow:hidden;position:relative;user-select:none}
 .scene svg{display:block;width:100%;height:auto}
 
@@ -67,17 +67,17 @@ h1{font-size:25px;margin:0 0 6px}
 </head>
 <body>
 <div class="wrap">
-  <h1>정원 시뮬레이터 <span style="font-size:11px;font-weight:800;background:var(--brand-soft);color:var(--brand-ink);border-radius:99px;padding:2px 10px;vertical-align:3px">배치 + 돌보기 인터랙션</span></h1>
-  <p class="lede">칸 시스템 확장판: 정원이 <b>바닥 16칸 + 선반 8칸</b>으로 세분화됐고, 식물에 <b>크기 등급(소/중/대)</b>이 생겼습니다.
-  소형만 선반에 올라가고, 대형은 위로 두 칸을 차지해 선반 아래에 못 들어갑니다.
-  <b>돌보기 모드</b>에서 목마른 식물을 탭해 물을 주고, <b>꾸미기 모드</b>에서 제약을 직접 확인해보세요 — 놓을 수 있는 칸(초록)과 안 되는 칸(🚫)이 구분됩니다.</p>
+  <h1>정원 시뮬레이터 <span style="font-size:11px;font-weight:800;background:var(--brand-soft);color:var(--brand-ink);border-radius:99px;padding:2px 10px;vertical-align:3px">온실 + 마당 · 칸 45</span></h1>
+  <p class="lede">레퍼런스 온실 일러스트 구성으로 재편: <b>온실 내부(바닥 25칸 + 벤치 10칸)</b>에 <b>바깥 마당 10칸</b>이 더해져 총 45칸입니다.
+  소형만 벤치에 올라가고, 대형은 위로 두 칸을 차지해 벤치 아래·벤치 위에 못 갑니다. 마당은 야외라 어떤 크기든 OK.
+  <b>돌보기</b>에서 물을 주고, <b>꾸미기</b>에서 제약을 확인하며 배치해보세요.</p>
 
   <div class="stagebox">
     <div class="scene" id="scene">
       <svg id="garden" viewBox="0 0 900 640"></svg>
       <div class="hud">
         <div class="hudcard">
-          <div class="t">🏡 우리집 정원 <span style="font-size:10.5px;background:var(--brand-soft);color:var(--brand-ink);border-radius:99px;padding:1px 8px">Lv.<span id="lv">7</span></span></div>
+          <div class="t">🏡 우리집 온실 <span style="font-size:10.5px;background:var(--brand-soft);color:var(--brand-ink);border-radius:99px;padding:1px 8px">Lv.<span id="lv">7</span></span></div>
           <div class="lvrow"><div class="gauge"><i id="gpbar"></i></div><span id="gptxt"></span></div>
         </div>
         <div class="sp"></div>
@@ -93,12 +93,11 @@ h1{font-size:25px;margin:0 0 6px}
     <div class="legend" id="legend"></div>
   </div>
 
-  <div class="note" id="designnote">
-    <b>칸·크기 시스템</b> — 정원은 <b>바닥 16칸 + 선반 8칸 = 24칸</b>입니다. 식물마다 크기 등급이 있습니다:
-    <b>소형(S)</b>은 어디든(선반 포함), <b>중형(M)</b>은 개방 바닥만, <b>대형(L)</b>은 위로 두 칸 높이를 차지해
-    선반 아래(천장 낮음)와 선반 위에는 둘 수 없습니다. 꾸미기 모드에서 식물을 선택하면 놓을 수 있는 칸은
-    초록으로, 크기 제약에 걸리는 칸은 🚫 붉은 표시로 구분되고, 탭하면 이유를 알려줍니다.
-    모든 배치는 여전히 <b>칸 ID + 파츠 JSON</b> 갱신뿐 — 이 데이터가 그대로 Firestore 문서입니다.
+  <div class="note">
+    <b>칸 구성 (레퍼런스 반영)</b> — 온실 내부: 바닥 5×5=25칸(벤치 아래 9칸은 천장 낮음) + 뒷벤치 6칸·왼벤치 4칸.
+    온실 밖 마당: 앞쪽 포장 구역 10칸 — 야외라 크기 제한이 없습니다. 수레·빈 화분은 장식 소품입니다.
+    배치 규칙: <b>소형</b> 어디든 / <b>중형</b> 개방 바닥·마당 / <b>대형</b> 개방 바닥·마당(위로 두 칸 차지).
+    모든 배치는 칸 ID + 파츠 JSON 갱신뿐 — 이 데이터가 그대로 Firestore 문서입니다.
   </div>
 
   <a class="back" href="../garden-kit-2026-08-26/">← 파츠 카탈로그</a>
@@ -106,7 +105,7 @@ h1{font-size:25px;margin:0 0 6px}
 
 <script>
 /* ================= 투영 ================= */
-const TW=88, TH=44, ZH=50, OX=450, OY=176;
+const TW=64, TH=32, ZH=40, OX=450, OY=150;
 const P=(x,y,z=0)=>[(x-y)*TW/2+OX,(x+y)*TH/2-z*ZH+OY];
 const pts=a=>a.map(p=>p.join(',')).join(' ');
 const sh=(hex,amt)=>{const n=parseInt(hex.slice(1),16),c=v=>Math.max(0,Math.min(255,v));
@@ -123,7 +122,7 @@ function grad(type, stops, attrs=''){
   return `url(#${id})`;
 }
 
-/* ================= 잎/줄기 (셰이딩 강화) ================= */
+/* ================= 잎/줄기 ================= */
 function toneGrads(t){
   return {
     leafA: grad('linear',[[0,sh(t.base,26)],[.55,t.base],[1,sh(t.base,-24)]],'x1="0" y1="0" x2="0.4" y2="1"'),
@@ -138,7 +137,6 @@ function leafBlade(x,y,rot,s,fill,vein){
     <path d="M0,-2 L0,-36" stroke="${vein}" stroke-width="1.4" opacity=".55"/>
     <path d="M0,-13 L-8,-19 M0,-21 L-8,-27 M0,-13 L8,-19 M0,-21 L8,-27" stroke="${vein}" stroke-width="1" opacity=".32" fill="none"/></g>`;
 }
-/* 줄기: 흙(0,0)에서 (x,y)까지 자연스러운 곡선 */
 const stem=(x,y,vein,w=2.4)=>`<path d="M0,4 Q${n1(x*.25)},${n1(y*.45)} ${n1(x)},${n1(y)}"
   stroke="${vein}" stroke-width="${w}" fill="none" stroke-linecap="round"/>`;
 
@@ -208,12 +206,24 @@ const FORMS={
               <ellipse cx="${n1(sp)}" cy="${n1(y)}" rx="${n1(sp*.5+1.4)}" ry="2.4" fill="${fill}"/>`;}
       o+=`<g transform="rotate(${rot})"><path d="M0,2 Q${n1(rot*.06)},${n1(-H*.6)} 0,${n1(-H)}" stroke="${g.vein}" stroke-width="1.6" fill="none"/>${pin}</g>`;});
     return `<g transform="scale(${n1(k*s)})">${o}</g>`;}},
+  flower:{name:'꽃나무',draw(w,st,g){
+    const s=STAGE_SCALE[st-1],k=w/46;
+    const B=pick([[0,-38,1],[-14,-30,.85],[15,-31,.85],[-24,-18,.7],[24,-19,.7],[-7,-46,.75],[8,-45,.72]],STAGE_COUNT[st-1]);
+    let o='';B.forEach(([x,y])=>{o+=stem(x,y+4,g.vein,2.2);});
+    /* 잎 뭉치 */
+    B.forEach(([x,y,c],i)=>{o+=`<circle cx="${x}" cy="${y}" r="${n1(11*c)}" fill="${i%2?g.leafB:g.leafA}"/>`;});
+    /* 꽃 (성장 3단계부터 개화) */
+    if(st>=3){B.forEach(([x,y,c],i)=>{ if(i%2)return;
+      o+=`<g transform="translate(${x},${n1(y-6*c)})">
+        ${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-4.5" rx="3" ry="4.6" fill="${this.petal}" transform="rotate(${a})"/>`).join('')}
+        <circle r="2.4" fill="#f5d76e"/></g>`;});}
+    return `<g transform="scale(${n1(k*s)})">${o}</g>`;},petal:'#e88ba0'},
 };
 const TONES={green:{base:'#3f7d54',alt:'#4f9163',vein:'#2c5b3c'},
   deep:{base:'#356a48',alt:'#437c55',vein:'#254d33'},
   variegated:{base:'#4a8b5c',alt:'#8fbf95',vein:'#2f6040'}};
 
-/* ================= 화분 (원통 셰이딩 + 앞테두리로 줄기 덮기) ================= */
+/* ================= 아바타 (화분에서 자라는 구조) ================= */
 function avatar(it,w,boost=1){
   const t=TONES[it.tone||'green'], g=toneGrads(t);
   const color=it.pot, RX=w*.5, RY=w*.22, H=w*.74, BR=w*.335;
@@ -224,7 +234,6 @@ function avatar(it,w,boost=1){
   const thirsty=it.state==='thirsty';
   const LIFT={rosette:.05,cactus:.3}[it.form] ?? .55;
 
-  /* boost: 대형 식물은 화분 대비 수형이 더 크고 높게 (위로 두 칸 차지하는 느낌) */
   const plant=`<g transform="translate(0,${n1(-H+RY*LIFT)}) scale(${boost}) ${thirsty?'rotate(-5)':''}"
      ${thirsty?'opacity=".88"':''}>${FORMS[it.form].draw(w,it.stage,g)}</g>`;
 
@@ -242,94 +251,137 @@ function avatar(it,w,boost=1){
   </g>`;
 }
 
-/* ================= 씬 데이터 ================= */
-const SHELF=1.05, N=4;
-
-/* 슬롯 = 칸.
-   선반 8칸(shelf): 소형만.
-   바닥 16칸: 선반 아래(covered)는 천장이 낮아 소형만, 개방 칸은 소/중/대 모두. */
+/* ================= 씬 데이터 =================
+   레퍼런스 온실 구성:
+   - 전체 지반 7×7 (포장 마당), 온실은 [1,6]×[1,6] (내부 5×5)
+   - 온실 내부: 바닥 25칸(벤치 아래 9칸은 covered) + 뒷벤치 6칸 + 왼벤치 4칸
+   - 온실 밖 마당: 앞쪽 두 면 10칸 (outdoor, 크기 제한 없음)          */
+const G0=1, G1=6, BENCH=0.95;
 const SLOTS=[];
-[[ .8,'sb1'],[1.55,'sb2'],[2.3,'sb3'],[3.05,'sb4'],[3.8,'sb5']]
-  .forEach(([x,id])=>SLOTS.push({id,x,y:.55,z:SHELF,kind:'shelf'}));
-[[1.4,'sl1'],[2.3,'sl2'],[3.2,'sl3']]
-  .forEach(([y,id])=>SLOTS.push({id,x:.55,y,z:SHELF,kind:'shelf'}));
-for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+/* 벤치(온실 내부) */
+[[1.45,'bb1'],[2.15,'bb2'],[2.85,'bb3'],[3.55,'bb4'],[4.25,'bb5'],[4.95,'bb6']]
+  .forEach(([x,id])=>SLOTS.push({id,x,y:1.42,z:BENCH,kind:'shelf'}));
+[[2.3,'bl1'],[3.1,'bl2'],[3.9,'bl3'],[4.7,'bl4']]
+  .forEach(([y,id])=>SLOTS.push({id,x:1.42,y,z:BENCH,kind:'shelf'}));
+/* 온실 내부 바닥 5×5 */
+for(let i=1;i<6;i++)for(let j=1;j<6;j++){
   SLOTS.push({id:`f${i}${j}`,x:i+.5,y:j+.5,z:0,i,j,
-    kind:(i===0||j===0)?'covered':'open'});
+    kind:(i===1||j===1)?'covered':'open'});
 }
+/* 마당 (온실 앞 두 면) */
+for(let i=1;i<6;i++) SLOTS.push({id:`oy${i}`,x:i+.5,y:6.5,z:0,i,j:6,kind:'outdoor'});
+for(let j=1;j<6;j++) SLOTS.push({id:`ox${j}`,x:6.5,y:j+.5,z:0,i:6,j,kind:'outdoor'});
 
-/* 크기 규칙: S=어디든 / M=개방 바닥 / L=개방 바닥(위로 두 칸 높이 차지) */
-const SIZE={S:{name:'소형',w:{shelf:29,floor:33}},M:{name:'중형',w:{floor:48}},L:{name:'대형',w:{floor:66},boost:1.25}};
+const SIZE={S:{name:'소형',w:{shelf:24,floor:28}},M:{name:'중형',w:{floor:40}},L:{name:'대형',w:{floor:56},boost:1.25}};
 function slotAllows(slot,p){
-  if(slot.kind==='shelf')   return p.size==='S' ? true : '선반에는 소형 식물만 올릴 수 있어요';
-  if(slot.kind==='covered') return p.size==='S' ? true : '선반 아래는 낮아서 소형 식물만 둘 수 있어요';
-  return true; /* open */
+  if(slot.kind==='shelf')   return p.size==='S' ? true : '벤치에는 소형 식물만 올릴 수 있어요';
+  if(slot.kind==='covered') return p.size==='S' ? true : '벤치 아래는 낮아서 소형 식물만 둘 수 있어요';
+  return true; /* open · outdoor */
 }
 
 const state={
   gp:1240, gpMax:1600, lv:7, mode:'care', sel:null, traySel:null,
   plants:[
-    {id:'p1',n:'몬스테라',size:'L',form:'broadleaf',stage:4,tone:'green',pot:'#c98a6a',slot:'f12',state:'thirsty',plv:4,dday:'D+1'},
-    {id:'p2',n:'스투키',size:'S',form:'upright',stage:3,tone:'deep',pot:'#8fa89b',slot:'sb2',state:'healthy',plv:6,dday:'D-5'},
-    {id:'p3',n:'몽이',size:'S',form:'rosette',stage:2,tone:'green',pot:'#dcc9a8',slot:'sb4',state:'thirsty',plv:2,dday:'오늘'},
-    {id:'p4',n:'칼라',size:'S',form:'patterned',stage:3,tone:'variegated',pot:'#b7a3c9',slot:'sl1',state:'healthy',plv:5,dday:'D-3'},
-    {id:'p9',n:'산세',size:'S',form:'upright',stage:2,tone:'green',pot:'#e0a08c',slot:'f02',state:'healthy',plv:2,dday:'D-7'},
-    {id:'p5',n:'초코',size:'M',form:'vine',stage:4,tone:'green',pot:'#a8785d',slot:'f23',state:'healthy',plv:8,dday:'D-2'},
-    {id:'p6',n:'테이블야자',size:'L',form:'palm',stage:3,tone:'deep',pot:'#9fb8d0',slot:'f31',state:'healthy',plv:3,dday:'D-4'},
-    {id:'p7',n:'가시',size:'S',form:'cactus',stage:3,tone:'green',pot:'#e0a08c',slot:null,state:'healthy',plv:1,dday:'D-12'},
-    {id:'p8',n:'보스턴',size:'M',form:'fern',stage:3,tone:'green',pot:'#c98a6a',slot:null,state:'healthy',plv:2,dday:'D-6'},
+    /* 뒷벤치 — 레퍼런스처럼 한 줄로 */
+    {id:'p2',n:'스투키',size:'S',form:'upright',stage:3,tone:'deep',pot:'#8fa89b',slot:'bb1',state:'healthy',plv:6},
+    {id:'p3',n:'몽이',size:'S',form:'rosette',stage:2,tone:'green',pot:'#dcc9a8',slot:'bb2',state:'thirsty',plv:2},
+    {id:'p9',n:'산세',size:'S',form:'upright',stage:2,tone:'green',pot:'#e0a08c',slot:'bb3',state:'healthy',plv:2},
+    {id:'p10',n:'가시',size:'S',form:'cactus',stage:3,tone:'green',pot:'#c98a6a',slot:'bb4',state:'healthy',plv:1},
+    {id:'p11',n:'무니',size:'S',form:'patterned',stage:2,tone:'variegated',pot:'#9fb8d0',slot:'bb5',state:'healthy',plv:3},
+    /* 왼벤치 */
+    {id:'p4',n:'칼라',size:'S',form:'patterned',stage:3,tone:'variegated',pot:'#b7a3c9',slot:'bl2',state:'healthy',plv:5},
+    {id:'p12',n:'또리',size:'S',form:'rosette',stage:3,tone:'deep',pot:'#dcc9a8',slot:'bl3',state:'healthy',plv:4},
+    /* 온실 바닥 */
+    {id:'p1',n:'몬스테라',size:'L',form:'broadleaf',stage:4,tone:'green',pot:'#c98a6a',slot:'f33',state:'thirsty',plv:4},
+    {id:'p13',n:'분홍이',size:'M',form:'flower',stage:4,tone:'green',pot:'#b7654f',slot:'f24',state:'healthy',plv:7},
+    {id:'p6',n:'테이블야자',size:'L',form:'palm',stage:3,tone:'deep',pot:'#9fb8d0',slot:'f52',state:'healthy',plv:3},
+    {id:'p5',n:'초코',size:'M',form:'vine',stage:4,tone:'green',pot:'#a8785d',slot:'f45',state:'healthy',plv:8},
+    {id:'p14',n:'설이',size:'S',form:'upright',stage:3,tone:'variegated',pot:'#dcc9a8',slot:'f14',state:'healthy',plv:2},
+    /* 마당 */
+    {id:'p15',n:'하양이',size:'M',form:'flower',stage:4,tone:'deep',pot:'#e0a08c',slot:'ox2',state:'healthy',plv:6},
+    {id:'p16',n:'보스턴',size:'M',form:'fern',stage:3,tone:'green',pot:'#c98a6a',slot:'oy2',state:'healthy',plv:2},
+    {id:'p17',n:'큰야자',size:'L',form:'palm',stage:4,tone:'green',pot:'#a8785d',slot:'oy4',state:'thirsty',plv:9},
+    /* 트레이 */
+    {id:'p7',n:'미니선인장',size:'S',form:'cactus',stage:2,tone:'green',pot:'#e0a08c',slot:null,state:'healthy',plv:1},
+    {id:'p8',n:'아이비',size:'M',form:'vine',stage:3,tone:'variegated',pot:'#8fa89b',slot:null,state:'healthy',plv:2},
   ],
 };
 const bySlot=id=>state.plants.find(p=>p.slot===id);
+FORMS.flower.petal='#e88ba0';
+
+/* ================= 장식 소품 ================= */
+function wheelbarrow(x,y){
+  const [sx,sy]=P(x,y,0);
+  return `<g transform="translate(${sx},${sy})">
+    <ellipse cx="0" cy="4" rx="34" ry="10" fill="rgba(46,60,48,.14)"/>
+    <path d="M-26,-22 L22,-22 L14,-4 L-20,-4 Z" fill="#b7845c"/>
+    <path d="M-26,-22 L-20,-4 L-20,-2 L-28,-20 Z" fill="#9c6c47"/>
+    <path d="M22,-22 L14,-4 L30,-10 L36,-18 Z" fill="#a5754f"/>
+    <circle cx="-6" cy="2" r="7.5" fill="#5b5650"/><circle cx="-6" cy="2" r="3" fill="#8c8680"/>
+    <path d="M14,-4 L30,4 M-20,-4 L-32,4" stroke="#8a6a4c" stroke-width="3" stroke-linecap="round"/>
+    <g transform="translate(-8,-24) scale(.62)">${miniPot('#c98a6a')}</g>
+    <g transform="translate(6,-26) scale(.55)">${miniPot('#dcc9a8')}</g>
+  </g>`;
+}
+function miniPot(c){
+  return `<path d="M-9,-12 L-6,0 L6,0 L9,-12 Z" fill="${c}"/><ellipse cx="0" cy="-12" rx="9" ry="3.6" fill="${sh(c,20)}"/>
+    <ellipse cx="0" cy="-12" rx="6.6" ry="2.6" fill="#5b4736"/>`;
+}
+function emptyPot(x,y,scale,c){
+  const [sx,sy]=P(x,y,0);
+  return `<g transform="translate(${sx},${sy}) scale(${scale})">
+    <ellipse cx="0" cy="2" rx="14" ry="5" fill="rgba(46,60,48,.13)"/>${miniPot(c)}</g>`;
+}
 
 /* ================= 씬 렌더 ================= */
 function render(){
   DEFS=''; defId=0;
   let o='';
+  const NT=7;
 
-  /* 잔디 받침 + 옆면 */
-  const grassG=grad('linear',[[0,'#d5e5c2'],[1,'#c3d8ab']],'x1="0" y1="0" x2="0" y2="1"');
-  o+=`<polygon points="${pts([P(-.55,-.55),P(N+.55,-.55),P(N+.55,N+.55),P(-.55,N+.55)])}" fill="${grassG}"/>`;
-  o+=`<polygon points="${pts([P(-.55,N+.55),P(N+.55,N+.55),[P(N+.55,N+.55)[0],P(N+.55,N+.55)[1]+14],[P(-.55,N+.55)[0],P(-.55,N+.55)[1]+14]])}" fill="#aec59a"/>`;
-  o+=`<polygon points="${pts([P(N+.55,-.55),P(N+.55,N+.55),[P(N+.55,N+.55)[0],P(N+.55,N+.55)[1]+14],[P(N+.55,-.55)[0],P(N+.55,-.55)[1]+14]])}" fill="#a2b98f"/>`;
+  /* 잔디 지반 */
+  const grassG=grad('linear',[[0,'#cfe0ba'],[1,'#bcd2a2']],'x1="0" y1="0" x2="0" y2="1"');
+  o+=`<polygon points="${pts([P(-.5,-.5),P(NT+.5,-.5),P(NT+.5,NT+.5),P(-.5,NT+.5)])}" fill="${grassG}"/>`;
+  o+=`<polygon points="${pts([P(-.5,NT+.5),P(NT+.5,NT+.5),[P(NT+.5,NT+.5)[0],P(NT+.5,NT+.5)[1]+13],[P(-.5,NT+.5)[0],P(-.5,NT+.5)[1]+13]])}" fill="#a8bf93"/>`;
+  o+=`<polygon points="${pts([P(NT+.5,-.5),P(NT+.5,NT+.5),[P(NT+.5,NT+.5)[0],P(NT+.5,NT+.5)[1]+13],[P(NT+.5,-.5)[0],P(NT+.5,-.5)[1]+13]])}" fill="#9db386"/>`;
 
-  /* 바닥 타일 (그라디언트 + 줄눈) */
-  for(let i=0;i<N;i++)for(let j=0;j<N;j++){
-    const base=(i+j)%2?'#ece7da':'#f4f0e5';
-    const tg=grad('linear',[[0,sh(base==='#ece7da'?'#ece7da':'#f4f0e5',8)],[1,sh(base==='#ece7da'?'#ece7da':'#f4f0e5',-7)]],'x1="0" y1="0" x2="0" y2="1"');
-    o+=`<polygon points="${pts([P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1)])}" fill="${tg}" stroke="#dcd5c4" stroke-width=".7"/>`;
+  /* 포장 타일 (온실 내부 + 마당) — 레퍼런스의 회색 포장 */
+  for(let i=0;i<NT;i++)for(let j=0;j<NT;j++){
+    const inside=i>=G0&&i<G1&&j>=G0&&j<G1;
+    const apron=!inside&&(i>=1&&j>=1);
+    if(!inside&&!apron)continue;
+    const base=inside?((i+j)%2?'#e9e4d6':'#f1ede1'):((i+j)%2?'#d9d7cf':'#e2e0d8');
+    const tg=grad('linear',[[0,sh(base,7)],[1,sh(base,-7)]],'x1="0" y1="0" x2="0" y2="1"');
+    o+=`<polygon points="${pts([P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1)])}" fill="${tg}" stroke="${inside?'#d8d1bf':'#c9c7bf'}" stroke-width=".7"/>`;
   }
 
-  /* 뒷벽 유리 + 지붕 (하늘 그라디언트) */
-  const WALL=2.1,RIDGE=3.4;
-  const skyG=grad('linear',[[0,'#dff0f7'],[1,'#eef6f2']],'x1="0" y1="0" x2="0" y2="1"');
-  o+=`<polygon points="${pts([P(0,0,0),P(N,0,0),P(N,0,WALL),P(0,0,WALL)])}" fill="${skyG}" opacity=".6"/>`;
-  o+=`<polygon points="${pts([P(0,0,0),P(0,N,0),P(0,N,WALL),P(0,0,WALL)])}" fill="${skyG}" opacity=".52"/>`;
-  o+=`<polygon points="${pts([P(0,0,WALL),P(N,0,WALL),P(N,N/2,RIDGE),P(0,N/2,RIDGE)])}" fill="#d8ebf2" opacity=".5"/>`;
-  /* 유리 하이라이트 스트릭 */
-  o+=`<polygon points="${pts([P(.4,0,.2),P(1.1,0,.2),P(1.7,0,WALL-.1),P(1.0,0,WALL-.1)])}" fill="#fff" opacity=".25"/>`;
+  /* 온실 뒷벽 유리 + 지붕 */
+  const WALL=1.9,RIDGE=2.85,MID=(G0+G1)/2;
+  const skyG=grad('linear',[[0,'#d9edf6'],[1,'#eaf5f0']],'x1="0" y1="0" x2="0" y2="1"');
+  o+=`<polygon points="${pts([P(G0,G0,0),P(G1,G0,0),P(G1,G0,WALL),P(G0,G0,WALL)])}" fill="${skyG}" opacity=".6"/>`;
+  o+=`<polygon points="${pts([P(G0,G0,0),P(G0,G1,0),P(G0,G1,WALL),P(G0,G0,WALL)])}" fill="${skyG}" opacity=".52"/>`;
+  o+=`<polygon points="${pts([P(G0,G0,WALL),P(G1,G0,WALL),P(G1,MID,RIDGE),P(G0,MID,RIDGE)])}" fill="#d3e8f0" opacity=".5"/>`;
+  o+=`<polygon points="${pts([P(G0+.3,G0,.2),P(G0+.9,G0,.2),P(G0+1.4,G0,WALL-.1),P(G0+.8,G0,WALL-.1)])}" fill="#fff" opacity=".25"/>`;
 
-  /* 선반 (나무 질감 그라디언트) */
-  const woodT=grad('linear',[[0,'#f0e2c8'],[1,'#dcc9a4']],'x1="0" y1="0" x2="0" y2="1"');
-  const woodS='#c3ab82';
-  function shelfRun(ax,ay,bx,by,depth){
-    const isX = ay===by;
-    const p1=P(ax,ay,SHELF), p2=P(bx,by,SHELF);
-    const p3=isX?P(bx,by+depth,SHELF):P(bx+depth,by,SHELF);
-    const p4=isX?P(ax,ay+depth,SHELF):P(ax+depth,ay,SHELF);
-    const l3=isX?P(bx,by+depth,SHELF-.09):P(bx+depth,by,SHELF-.09);
-    const l4=isX?P(ax,ay+depth,SHELF-.09):P(ax+depth,ay,SHELF-.09);
+  /* 벤치 (다리 + 상판) */
+  const woodT=grad('linear',[[0,'#eeddc0'],[1,'#d9c49c']],'x1="0" y1="0" x2="0" y2="1"');
+  const woodS='#bfa67c';
+  function bench(ax,ay,bx,by,depth){
+    const isX=ay===by;
+    const p1=P(ax,ay,BENCH),p2=P(bx,by,BENCH);
+    const p3=isX?P(bx,by+depth,BENCH):P(bx+depth,by,BENCH);
+    const p4=isX?P(ax,ay+depth,BENCH):P(ax+depth,ay,BENCH);
+    const l3=isX?P(bx,by+depth,BENCH-.08):P(bx+depth,by,BENCH-.08);
+    const l4=isX?P(ax,ay+depth,BENCH-.08):P(ax+depth,ay,BENCH-.08);
     return `<polygon points="${pts([p4,p3,l3,l4])}" fill="${woodS}"/>
             <polygon points="${pts([p1,p2,p3,p4])}" fill="${woodT}"/>`;
   }
-  [[.55,.18,SHELF],[1.75,.18,SHELF],[2.95,.18,SHELF],[3.85,.18,SHELF]].forEach(([x,y])=>{
-    const a=P(x,y+.5,0),b=P(x,y+.5,SHELF-.05);
-    o+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#e9e2d1" stroke-width="4" stroke-linecap="round"/>`;});
-  [[.18,1.1],[.18,2.3],[.18,3.2]].forEach(([x,y])=>{
-    const a=P(x+.5,y,0),b=P(x+.5,y,SHELF-.05);
-    o+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#e9e2d1" stroke-width="4" stroke-linecap="round"/>`;});
-  o+=shelfRun(.2,.18,4.05,.18,.8);
-  o+=shelfRun(.18,.2,.18,3.35,.8);
+  const leg=(x,y)=>{const a=P(x,y,0),b=P(x,y,BENCH-.04);
+    return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c9b088" stroke-width="4" stroke-linecap="round"/>`;};
+  [[1.35,1.75],[2.75,1.75],[4.15,1.75],[5.1,1.75]].forEach(([x,y])=>{o+=leg(x,y);});
+  [[1.75,2.2],[1.75,3.5],[1.75,4.8]].forEach(([x,y])=>{o+=leg(x,y);});
+  o+=bench(1.15,1.15,5.2,1.15,.75);
+  o+=bench(1.15,1.2,1.15,4.95,.75);
 
   /* 빈 칸 표시 (꾸미기 모드) */
   if(state.mode==='edit'){
@@ -339,12 +391,12 @@ function render(){
       if(bySlot(s.id))return;
       const c=P(s.x,s.y,s.z);
       const tile = s.kind!=='shelf'
-        ? `points="${pts([P(s.i+.12,s.j+.12),P(s.i+.88,s.j+.12),P(s.i+.88,s.j+.88),P(s.i+.12,s.j+.88)])}"`
+        ? `points="${pts([P(s.i+.14,s.j+.14),P(s.i+.86,s.j+.14),P(s.i+.86,s.j+.86),P(s.i+.14,s.j+.86)])}"`
         : null;
-      if(!moving){ /* 선택 전: 칸 위치만 은은하게 */
+      if(!moving){
         o+= tile
-          ? `<polygon ${tile} fill="none" stroke="#b9c9bb" stroke-width="1.2" stroke-dasharray="3 4" opacity=".8"/>`
-          : `<ellipse cx="${c[0]}" cy="${c[1]}" rx="24" ry="11" fill="none" stroke="#b9c9bb" stroke-width="1.2" stroke-dasharray="3 4" opacity=".8"/>`;
+          ? `<polygon ${tile} fill="none" stroke="#a9bcab" stroke-width="1.1" stroke-dasharray="3 4" opacity=".8"/>`
+          : `<ellipse cx="${c[0]}" cy="${c[1]}" rx="19" ry="9" fill="none" stroke="#a9bcab" stroke-width="1.1" stroke-dasharray="3 4" opacity=".8"/>`;
         return;
       }
       const ok = slotAllows(s,moving)===true;
@@ -352,37 +404,61 @@ function render(){
       const anim = ok?`<animate attributeName="stroke-dashoffset" from="0" to="22" dur="1.2s" repeatCount="indefinite"/>`:'';
       const shape = tile
         ? `<polygon ${tile} fill="${ok?'rgba(22,143,128,.15)':'rgba(180,90,74,.08)'}"/>
-           <polygon ${tile} fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="6 5" ${ok?'':'opacity=".55"'}>${anim}</polygon>`
-        : `<ellipse cx="${c[0]}" cy="${c[1]}" rx="27" ry="13" fill="${ok?'rgba(22,143,128,.16)':'rgba(180,90,74,.08)'}"/>
-           <ellipse cx="${c[0]}" cy="${c[1]}" rx="27" ry="13" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="6 5" ${ok?'':'opacity=".55"'}>${anim}</ellipse>`;
+           <polygon ${tile} fill="none" stroke="${col}" stroke-width="1.8" stroke-dasharray="6 5" ${ok?'':'opacity=".55"'}>${anim}</polygon>`
+        : `<ellipse cx="${c[0]}" cy="${c[1]}" rx="21" ry="10" fill="${ok?'rgba(22,143,128,.16)':'rgba(180,90,74,.08)'}"/>
+           <ellipse cx="${c[0]}" cy="${c[1]}" rx="21" ry="10" fill="none" stroke="${col}" stroke-width="1.8" stroke-dasharray="6 5" ${ok?'':'opacity=".55"'}>${anim}</ellipse>`;
       o+=`<g class="slotmark" data-slot="${s.id}" data-ok="${ok?1:0}" style="cursor:pointer">${shape}
-        ${ok?'':`<text x="${c[0]}" y="${c[1]+4}" text-anchor="middle" font-size="12" opacity=".8">🚫</text>`}</g>`;
+        ${ok?'':`<text x="${c[0]}" y="${c[1]+4}" text-anchor="middle" font-size="10" opacity=".8">🚫</text>`}</g>`;
     });
   }
 
-  /* 식물 (깊이 정렬) */
-  const placed=state.plants.filter(p=>p.slot).map(p=>({p,s:SLOTS.find(s=>s.id===p.slot)}))
+  /* 장식 소품 (마당) */
+  o+=wheelbarrow(2.05,6.5,0);
+  o+=emptyPot(6.45,.7,.9,'#c98a6a');
+  o+=emptyPot(6.75,.95,.7,'#dcc9a8');
+
+  /* 식물 (깊이 정렬 · 실내는 온실 앞면보다 먼저, 실외는 나중에) */
+  const all=state.plants.filter(p=>p.slot).map(p=>({p,s:SLOTS.find(s=>s.id===p.slot)}))
     .sort((a,b)=>(a.s.x+a.s.y)-(b.s.x+b.s.y));
-  placed.forEach(({p,s})=>{
+  const drawPlant=({p,s})=>{
     const [sx,sy]=P(s.x,s.y,s.z);
     const sz=SIZE[p.size]||SIZE.M;
     const w=(s.kind==='shelf'?(sz.w.shelf||sz.w.floor):sz.w.floor)*(0.88+p.stage*0.04);
     const on=state.sel===p.id;
     o+=`<g class="plant" data-id="${p.id}" transform="translate(${sx},${sy})" style="cursor:pointer">
-      ${on?`<ellipse cy="2" rx="${w*.72}" ry="${w*.3}" fill="none" stroke="#168f80" stroke-width="2.4" stroke-dasharray="6 5"/>`:''}
+      ${on?`<ellipse cy="2" rx="${w*.72}" ry="${w*.3}" fill="none" stroke="#168f80" stroke-width="2.2" stroke-dasharray="6 5"/>`:''}
       ${avatar(p,w,sz.boost||1)}
       ${p.state==='thirsty'&&state.mode==='care'?`
-        <g transform="translate(${w*.42},${-w*1.32})">
-          <rect x="-8" y="-30" width="52" height="22" rx="11" fill="#4088ff"/>
-          <path d="M2,-9 l6,8 6,-8" fill="#4088ff"/>
-          <text x="18" y="-15" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">💧 D+1</text>
+        <g transform="translate(${w*.4},${-w*1.3})">
+          <rect x="-8" y="-28" width="48" height="21" rx="10.5" fill="#4088ff"/>
+          <path d="M2,-8 l5,7 5,-7" fill="#4088ff"/>
+          <text x="16" y="-13.5" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">💧 D+1</text>
           <animateTransform attributeName="transform" type="translate"
-            values="${w*.42},${-w*1.32};${w*.42},${-w*1.38};${w*.42},${-w*1.32}" dur="1.6s" repeatCount="indefinite"/>
+            values="${w*.4},${-w*1.3};${w*.4},${-w*1.36};${w*.4},${-w*1.3}" dur="1.6s" repeatCount="indefinite"/>
         </g>`:''}
-      ${on?`<g transform="translate(0,${-w*1.62})"><rect x="-56" y="-18" width="112" height="22" rx="11" fill="#168f80"/>
-        <text x="0" y="-2.5" text-anchor="middle" fill="#fff" font-size="11.5" font-weight="700">${p.n} Lv.${p.plv} · ${SIZE[p.size].name}</text></g>`:''}
+      ${on?`<g transform="translate(0,${-w*1.58})"><rect x="-52" y="-17" width="104" height="21" rx="10.5" fill="#168f80"/>
+        <text x="0" y="-2.5" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">${p.n} Lv.${p.plv} · ${SIZE[p.size].name}</text></g>`:''}
     </g>`;
-  });
+  };
+  all.filter(x=>x.s.kind!=='outdoor').forEach(drawPlant);
+
+  /* 온실 앞쪽 유리 + 프레임 (실내 식물 위로) */
+  o+=`<polygon points="${pts([P(G0,G1,0),P(G1,G1,0),P(G1,G1,WALL),P(G0,G1,WALL)])}" fill="#e8f2f6" opacity=".13"/>`;
+  o+=`<polygon points="${pts([P(G1,G0,0),P(G1,G1,0),P(G1,G1,WALL),P(G1,G0,WALL)])}" fill="#e8f2f6" opacity=".11"/>`;
+  o+=`<polygon points="${pts([P(G0,MID,RIDGE),P(G1,MID,RIDGE),P(G1,G1,WALL),P(G0,G1,WALL)])}" fill="#eef6f8" opacity=".15"/>`;
+  const beam=(a,b,w=4.6)=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#fbfaf6" stroke-width="${w}" stroke-linecap="round"/>`;
+  [[G0,G0],[G1,G0],[G0,G1],[G1,G1]].forEach(([x,y])=>{o+=beam(P(x,y,0),P(x,y,WALL),5);});
+  o+=beam(P(G0,G0,WALL),P(G1,G0,WALL))+beam(P(G0,G1,WALL),P(G1,G1,WALL))
+   +beam(P(G0,G0,WALL),P(G0,G1,WALL))+beam(P(G1,G0,WALL),P(G1,G1,WALL))
+   +beam(P(G0,MID,RIDGE),P(G1,MID,RIDGE),5)
+   +beam(P(G0,G0,WALL),P(G0,MID,RIDGE))+beam(P(G0,G1,WALL),P(G0,MID,RIDGE))
+   +beam(P(G1,G0,WALL),P(G1,MID,RIDGE))+beam(P(G1,G1,WALL),P(G1,MID,RIDGE));
+  /* 중간 세로 프레임 (앞면) */
+  [[2.25,G1],[3.5,G1],[4.75,G1]].forEach(([x,y])=>{o+=beam(P(x,y,0),P(x,y,WALL),2.6);});
+  [[G1,2.25],[G1,3.5],[G1,4.75]].forEach(([x,y])=>{o+=beam(P(x,y,0),P(x,y,WALL),2.6);});
+
+  /* 실외(마당) 식물 — 온실 프레임 앞에 그림 */
+  all.filter(x=>x.s.kind==='outdoor').forEach(drawPlant);
 
   document.getElementById('garden').innerHTML=`<defs>${DEFS}</defs>${o}`;
   const svg=document.getElementById('garden'), bb=svg.getBBox();
@@ -413,8 +489,8 @@ function render(){
   document.getElementById('legend').innerHTML = state.mode==='care'
     ? `<span><b>💧 말풍선</b> 탭 → 물주기 (+10 GP)</span><span><b>식물</b> 탭 → 이름·레벨 확인</span>`
     : `<span><b>식물/보유 식물</b> 선택 → <b>초록 칸</b>에 배치</span>
-       <span><b>🚫 붉은 칸</b> = 크기 제약 (선반·선반 아래는 소형만)</span>
-       <span>배지: <b style="color:#168f80">소</b>=어디든 · <b style="color:#c8912b">중</b>=개방 바닥 · <b style="color:#b45a4a">대</b>=개방 바닥, 위로 두 칸 차지</span>`;
+       <span><b>🚫 붉은 칸</b> = 크기 제약 (벤치·벤치 아래는 소형만, 마당은 제한 없음)</span>
+       <span>배지: <b style="color:#168f80">소</b> · <b style="color:#c8912b">중</b> · <b style="color:#b45a4a">대</b>(위로 두 칸)</span>`;
 }
 
 /* ================= 인터랙션 ================= */
