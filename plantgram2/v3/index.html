@@ -533,19 +533,48 @@ function boardGrid(){
   </div>`);
   return t.join('');
 }
-screens.push({label:'내 식물 — 그리드 보드',note:'보내주신 3열 그리드 레퍼런스의 문법을 그대로 따랐습니다 — 정사각 칸, 좁고 균일한 간격(10px), 크림 배경 위에 플랫한 컬러 칸. 칸마다 다른 에디토리얼 구성: 여백 큰 사진 칸(몬스테라), 반복 타이포(몽이!×3), 곡선 텍스트(STUKI), 2×2 성장 콜라주(초코), 아치 프레임(칼라데아), 진한 포인트 칸(물주기), 기울인 타이포(IVY), 코너 타이포(8월의 정원). 상세에서 꾸민 테마가 각 칸의 배경색이 됩니다.',
+function plantListRows(){
+  return [
+    ['monstera','#c98a6a','몬스테라','Monstera deliciosa · Lv.4','D+1',1,46],
+    ['succulent','#dcc9a8','몽이','Echeveria · Lv.2','D-day',1,38],
+    ['sansevieria','#8fa89b','스투키','Sansevieria · Lv.6','D-5',0,42],
+    ['calathea','#b7a3c9','칼라데아','Calathea · Lv.5','D-3',0,44],
+    ['pothos','#e0a08c','초코','Pothos · Lv.8','D-2',0,46],
+    ['pothos','#9fb8d0','아이비','Hedera · Lv.2','D-6',0,44],
+  ].map(([k,pc,nm,sp,dd,due,w])=>`
+    <div class="row" style="min-height:76px">
+      <div class="avatar" style="width:62px;height:62px">${plant(k,w,pc)}</div>
+      <div class="grow">
+        <div class="t">${nm}</div>
+        <div class="d">${sp}</div>
+      </div>
+      <span class="pill ${due?'pink':'sage'}">${dd}</span>
+    </div>`).join('');
+}
+screens.push({label:'내 식물 — 보드/리스트 전환',interactive:true,note:'보는 방식은 취향이 갈려서 토글로 선택합니다 — 기본은 보드. 보드는 보내주신 3열 그리드 레퍼런스 문법(정사각 칸·10px 균일 간격·크림 배경·플랫 컬러 칸·에디토리얼 타이포)이고, 리스트는 v3의 조용한 행(원형 일러스트·이름·D-day)입니다. 우측 상단 ⊞/☰ 토글을 직접 눌러 전환해보세요 — 배경색도 뷰에 맞춰 바뀝니다.',
 html:`
 ${statusbar}
-<div style="flex:1;overflow:hidden;background:#f2eee3">
+<div id="plantsWrap" style="flex:1;overflow:hidden;background:#f2eee3">
   <div class="pagepad" style="display:flex;align-items:center;padding-top:10px">
     <div class="h1" style="flex:1">내 식물 <span style="color:var(--faint);font-weight:700">6</span></div>
+    <div style="display:flex;gap:3px;background:rgba(25,31,27,.06);border-radius:99px;padding:3px;margin-right:6px">
+      <span data-pview="board" style="cursor:pointer;border-radius:99px;padding:6px 11px;font-size:12px;font-weight:800;background:#fff;box-shadow:0 2px 6px rgba(30,40,32,.10)">⊞</span>
+      <span data-pview="list" style="cursor:pointer;border-radius:99px;padding:6px 11px;font-size:12px;font-weight:800;color:var(--faint)">☰</span>
+    </div>
     <button class="iconbtn plain">${ic('search',22,'#8b928c')}</button>
     <button class="iconbtn plain">${ic('plus',22,'#8b928c')}</button>
   </div>
-  <div style="margin-top:16px;padding:0 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-    ${boardGrid()}
+  <div id="pvBoard">
+    <div style="margin-top:16px;padding:0 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+      ${boardGrid()}
+    </div>
+    <p class="tiny" style="padding:12px 20px 0">상세에서 꾸민 테마·스티커가 이 보드 칸에 그대로 반영돼요</p>
   </div>
-  <p class="tiny" style="padding:12px 20px 0">상세에서 꾸민 테마·스티커가 이 보드 칸에 그대로 반영돼요</p>
+  <div id="pvList" style="display:none">
+    <div class="pagepad" style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
+      ${plantListRows()}
+    </div>
+  </div>
 </div>
 ${nav('plant')}
 `});
@@ -1055,6 +1084,20 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-edit-close]')){
     const ed=document.getElementById('detailEdit'); if(ed) ed.style.display='none';
     sheetOpen=false; applySheet();
+    return;
+  }
+  const pv=e.target.closest('[data-pview]');
+  if(pv){
+    const mode=pv.dataset.pview;
+    document.getElementById('pvBoard').style.display=mode==='board'?'':'none';
+    document.getElementById('pvList').style.display=mode==='list'?'':'none';
+    document.getElementById('plantsWrap').style.background=mode==='board'?'#f2eee3':'#fff';
+    document.querySelectorAll('[data-pview]').forEach(b=>{
+      const on=b.dataset.pview===mode;
+      b.style.background=on?'#fff':'none';
+      b.style.boxShadow=on?'0 2px 6px rgba(30,40,32,.10)':'none';
+      b.style.color=on?'var(--ink)':'var(--faint)';
+    });
     return;
   }
   const tab=e.target.closest('.ed-tab');
