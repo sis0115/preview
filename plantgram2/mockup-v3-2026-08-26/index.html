@@ -580,6 +580,31 @@ html:`
 ${nav('plant')}
 `});
 
+/* 개념 확인용: 같은 상세 화면의 '꾸미기 열림' 상태 (핑크 도트로 꾸민 예시) */
+const EX={bg:'blush',pattern:'dots',pot:'#c98a6a',sticker:'🏆',img:'avatar',cutout:true};
+screens.push({label:'식물 상세 — 꾸미기 열림 (같은 화면)',note:'별도 화면이 아닙니다 — 3번과 같은 화면의 두 번째 상태입니다. 🎨 꾸미기를 누르면 아래 섹션 자리가 이렇게 편집 시트로 바뀌고, 고르는 즉시 화면 전체 테마가 바뀝니다. 예시는 핑크 도트 + 🏆 스티커로 꾸민 모습. 실제 동작은 3번에서 해보세요.',
+html:`
+<div style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(EX)}</div>
+<div style="flex:1;background:#fff;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
+  display:flex;flex-direction:column;padding:10px 24px 24px">
+  <div style="display:flex;align-items:center;padding:4px 0 2px">
+    <span style="font-size:15px;font-weight:800">꾸미기</span>
+    <div style="flex:1"></div>
+    <span style="font-size:14px;font-weight:800;color:var(--sage)">완료</span>
+  </div>
+  <div class="ed-tabs" style="margin-top:10px;justify-content:flex-start">
+    <button class="ed-tab on">테마</button>
+    <button class="ed-tab">패턴</button>
+    <button class="ed-tab">사진</button>
+    <button class="ed-tab">스티커</button>
+  </div>
+  <div class="ed-grid">
+    ${Object.entries(CARD_BG).map(([k,c])=>`<div class="ed-opt ${k===EX.bg?'on':''}"><span class="sw" style="background:${c}"></span></div>`).join('')}
+  </div>
+  <p class="tiny" style="margin-top:14px">테마를 고르면 상단만이 아니라 <b style="color:var(--sub)">이 식물의 상세 화면 전체</b>가 그 테마가 됩니다 · 사진 탭에는 ✂️ 배경 지우기(누끼) 토글</p>
+</div>
+`});
+
 
 /* ---------- 4. 기록 시트 ---------- */
 screens.push({label:'기록 시트',note:'말로 하는 기록이 첫 번째 — 큰 입력 블록 하나. 아이콘 기록은 그 아래 3×2, 회색 블록에 아이콘과 라벨만. GP는 아주 작게.',
@@ -852,7 +877,7 @@ function edRender(){
         </div>
         <div class="tiny" style="margin-top:10px;padding:0 4px">사진 변경은 <b style="color:var(--sub)">앨범에서 선택</b> · 배경 지우기는 기기에서 바로 처리돼요</div>`;
     } else { grid.style.display='grid'; grid.innerHTML=h; }
-    document.querySelectorAll('.ed-tab').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
+    document.querySelectorAll('.ed-tab[data-cat]').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
   }
   const h1=document.getElementById('detailHero'); if(h1) h1.innerHTML=detailHero(CARD);
 }
