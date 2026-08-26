@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>플랜트그램 결정 보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#f7f9f6; --surface:#ffffff; --surface2:#eef4ef;
+    --ink:#1b241e; --muted:#5f6d64; --line:#dde5dd;
+    --teal:#168f80; --teal-soft:#e2f2ef;
+    --green:#2f8f5b; --green-soft:#e3f2e9;
+    --sun:#b07d28; --sun-soft:#fdf1d7;
+    --shadow:0 10px 28px rgba(23,33,27,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"IBM Plex Sans KR",-apple-system,"Segoe UI",sans-serif;
+    font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:44px 20px 140px}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--teal);text-transform:uppercase;margin:0 0 12px}
+  h1{font-family:"Gowun Batang",serif;font-size:clamp(26px,5vw,36px);line-height:1.25;margin:0 0 12px}
+  .lede{color:var(--muted);margin:0 0 8px;max-width:60ch}
+  .lede b{color:var(--ink)}
+  .done-note{font-size:12.5px;color:var(--muted);background:var(--green-soft);border-radius:8px;padding:10px 14px;margin:18px 0 30px}
+  .done-note b{color:var(--green)}
+  .dcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+  .dno{font-size:12px;font-weight:700;color:var(--teal);letter-spacing:.08em;margin-bottom:4px}
+  .q{font-weight:700;font-size:16px;margin-bottom:4px;line-height:1.45}
+  .hint{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);border-radius:8px;padding:11px 14px;cursor:pointer;background:var(--surface);transition:border-color .12s, background .12s}
+  .opt:hover{border-color:var(--teal)}
+  .opt input{margin-top:3px;accent-color:var(--teal);flex:0 0 auto}
+  .opt .txt{font-size:14px}
+  .opt .txt small{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+  .opt.picked{border-color:var(--teal);background:var(--teal-soft)}
+  .rec{display:inline-block;font-size:10.5px;font-weight:700;background:var(--teal-soft);color:var(--teal);border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:1px}
+  .opt.picked .rec{background:#fff}
+  .custom{margin-top:10px}
+  .custom input{width:100%;border:1px dashed #b7c5b9;border-radius:8px;padding:10px 12px;font:inherit;font-size:14px;background:var(--bg);color:var(--ink)}
+  .custom input:focus{outline:2px solid var(--teal);outline-offset:1px;border-style:solid}
+  .memo-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+  .memo-card textarea{width:100%;min-height:96px;border:1px dashed #b7c5b9;border-radius:8px;padding:12px;font:inherit;font-size:14px;background:var(--bg);color:var(--ink);resize:vertical}
+  .memo-card textarea:focus{outline:2px solid var(--teal);outline-offset:1px;border-style:solid}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:rgba(247,249,246,.92);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 16px}
+  .bar-in{max-width:760px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .count{font-size:13px;color:var(--muted);flex:1;font-variant-numeric:tabular-nums}
+  button.copy{border:0;border-radius:12px;background:var(--green);color:#fff;font:inherit;font-weight:700;font-size:15px;padding:13px 22px;cursor:pointer;box-shadow:0 8px 20px rgba(47,143,91,.3)}
+  button.copy:active{transform:translateY(1px)}
+  button.ghost{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--muted);font:inherit;font-size:13px;padding:12px 16px;cursor:pointer}
+  .preview{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:6px}
+  .preview h3{margin:0 0 8px;font-size:13px;color:var(--muted);font-weight:700}
+  .preview pre{margin:0;white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.7;overflow-x:auto}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:88px;background:var(--ink);color:#fff;font-size:14px;font-weight:500;border-radius:999px;padding:10px 20px;opacity:0;pointer-events:none;transition:opacity .25s}
+  .toast.show{opacity:1}
+  a.back{color:var(--teal);font-size:13px;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Plantgram · Decision Board</p>
+  <h1>결정이 필요한 8가지</h1>
+  <p class="lede">각 항목을 선택하거나 직접 입력한 뒤, 하단 <b>결정 사항 복사하기</b>를 눌러 Claude에게 붙여넣어 주세요. 선택은 이 브라우저에 자동 저장됩니다.</p>
+  <p style="margin:6px 0 0"><a class="back" href="index.html">← 요건 정의 문서로</a></p>
+  <div class="done-note"><b>이미 확정된 항목</b> — D-4 레벨 시스템(유지) · D-9 꾸미기(전부 무료) · D-11 공동 관리(부모-자식 계정, 정원 단위, GP 합산) · D-12 집사 레벨(병행)</div>
+
+  <div id="cards"></div>
+
+  <div class="memo-card">
+    <div class="dno">추가 메모</div>
+    <div class="q" style="font-size:15px">그 외 전달할 내용이 있다면 자유롭게 적어주세요</div>
+    <textarea id="memo" placeholder="예: 아바타 스타일은 귀여운 쪽보다 미니멀한 쪽으로 / 정원 배경에 우리집 베란다 느낌 추가 등"></textarea>
+  </div>
+
+  <div class="preview">
+    <h3>복사될 내용 미리보기</h3>
+    <pre id="preview"></pre>
+  </div>
+</div>
+
+<div class="bar"><div class="bar-in">
+  <span class="count" id="count"></span>
+  <button class="ghost" id="reset">초기화</button>
+  <button class="copy" id="copy">📋 결정 사항 복사하기</button>
+</div></div>
+<div class="toast" id="toast">복사되었습니다 — Claude 대화에 붙여넣어 주세요</div>
+
+<script>
+const ITEMS = [
+  { id:"D-1", title:"로그인 방식", hint:"iOS 앱스토어 출시 시 소셜 로그인을 제공하면 Apple 로그인은 심사 필수 요건입니다.",
+    opts:[
+      {v:"a", t:"Kakao만", s:"가장 단순, 단 iOS 심사 리스크"},
+      {v:"b", t:"Kakao + Apple", s:"iOS 출시 대비", rec:true},
+      {v:"c", t:"Kakao + Google + Apple", s:"커버리지 최대"}
+    ]},
+  { id:"D-2", title:"게스트 모드", hint:"레거시는 로그인 없이 식물관리가 가능했습니다. 다만 서버 단일 원본 구조와는 충돌합니다.",
+    opts:[
+      {v:"a", t:"로그인 필수", s:"MVP 단순화, 데이터 구조 깔끔", rec:true},
+      {v:"b", t:"게스트 허용", s:"진입장벽 낮춤, 복잡도 상승"}
+    ]},
+  { id:"D-3", title:"기록 유형", hint:"세분 활동(통풍·분무·가지·관찰)은 자연어 기록과 메모로 흡수 가능합니다.",
+    opts:[
+      {v:"a", t:"6종 (물·영양제·분갈이·메모·상태·사진)", s:"plantgram2 방식", rec:true},
+      {v:"b", t:"레거시 8종 활동 복원", s:"통풍·분무·가지·관찰 추가"}
+    ]},
+  { id:"D-5", title:"날씨 카드", hint:"OpenWeather 연동 홈 카드. plantgram2에 이미 구현되어 있습니다.",
+    opts:[
+      {v:"a", t:"유지", s:"홈 생동감 + 정원 뷰 날씨 연출과 시너지", rec:true},
+      {v:"b", t:"제거", s:"외부 API 의존 제거"}
+    ]},
+  { id:"D-6", title:"브랜드 컬러", hint:"목업 단계에서 두 안을 나란히 보고 골라도 됩니다.",
+    opts:[
+      {v:"a", t:"틸 #168f80", s:"레거시 teal 계승, 차분한 톤"},
+      {v:"b", t:"그린 #2f8f5b", s:"브리프·AI 보드의 딥 그린"},
+      {v:"c", t:"목업에서 두 안 비교 후 결정", s:"결정 유보", rec:true}
+    ]},
+  { id:"D-8", title:"개발 베이스", hint:"피드·게임화·가족 계정은 plantgram2에 없던 축이라 신규 시작의 이점이 커졌습니다.",
+    opts:[
+      {v:"a", t:"plantgram2 소스 이어서 개발", s:"관리 코어 재활용"},
+      {v:"b", t:"신규 시작 (설계·코드 참조만 계승)", s:"v0.3 구조에 맞는 재설계", rec:true}
+    ]},
+  { id:"D-10", title:"피드 구조", hint:"레거시 팔로우 그래프는 활성화에 실패했고, 토스 커뮤니티도 팔로우 없이 운영됩니다.",
+    opts:[
+      {v:"a", t:"팔로우 없이 주제 중심 (토스식)", s:"식물종 채널·태그 중심", rec:true},
+      {v:"b", t:"팔로우 부활", s:"관계 기반 피드"}
+    ]},
+  { id:"D-13", title:"AI 과금 방식", hint:"이미지 분석(상태 리포트·환경 분석)에 적용. 자연어 기록·주간 요약은 무료 유지 전제입니다.",
+    opts:[
+      {v:"a", t:"무료 크레딧 월 N회 + 구독", s:"체험 후 구독 전환", rec:true},
+      {v:"b", t:"회당 결제", s:"구독 부담 없음, 반복 사용 유도 약함"},
+      {v:"c", t:"전면 구독 (무료 체험 없음)", s:"단순하지만 전환 장벽 높음"}
+    ]}
+];
+
+const KEY = "plantgram-decisions-v1";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) { state = {}; }
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+const cards = document.getElementById("cards");
+ITEMS.forEach(item => {
+  const card = document.createElement("div");
+  card.className = "dcard";
+  card.innerHTML = '<div class="dno">' + item.id + '</div>'
+    + '<div class="q">' + item.title + '</div>'
+    + '<div class="hint">' + item.hint + '</div>';
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.opts.forEach(o => {
+    const label = document.createElement("label");
+    label.className = "opt";
+    const circled = {a:"ⓐ", b:"ⓑ", c:"ⓒ", d:"ⓓ"}[o.v] || o.v;
+    label.innerHTML = '<input type="radio" name="' + item.id + '" value="' + o.v + '">'
+      + '<span class="txt"><b>' + circled + ' ' + o.t + '</b>'
+      + (o.rec ? '<span class="rec">추천</span>' : '')
+      + '<small>' + o.s + '</small></span>';
+    opts.appendChild(label);
+  });
+  card.appendChild(opts);
+  const custom = document.createElement("div");
+  custom.className = "custom";
+  custom.innerHTML = '<input type="text" id="custom-' + item.id + '" placeholder="✏️ 직접 입력 (입력하면 선택지보다 우선됩니다)">';
+  card.appendChild(custom);
+  cards.appendChild(card);
+
+  const saved = state[item.id] || {};
+  opts.querySelectorAll("input[type=radio]").forEach(r => {
+    if (saved.pick === r.value) { r.checked = true; r.closest(".opt").classList.add("picked"); }
+    r.addEventListener("change", () => {
+      state[item.id] = state[item.id] || {};
+      state[item.id].pick = r.value;
+      opts.querySelectorAll(".opt").forEach(el => el.classList.remove("picked"));
+      r.closest(".opt").classList.add("picked");
+      save(); render();
+    });
+  });
+  const ci = custom.querySelector("input");
+  ci.value = saved.custom || "";
+  ci.addEventListener("input", () => {
+    state[item.id] = state[item.id] || {};
+    state[item.id].custom = ci.value;
+    save(); render();
+  });
+});
+
+const memoEl = document.getElementById("memo");
+memoEl.value = state._memo || "";
+memoEl.addEventListener("input", () => { state._memo = memoEl.value; save(); render(); });
+
+function buildText(){
+  const lines = ["[플랜트그램 결정 사항] " + new Date().toISOString().slice(0,10)];
+  let answered = 0;
+  ITEMS.forEach(item => {
+    const s = state[item.id] || {};
+    const circled = {a:"ⓐ", b:"ⓑ", c:"ⓒ", d:"ⓓ"};
+    let val = "미정";
+    if (s.custom && s.custom.trim()) { val = "직접 입력 — " + s.custom.trim(); answered++; }
+    else if (s.pick) {
+      const o = item.opts.find(x => x.v === s.pick);
+      val = (circled[s.pick] || s.pick) + " " + (o ? o.t : s.pick); answered++;
+    }
+    lines.push(item.id + " " + item.title + ": " + val);
+  });
+  if (state._memo && state._memo.trim()) lines.push("추가 메모: " + state._memo.trim());
+  return { text: lines.join("\n"), answered };
+}
+
+function render(){
+  const { text, answered } = buildText();
+  document.getElementById("preview").textContent = text;
+  document.getElementById("count").textContent = answered + " / " + ITEMS.length + " 항목 결정됨";
+}
+render();
+
+document.getElementById("copy").addEventListener("click", async () => {
+  const { text } = buildText();
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; }
+  catch(e) {
+    const ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand("copy"); } catch(e2) {}
+    document.body.removeChild(ta);
+  }
+  const toast = document.getElementById("toast");
+  toast.textContent = ok ? "복사되었습니다 — Claude 대화에 붙여넣어 주세요" : "복사에 실패했어요. 미리보기 내용을 직접 선택해 복사해 주세요.";
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2600);
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+  if (!confirm("모든 선택과 메모를 초기화할까요?")) return;
+  state = {}; save();
+  location.reload();
+});
+</script>
+</body>
+</html>
