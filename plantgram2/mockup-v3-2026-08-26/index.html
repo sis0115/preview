@@ -93,6 +93,42 @@ svg.ic{display:block}
 /* ---------- 셀레브레이션 컨페티 ---------- */
 .cf{position:absolute;width:6px;height:10px;border-radius:3px;opacity:.8}
 
+/* ---------- 식물 토이 카드 (본디 문법) ---------- */
+.tcard{position:relative;border-radius:24px;padding:18px 18px 20px;overflow:hidden;
+  box-shadow:0 18px 44px rgba(60,70,62,.16)}
+.tcard .hole{width:44px;height:12px;border-radius:99px;background:rgba(0,0,0,.10);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.12);margin:0 auto}
+.tcard .brand{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.tcard .brand .bl{font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:13px;letter-spacing:.12em}
+.tcard .brand .bc{display:flex;gap:2px;align-items:flex-end}
+.tcard .brand .bc i{display:block;width:2.5px;background:rgba(0,0,0,.55)}
+.tcard .plate{margin-top:10px;background:#20241f;color:#fff;border-radius:12px;padding:9px 14px;
+  display:flex;align-items:baseline;gap:8px}
+.tcard .plate .nm{font-size:15px;font-weight:800;letter-spacing:-.2px}
+.tcard .plate .hd{font-size:11px;color:rgba(255,255,255,.55);font-weight:600;margin-left:auto}
+.tcard .bubble{margin-top:14px;border-radius:22px;height:246px;display:grid;place-items:center;position:relative;
+  background:linear-gradient(155deg,rgba(255,255,255,.92),rgba(255,255,255,.55));
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.9), inset 0 -18px 30px rgba(40,60,45,.06), 0 8px 20px rgba(40,60,45,.08)}
+.tcard .bubble::after{content:"";position:absolute;left:14px;top:12px;width:52px;height:26px;border-radius:99px;
+  background:linear-gradient(120deg,rgba(255,255,255,.85),rgba(255,255,255,0));transform:rotate(-18deg)}
+.tcard .sticker{position:absolute;font-size:30px;filter:drop-shadow(0 4px 8px rgba(60,70,62,.25));transform:rotate(12deg)}
+.tcard .cfoot{margin-top:14px;display:flex;align-items:center;gap:8px}
+.tcard .cfoot .sp{font-family:Georgia,serif;font-style:italic;font-size:11.5px;color:rgba(30,40,32,.45);margin-left:auto}
+.cpill{display:inline-block;background:rgba(255,255,255,.75);border-radius:999px;padding:4px 11px;
+  font-size:11.5px;font-weight:800;color:#3c463e}
+
+/* ---------- 카드 편집기 (본디 에디터 문법) ---------- */
+.ed-tabs{display:flex;justify-content:center;gap:6px}
+.ed-tab{border:0;background:none;font:inherit;font-size:13px;font-weight:700;color:var(--faint);
+  padding:8px 15px;border-radius:999px;cursor:pointer}
+.ed-tab.on{background:var(--ink);color:#fff}
+.ed-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:16px}
+.ed-opt{aspect-ratio:1;border-radius:18px;border:2.5px solid transparent;background:var(--block);
+  display:grid;place-items:center;cursor:pointer;font-size:24px;position:relative}
+.ed-opt.on{border-color:var(--ink)}
+.ed-opt .sw{width:58%;height:58%;border-radius:14px}
+.ed-opt .lb{position:absolute;bottom:6px;font-size:9px;font-weight:700;color:var(--sub)}
+
 /* ---------- 시트 ---------- */
 .dim{position:absolute;inset:0;background:rgba(20,26,22,.32);display:flex;align-items:flex-end;border-radius:39px}
 .sheet{background:var(--bg);width:100%;border-radius:30px 30px 39px 39px;padding:8px 24px 30px}
@@ -443,7 +479,21 @@ html:`
     </div>
   </div>
 
-  <div class="pagepad" style="margin-top:38px">
+  <div class="pagepad" style="margin-top:24px">
+    <div style="display:flex;gap:10px">
+      <div style="flex:1.2;background:#f5dbe2;border-radius:20px;padding:14px;display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:42px;border-radius:8px;background:rgba(255,255,255,.8);display:grid;place-items:center">${plant('monstera',19)}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:800">식물 카드</div><div class="tiny">꾸미고 자랑하기</div></div>
+        <span class="chev">›</span>
+      </div>
+      <div style="flex:1;background:var(--sage-soft);border-radius:20px;padding:14px;display:flex;align-items:center;gap:10px">
+        <div style="font-size:19px">🤖</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:800">환경 분석</div><div class="tiny">이 자리 맞을까?</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagepad" style="margin-top:30px">
     <div style="display:flex;align-items:baseline">
       <div class="sec" style="flex:1">기록</div>
       <span class="tiny">전체보기</span>
@@ -467,6 +517,73 @@ html:`
   </div>
 </div>
 ${nav('plant')}
+`});
+
+/* ---------- 4·5. 식물 토이 카드 + 편집기 (본디 문법) ---------- */
+const CARD={bg:'blush',pattern:'dots',pot:'#c98a6a',sticker:'🏆'};
+const CARD_BG={blush:'#f5dbe2',mint:'#daeee0',cream:'#f6ecd4',lav:'#e5e0f2',sky:'#dbe9f2'};
+const CARD_PAT={
+  none:'',
+  dots:'background-image:radial-gradient(rgba(255,255,255,.55) 2.5px,transparent 2.6px);background-size:22px 22px;',
+  stripe:'background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.35) 0 10px,transparent 10px 26px);',
+  grid:'background-image:linear-gradient(rgba(255,255,255,.4) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.4) 1.5px,transparent 1.5px);background-size:26px 26px;'
+};
+const CARD_POTS=['#c98a6a','#8fa89b','#dcc9a8','#b7a3c9','#e0a08c','#9fb8d0'];
+const CARD_STICKERS=['없음','🏆','⭐','💧','🎀','✨'];
+function barcode(){let s='';for(let i=0;i<14;i++){s+=`<i style="height:${8+((i*7)%9)}px"></i>`;}return s;}
+function plantCard(st){
+  return `<div class="tcard" style="background:${CARD_BG[st.bg]};${CARD_PAT[st.pattern]}">
+    <div class="hole"></div>
+    <div class="brand"><span class="bl">PLANTGRAM</span><span class="bc">${barcode()}</span></div>
+    <div class="plate"><span class="nm">몬스테라</span><span class="hd">@초록집사</span></div>
+    <div class="bubble">${plant('monstera',132,st.pot)}
+      ${st.sticker&&st.sticker!=='없음'?`<span class="sticker" style="right:12px;top:10px">${st.sticker}</span>`:''}
+    </div>
+    <div class="cfoot">
+      <span class="cpill">Lv.4</span><span class="cpill">함께한 지 124일</span>
+      <span class="sp">Monstera deliciosa</span>
+    </div>
+  </div>`;
+}
+screens.push({label:'식물 카드',note:'식물마다 갖는 토이 블리스터 카드 — 걸이 구멍, 바코드, 네임 플레이트, 피규어 버블 안의 아바타, 하단 스펙. 상세에서 진입하고, 피드 자랑과 공유의 단위가 됩니다. 정원의 아바타 표시는 그대로, 카드는 별도의 수집 레이어입니다.',
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+  <div class="pagepad" style="display:flex;justify-content:space-between;align-items:center;padding-top:6px">
+    <button class="iconbtn plain" style="margin-left:-12px">${ic('back',22)}</button>
+    <div style="font-size:16px;font-weight:800">식물 카드</div>
+    <span style="font-size:14px;font-weight:800;color:var(--sage)">공유</span>
+  </div>
+  <div style="flex:1;display:grid;place-items:center;padding:10px 34px 0">
+    <div style="width:100%">${plantCard(CARD)}</div>
+  </div>
+  <div class="pagepad" style="padding:22px 24px 26px;display:flex;gap:10px">
+    <button class="cta quiet" style="flex:1;font-size:14.5px">피드에 자랑</button>
+    <button class="cta" style="flex:1.3;font-size:14.5px">카드 꾸미기</button>
+  </div>
+</div>
+`});
+screens.push({label:'카드 편집기',interactive:true,note:'본디 에디터 문법 — 위에 카드 미리보기, 아래에 카테고리 탭과 옵션 그리드. 이 화면은 실제로 동작합니다: 배경·패턴·화분·스티커를 탭해서 바꿔보세요.',
+html:`
+${statusbar}
+<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+  <div class="pagepad" style="display:flex;justify-content:space-between;align-items:center;padding-top:6px">
+    <button class="iconbtn plain" style="margin-left:-12px;font-size:19px;color:var(--sub)">✕</button>
+    <span style="font-size:15px;font-weight:800;color:var(--sage)">완료</span>
+  </div>
+  <div style="flex:1;display:grid;place-items:center;padding:4px 56px 0">
+    <div style="width:100%" id="cardPrev">${plantCard(CARD)}</div>
+  </div>
+  <div style="border-top:1px solid var(--hair);margin-top:18px;padding:14px 24px 24px">
+    <div class="ed-tabs">
+      <button class="ed-tab on" data-cat="bg">배경</button>
+      <button class="ed-tab" data-cat="pattern">패턴</button>
+      <button class="ed-tab" data-cat="pot">화분</button>
+      <button class="ed-tab" data-cat="sticker">스티커</button>
+    </div>
+    <div class="ed-grid" id="edGrid"></div>
+  </div>
+</div>
 `});
 
 /* ---------- 4. 기록 시트 ---------- */
@@ -695,11 +812,37 @@ const g=document.getElementById('gallery');
 screens.forEach((s,i)=>{
   const d=document.createElement('div');
   d.className='gitem';
-  d.innerHTML=`<div class="glabel">${i+1}. ${s.label}${s.overlay?'<small>오버레이</small>':''}</div>
+  d.innerHTML=`<div class="glabel">${i+1}. ${s.label}${s.overlay?'<small>오버레이</small>':''}${s.interactive?'<small style="color:var(--sage)">동작함</small>':''}</div>
     <div class="phone"><div class="screen">${s.html}</div></div>
     <p class="gnote">${s.note}</p>`;
   g.appendChild(d);
 });
+
+/* ---------- 카드 편집기 동작 ---------- */
+let edCat='bg';
+function edRender(){
+  const grid=document.getElementById('edGrid'); if(!grid)return;
+  const opt=(v,inner,on)=>`<div class="ed-opt ${on?'on':''}" data-v="${v}">${inner}</div>`;
+  let h='';
+  if(edCat==='bg') h=Object.entries(CARD_BG).map(([k,c])=>opt(k,`<span class="sw" style="background:${c}"></span>`,CARD.bg===k)).join('');
+  if(edCat==='pattern') h=Object.keys(CARD_PAT).map(k=>opt(k,
+      k==='none'?`<span style="font-size:12px;font-weight:700;color:var(--sub)">없음</span>`
+      :`<span class="sw" style="background:${CARD_BG[CARD.bg]};${CARD_PAT[k]}"></span>`,CARD.pattern===k)).join('');
+  if(edCat==='pot') h=CARD_POTS.map(c=>opt(c,`<span class="sw" style="background:${c};border-radius:50%"></span>`,CARD.pot===c)).join('');
+  if(edCat==='sticker') h=CARD_STICKERS.map(s=>opt(s,
+      s==='없음'?`<span style="font-size:12px;font-weight:700;color:var(--sub)">없음</span>`:s,CARD.sticker===s)).join('');
+  grid.innerHTML=h;
+  document.querySelectorAll('.ed-tab').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
+  const prev=document.getElementById('cardPrev');
+  if(prev) prev.innerHTML=plantCard(CARD);
+}
+document.addEventListener('click',e=>{
+  const tab=e.target.closest('.ed-tab');
+  if(tab){edCat=tab.dataset.cat;edRender();return;}
+  const opt=e.target.closest('.ed-opt');
+  if(opt){CARD[edCat]=opt.dataset.v;edRender();return;}
+});
+edRender();
 </script>
 </body>
 </html>
