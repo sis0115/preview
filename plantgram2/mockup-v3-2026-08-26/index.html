@@ -202,6 +202,98 @@ const nav=on=>`<div class="nav">
 </div>`;
 const statusbar=`<div class="status"><span>9:41</span><span class="r">●●●●  ᯤ  ▮</span></div>`;
 
+/* ---------- 꽃나무 (온실 씬용 추가 형태) ---------- */
+AV.flower=function(w){
+  const a='#557f63',b='#699b78',v='#3c5c46',petal='#e39aad',core='#f2d98b';
+  const B=[[0,-w*.42,1],[-w*.16,-w*.32,.85],[w*.17,-w*.33,.85],[-w*.26,-w*.19,.7],[w*.27,-w*.20,.7]];
+  let s='';B.forEach(([x,y])=>{s+=stem(x,y+4,v);});
+  B.forEach(([x,y,c],i)=>{s+=`<circle cx="${x}" cy="${y}" r="${w*.13*c}" fill="${i%2?b:a}"/>`;});
+  B.forEach(([x,y,c],i)=>{ if(i%2)return;
+    s+=`<g transform="translate(${x},${y-w*.07*c})">
+      ${[0,72,144,216,288].map(ang=>`<ellipse cx="0" cy="${-w*.045}" rx="${w*.032}" ry="${w*.05}" fill="${petal}" transform="rotate(${ang})"/>`).join('')}
+      <circle r="${w*.026}" fill="${core}"/></g>`;});
+  return s;
+};
+
+/* ---------- 홈: 아이소메트릭 온실 씬 ---------- */
+function ghBlock(){
+  const TW=47,TH=23.5,ZH=30,OX=195,OY=66;
+  const Pp=(x,y,z=0)=>[(x-y)*TW/2+OX,(x+y)*TH/2-z*ZH+OY];
+  const ptss=a=>a.map(p=>p.join(',')).join(' ');
+  const G0=1,G1=6,N=7,WALL=1.9,RIDGE=2.8,MID=3.5,BENCH=.95;
+  let o='';
+  /* 잔디 지반 + 옆면 */
+  o+=`<polygon points="${ptss([Pp(-.4,-.4),Pp(N+.4,-.4),Pp(N+.4,N+.4),Pp(-.4,N+.4)])}" fill="#cfdfba"/>`;
+  const c1=Pp(-.4,N+.4),c2=Pp(N+.4,N+.4),c3=Pp(N+.4,-.4);
+  o+=`<polygon points="${ptss([c1,c2,[c2[0],c2[1]+10],[c1[0],c1[1]+10]])}" fill="#adc399"/>`;
+  o+=`<polygon points="${ptss([c3,c2,[c2[0],c2[1]+10],[c3[0],c3[1]+10]])}" fill="#a1b78d"/>`;
+  /* 포장 타일 */
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+    const inside=i>=G0&&i<G1&&j>=G0&&j<G1, apron=!inside&&i>=1&&j>=1;
+    if(!inside&&!apron)continue;
+    o+=`<polygon points="${ptss([Pp(i,j),Pp(i+1,j),Pp(i+1,j+1),Pp(i,j+1)])}"
+      fill="${inside?((i+j)%2?'#ebe6d8':'#f3efe3'):((i+j)%2?'#dbd9d1':'#e4e2da')}"
+      stroke="${inside?'#dcd5c3':'#cbc9c1'}" stroke-width=".6"/>`;
+  }
+  /* 뒷벽 유리 + 지붕 */
+  o+=`<polygon points="${ptss([Pp(G0,G0,0),Pp(G1,G0,0),Pp(G1,G0,WALL),Pp(G0,G0,WALL)])}" fill="#dcedf4" opacity=".55"/>`;
+  o+=`<polygon points="${ptss([Pp(G0,G0,0),Pp(G0,G1,0),Pp(G0,G1,WALL),Pp(G0,G0,WALL)])}" fill="#e2f0f4" opacity=".5"/>`;
+  o+=`<polygon points="${ptss([Pp(G0,G0,WALL),Pp(G1,G0,WALL),Pp(G1,MID,RIDGE),Pp(G0,MID,RIDGE)])}" fill="#d6e9f0" opacity=".5"/>`;
+  /* 벤치 */
+  const bench=(ax,ay,bx,by,d)=>{
+    const isX=ay===by;
+    const p1=Pp(ax,ay,BENCH),p2=Pp(bx,by,BENCH);
+    const p3=isX?Pp(bx,by+d,BENCH):Pp(bx+d,by,BENCH);
+    const p4=isX?Pp(ax,ay+d,BENCH):Pp(ax+d,ay,BENCH);
+    const l3=isX?Pp(bx,by+d,BENCH-.09):Pp(bx+d,by,BENCH-.09);
+    const l4=isX?Pp(ax,ay+d,BENCH-.09):Pp(ax+d,ay,BENCH-.09);
+    return `<polygon points="${ptss([p4,p3,l3,l4])}" fill="#c0a77d"/>
+            <polygon points="${ptss([p1,p2,p3,p4])}" fill="#ecdbbd"/>`;
+  };
+  [[1.35,1.72],[2.75,1.72],[4.2,1.72],[5.05,1.72]].forEach(([x,y])=>{
+    const a=Pp(x,y,0),b=Pp(x,y,BENCH-.04);
+    o+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#e8e1d0" stroke-width="2.6" stroke-linecap="round"/>`;});
+  o+=bench(1.15,1.15,5.2,1.15,.72);
+  /* 식물 */
+  const draw=(x,y,z,k,w,pc)=>{
+    const [sx,sy]=Pp(x,y,z);
+    return `<g transform="translate(${sx},${sy})">
+      <ellipse cy="2" rx="${w*.3}" ry="${w*.08}" fill="rgba(70,90,70,.13)"/>
+      ${AV[k]?AV[k](w):''}${pot(pc,w)}</g>`;
+  };
+  const indoor=[
+    [1.7,1.45,BENCH,'sansevieria',24,'#8fa89b'],[2.8,1.45,BENCH,'succulent',21,'#dcc9a8'],
+    [3.9,1.45,BENCH,'calathea',24,'#b7a3c9'],[4.9,1.45,BENCH,'succulent',20,'#e0a08c'],
+    [1.6,3.1,0,'flower',38,'#b7654f'],[3.5,3.4,0,'monstera',58,'#c98a6a'],
+    [5.0,2.6,0,'pothos',40,'#9fb8d0'],[2.4,4.9,0,'sansevieria',34,'#e0a08c'],[4.6,4.9,0,'calathea',38,'#a8785d'],
+  ].sort((a,b)=>(a[0]+a[1])-(b[0]+b[1]));
+  indoor.forEach(p=>{o+=draw(...p);});
+  /* 앞면 유리 + 프레임 */
+  o+=`<polygon points="${ptss([Pp(G0,G1,0),Pp(G1,G1,0),Pp(G1,G1,WALL),Pp(G0,G1,WALL)])}" fill="#e8f2f6" opacity=".13"/>`;
+  o+=`<polygon points="${ptss([Pp(G1,G0,0),Pp(G1,G1,0),Pp(G1,G1,WALL),Pp(G1,G0,WALL)])}" fill="#e8f2f6" opacity=".11"/>`;
+  o+=`<polygon points="${ptss([Pp(G0,MID,RIDGE),Pp(G1,MID,RIDGE),Pp(G1,G1,WALL),Pp(G0,G1,WALL)])}" fill="#eef6f8" opacity=".15"/>`;
+  const beam=(a,b,w=3.2)=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#fcfbf7" stroke-width="${w}" stroke-linecap="round"/>`;
+  [[G0,G0],[G1,G0],[G0,G1],[G1,G1]].forEach(([x,y])=>{o+=beam(Pp(x,y,0),Pp(x,y,WALL),3.6);});
+  o+=beam(Pp(G0,G0,WALL),Pp(G1,G0,WALL))+beam(Pp(G0,G1,WALL),Pp(G1,G1,WALL))
+   +beam(Pp(G0,G0,WALL),Pp(G0,G1,WALL))+beam(Pp(G1,G0,WALL),Pp(G1,G1,WALL))
+   +beam(Pp(G0,MID,RIDGE),Pp(G1,MID,RIDGE),3.6)
+   +beam(Pp(G0,G0,WALL),Pp(G0,MID,RIDGE))+beam(Pp(G0,G1,WALL),Pp(G0,MID,RIDGE))
+   +beam(Pp(G1,G0,WALL),Pp(G1,MID,RIDGE))+beam(Pp(G1,G1,WALL),Pp(G1,MID,RIDGE));
+  [[2.25,G1],[3.5,G1],[4.75,G1]].forEach(([x,y])=>{o+=beam(Pp(x,y,0),Pp(x,y,WALL),1.8);});
+  [[G1,2.25],[G1,3.5],[G1,4.75]].forEach(([x,y])=>{o+=beam(Pp(x,y,0),Pp(x,y,WALL),1.8);});
+  /* 마당 */
+  [[2.0,6.5,0,'flower',34,'#e0a08c'],[6.5,2.2,0,'pothos',38,'#c98a6a'],[5.6,6.4,0,'succulent',26,'#dcc9a8']]
+    .forEach(p=>{o+=draw(...p);});
+
+  return `<div class="block-img" data-grow style="height:100%;min-height:300px;background:linear-gradient(176deg,#e6eff2,#f0efe2)">
+    <svg viewBox="0 6 390 254" style="width:100%;height:100%;display:block">${o}</svg>
+    <div class="pill glass" style="position:absolute;left:14px;top:14px">우리집 온실 · Lv.7</div>
+    <div class="pill glass" style="position:absolute;right:14px;top:14px;color:var(--pink)">${ic('drop',13)} 2</div>
+    <div class="pill glass" style="position:absolute;left:16px;bottom:16px">🪴 정원 가기</div>
+    <div class="pill glass" style="position:absolute;right:16px;bottom:16px">꾸미기</div>
+  </div>`;
+}
+
 /* ---------- 홈 정원 일러스트 블록 ---------- */
 function gardenBlock(h=300){
   const TW=112,TH=56;
@@ -247,7 +339,7 @@ ${statusbar}
   </div>
 
   <div class="pagepad" style="margin-top:18px;flex:1;display:flex;flex-direction:column;min-height:0">
-    ${gardenBlock(340).replace('height:340px','height:100%;min-height:300px').replace('class="block-img"','class="block-img" data-grow')}
+    ${ghBlock()}
   </div>
 
   <div class="pagepad" style="margin-top:26px">
