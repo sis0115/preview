@@ -359,7 +359,7 @@ function gardenBlock(h=300){
 /* ============================================================
    화면 정의
    ============================================================ */
-const CARD={bg:'blush',pattern:'dots',pot:'#c98a6a',sticker:'🏆'};
+const CARD={bg:'blush',pattern:'dots',pot:'#c98a6a',sticker:'🏆',img:'avatar',cutout:true};
 const CARD_BG={blush:'#f5dbe2',mint:'#daeee0',cream:'#f6ecd4',lav:'#e5e0f2',sky:'#dbe9f2'};
 const CARD_PAT={
   none:'',
@@ -486,14 +486,33 @@ function detailHero(st){
         <span style="font-size:15px;font-weight:800">몬스테라</span>
         <span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600;margin-left:auto">@초록집사</span>
       </div>
-      <div style="margin-top:13px;height:212px;border-radius:22px;display:grid;place-items:center;position:relative;
-        background:linear-gradient(155deg,rgba(255,255,255,.92),rgba(255,255,255,.55));
-        box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.9), inset 0 -18px 30px rgba(40,60,45,.06), 0 8px 20px rgba(40,60,45,.08)">
-        <span style="position:absolute;left:14px;top:12px;width:52px;height:26px;border-radius:99px;
-          background:linear-gradient(120deg,rgba(255,255,255,.85),rgba(255,255,255,0));transform:rotate(-18deg)"></span>
-        ${plant('monstera',118,st.pot)}
-        ${st.sticker&&st.sticker!=='없음'?`<span style="position:absolute;right:12px;top:10px;font-size:30px;filter:drop-shadow(0 4px 8px rgba(60,70,62,.25));transform:rotate(12deg)">${st.sticker}</span>`:''}
-      </div>
+      ${(()=>{ /* 이미지 영역: 아바타 / 사진(원본) / 사진(누끼) */
+        if(st.img==='photo' && !st.cutout){
+          return `<div style="margin-top:13px;height:212px;border-radius:18px;overflow:hidden;position:relative;
+            background:linear-gradient(168deg,#e3e7e2 0%,#d3dbd2 55%,#c7d0c6 100%)">
+            <div style="position:absolute;left:10%;top:10%;width:34%;height:52%;border-radius:6px;background:linear-gradient(165deg,#eef4f6,#d8e4e8);box-shadow:inset 0 0 0 4px #f2efe8"></div>
+            <div style="position:absolute;left:0;right:0;bottom:18%;height:3px;background:rgba(120,110,90,.25)"></div>
+            <div style="position:absolute;left:50%;bottom:6%;transform:translateX(-50%)">${plant('monstera',120,st.pot)}</div>
+            <div style="position:absolute;inset:0;box-shadow:inset 0 0 40px rgba(40,50,40,.10)"></div>
+            <span style="position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.4);color:#fff;font-size:10px;font-weight:700;border-radius:99px;padding:3px 9px">내 사진</span>
+          </div>`;
+        }
+        if(st.img==='photo' && st.cutout){
+          return `<div style="margin-top:8px;height:218px;display:grid;place-items:center;position:relative">
+            <span style="filter:drop-shadow(0 16px 22px rgba(40,60,45,.28))">${plant('monstera',146,st.pot)}</span>
+            <span style="position:absolute;right:6px;bottom:4px;background:rgba(255,255,255,.7);color:#3c463e;font-size:10px;font-weight:700;border-radius:99px;padding:3px 9px">✂️ 배경 지움</span>
+            ${st.sticker&&st.sticker!=='없음'?`<span style="position:absolute;right:10px;top:2px;font-size:30px;filter:drop-shadow(0 4px 8px rgba(60,70,62,.25));transform:rotate(12deg)">${st.sticker}</span>`:''}
+          </div>`;
+        }
+        return `<div style="margin-top:13px;height:212px;border-radius:22px;display:grid;place-items:center;position:relative;
+          background:linear-gradient(155deg,rgba(255,255,255,.92),rgba(255,255,255,.55));
+          box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.9), inset 0 -18px 30px rgba(40,60,45,.06), 0 8px 20px rgba(40,60,45,.08)">
+          <span style="position:absolute;left:14px;top:12px;width:52px;height:26px;border-radius:99px;
+            background:linear-gradient(120deg,rgba(255,255,255,.85),rgba(255,255,255,0));transform:rotate(-18deg)"></span>
+          ${plant('monstera',118,st.pot)}
+          ${st.sticker&&st.sticker!=='없음'?`<span style="position:absolute;right:12px;top:10px;font-size:30px;filter:drop-shadow(0 4px 8px rgba(60,70,62,.25));transform:rotate(12deg)">${st.sticker}</span>`:''}
+        </div>`;
+      })()}
       <div style="margin-top:13px;display:flex;align-items:center;gap:8px">
         <span class="cpill">Lv.4</span><span class="cpill">함께한 지 124일</span>
         <span style="font-family:Georgia,serif;font-style:italic;font-size:11.5px;color:rgba(30,40,32,.45);margin-left:auto">Monstera deliciosa</span>
@@ -501,7 +520,7 @@ function detailHero(st){
     </div>
   </div>`;
 }
-screens.push({label:'식물 상세',note:'상세의 상단 전체가 곧 그 식물의 카드입니다 — 꾸미기가 이 영역(배경·패턴·화분·스티커)을 테마링하고, 식물마다 다른 카드를 갖습니다. 아래로 스크롤하면 칸으로 나뉜 상세 섹션: 요약 · 할 일 · 기록 · 도구. 편집기(6번)에서 바꾸면 이 화면도 함께 바뀝니다.',
+screens.push({label:'식물 상세',note:'상세의 상단 전체가 곧 그 식물의 카드입니다 — 꾸미기가 이 영역(배경·패턴·화분·스티커)을 테마링하고, 식물마다 다른 카드를 갖습니다. 아래로 스크롤하면 칸으로 나뉜 상세 섹션: 요약 · 할 일 · 기록 · 도구. 꾸미기를 누르면 다음 화면처럼 그 자리에서 편집 시트가 열립니다.',
 html:`
 <div id="detailHero" style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(CARD)}</div>
 <div style="flex:1;background:#f1f0ea;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
@@ -540,7 +559,7 @@ html:`
   <div style="display:flex;gap:12px">
     <div style="flex:1;background:#fff;border-radius:22px;padding:15px;display:flex;align-items:center;gap:10px">
       <div style="font-size:19px">🎨</div>
-      <div style="flex:1"><div style="font-size:13px;font-weight:800">카드 꾸미기</div><div class="tiny">나만의 테마로</div></div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:800">꾸미기</div><div class="tiny">테마·사진·스티커</div></div>
       <span class="chev">›</span>
     </div>
     <div style="flex:1;background:#fff;border-radius:22px;padding:15px;display:flex;align-items:center;gap:10px">
@@ -555,47 +574,26 @@ html:`
 ${nav('plant')}
 `});
 
-/* ---------- 4·5. 식물 토이 카드 + 편집기 (본디 문법) ---------- */
-screens.push({label:'식물 카드',note:'식물마다 갖는 토이 블리스터 카드 — 걸이 구멍, 바코드, 네임 플레이트, 피규어 버블 안의 아바타, 하단 스펙. 상세에서 진입하고, 피드 자랑과 공유의 단위가 됩니다. 정원의 아바타 표시는 그대로, 카드는 별도의 수집 레이어입니다.',
+screens.push({label:'식물 상세 · 꾸미기 모드',interactive:true,note:'별도 편집기 화면 없이 상세 그 자리에서 꾸밉니다 — 꾸미기를 누르면 아래 섹션 자리에 편집 시트가 올라오고 상단이 실시간으로 바뀝니다. 사진 탭에서 아바타↔내 사진 전환과 ✂️ 배경 지우기(누끼) 토글을 직접 눌러보세요. 이 화면은 실제로 동작합니다.',
 html:`
-${statusbar}
-<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
-  <div class="pagepad" style="display:flex;justify-content:space-between;align-items:center;padding-top:6px">
-    <button class="iconbtn plain" style="margin-left:-12px">${ic('back',22)}</button>
-    <div style="font-size:16px;font-weight:800">식물 카드</div>
-    <span style="font-size:14px;font-weight:800;color:var(--sage)">공유</span>
+<div id="edHero" style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(CARD)}</div>
+<div style="flex:1;background:#fff;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
+  display:flex;flex-direction:column;padding:10px 24px 24px">
+  <div style="display:flex;align-items:center;padding:4px 0 2px">
+    <span style="font-size:15px;font-weight:800">꾸미기</span>
+    <div style="flex:1"></div>
+    <span style="font-size:14px;font-weight:800;color:var(--sage)">완료</span>
   </div>
-  <div style="flex:1;display:grid;place-items:center;padding:10px 34px 0">
-    <div style="width:100%">${plantCard(CARD)}</div>
+  <div class="ed-tabs" style="margin-top:10px;justify-content:flex-start">
+    <button class="ed-tab on" data-cat="bg">테마</button>
+    <button class="ed-tab" data-cat="pattern">패턴</button>
+    <button class="ed-tab" data-cat="photo">사진</button>
+    <button class="ed-tab" data-cat="sticker">스티커</button>
   </div>
-  <div class="pagepad" style="padding:22px 24px 26px;display:flex;gap:10px">
-    <button class="cta quiet" style="flex:1;font-size:14.5px">피드에 자랑</button>
-    <button class="cta" style="flex:1.3;font-size:14.5px">카드 꾸미기</button>
-  </div>
+  <div id="edGrid" class="ed-grid"></div>
 </div>
 `});
-screens.push({label:'카드 편집기',interactive:true,note:'본디 에디터 문법 — 위에 카드 미리보기, 아래에 카테고리 탭과 옵션 그리드. 이 화면은 실제로 동작합니다: 배경·패턴·화분·스티커를 탭하면 3번 식물 상세의 상단까지 함께 바뀝니다.',
-html:`
-${statusbar}
-<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
-  <div class="pagepad" style="display:flex;justify-content:space-between;align-items:center;padding-top:6px">
-    <button class="iconbtn plain" style="margin-left:-12px;font-size:19px;color:var(--sub)">✕</button>
-    <span style="font-size:15px;font-weight:800;color:var(--sage)">완료</span>
-  </div>
-  <div style="flex:1;display:grid;place-items:center;padding:4px 56px 0">
-    <div style="width:100%" id="cardPrev">${plantCard(CARD)}</div>
-  </div>
-  <div style="border-top:1px solid var(--hair);margin-top:18px;padding:14px 24px 24px">
-    <div class="ed-tabs">
-      <button class="ed-tab on" data-cat="bg">배경</button>
-      <button class="ed-tab" data-cat="pattern">패턴</button>
-      <button class="ed-tab" data-cat="pot">화분</button>
-      <button class="ed-tab" data-cat="sticker">스티커</button>
-    </div>
-    <div class="ed-grid" id="edGrid"></div>
-  </div>
-</div>
-`});
+
 
 /* ---------- 4. 기록 시트 ---------- */
 screens.push({label:'기록 시트',note:'말로 하는 기록이 첫 번째 — 큰 입력 블록 하나. 아이콘 기록은 그 아래 3×2, 회색 블록에 아이콘과 라벨만. GP는 아주 작게.',
@@ -829,31 +827,59 @@ screens.forEach((s,i)=>{
   g.appendChild(d);
 });
 
-/* ---------- 카드 편집기 동작 ---------- */
+/* ---------- 인라인 꾸미기 동작 ---------- */
 let edCat='bg';
 function edRender(){
-  const grid=document.getElementById('edGrid'); if(!grid)return;
-  const opt=(v,inner,on)=>`<div class="ed-opt ${on?'on':''}" data-v="${v}">${inner}</div>`;
-  let h='';
-  if(edCat==='bg') h=Object.entries(CARD_BG).map(([k,c])=>opt(k,`<span class="sw" style="background:${c}"></span>`,CARD.bg===k)).join('');
-  if(edCat==='pattern') h=Object.keys(CARD_PAT).map(k=>opt(k,
-      k==='none'?`<span style="font-size:12px;font-weight:700;color:var(--sub)">없음</span>`
-      :`<span class="sw" style="background:${CARD_BG[CARD.bg]};${CARD_PAT[k]}"></span>`,CARD.pattern===k)).join('');
-  if(edCat==='pot') h=CARD_POTS.map(c=>opt(c,`<span class="sw" style="background:${c};border-radius:50%"></span>`,CARD.pot===c)).join('');
-  if(edCat==='sticker') h=CARD_STICKERS.map(s=>opt(s,
-      s==='없음'?`<span style="font-size:12px;font-weight:700;color:var(--sub)">없음</span>`:s,CARD.sticker===s)).join('');
-  grid.innerHTML=h;
-  document.querySelectorAll('.ed-tab').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
-  const prev=document.getElementById('cardPrev');
-  if(prev) prev.innerHTML=plantCard(CARD);
-  const hero=document.getElementById('detailHero');
-  if(hero) hero.innerHTML=detailHero(CARD);
+  const grid=document.getElementById('edGrid');
+  if(grid){
+    const opt=(v,inner,on)=>`<div class="ed-opt ${on?'on':''}" data-v="${v}">${inner}</div>`;
+    let h='';
+    if(edCat==='bg') h=Object.entries(CARD_BG).map(([k,c])=>opt(k,`<span class="sw" style="background:${c}"></span>`,CARD.bg===k)).join('');
+    if(edCat==='pattern') h=Object.keys(CARD_PAT).map(k=>opt(k,
+        k==='none'?`<span style="font-size:12px;font-weight:700;color:var(--sub)">없음</span>`
+        :`<span class="sw" style="background:${CARD_BG[CARD.bg]};${CARD_PAT[k]}"></span>`,CARD.pattern===k)).join('');
+    if(edCat==='sticker') h=CARD_STICKERS.map(st=>opt(st,
+        st==='없음'?`<span style="font-size:12px;font-weight:700;color:var(--sub)">없음</span>`:st,CARD.sticker===st)).join('');
+    if(edCat==='photo'){
+      grid.style.display='block';
+      grid.innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+          <div class="ed-opt ${CARD.img==='avatar'?'on':''}" data-img="avatar" style="aspect-ratio:auto;padding:14px 8px">
+            <div style="text-align:center"><div style="font-size:22px">🪴</div>
+            <div style="font-size:12px;font-weight:700;margin-top:5px">일러스트</div></div>
+          </div>
+          <div class="ed-opt ${CARD.img==='photo'?'on':''}" data-img="photo" style="aspect-ratio:auto;padding:14px 8px">
+            <div style="text-align:center"><div style="font-size:22px">📷</div>
+            <div style="font-size:12px;font-weight:700;margin-top:5px">내 사진</div></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:14px;background:var(--block);border-radius:18px;padding:15px 16px;${CARD.img==='photo'?'':'opacity:.4'}">
+          <div style="flex:1">
+            <div style="font-size:13.5px;font-weight:700">✂️ 배경 지우기</div>
+            <div class="tiny" style="margin-top:1px">사진에서 식물만 남겨 카드에 얹어요</div>
+          </div>
+          <div data-cutout="1" style="width:48px;height:29px;border-radius:99px;cursor:pointer;position:relative;
+            background:${CARD.cutout?'var(--sage)':'#d5d8d2'};transition:background .2s">
+            <span style="position:absolute;top:2.5px;left:${CARD.cutout?'21px':'2.5px'};width:24px;height:24px;border-radius:99px;background:#fff;
+              box-shadow:0 2px 6px rgba(0,0,0,.18);transition:left .2s"></span>
+          </div>
+        </div>
+        <div class="tiny" style="margin-top:10px;padding:0 4px">사진 변경은 <b style="color:var(--sub)">앨범에서 선택</b> · 배경 지우기는 기기에서 바로 처리돼요</div>`;
+    } else { grid.style.display='grid'; grid.innerHTML=h; }
+    document.querySelectorAll('.ed-tab').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
+  }
+  const h1=document.getElementById('detailHero'); if(h1) h1.innerHTML=detailHero(CARD);
+  const h2=document.getElementById('edHero'); if(h2) h2.innerHTML=detailHero(CARD);
 }
 document.addEventListener('click',e=>{
   const tab=e.target.closest('.ed-tab');
   if(tab){edCat=tab.dataset.cat;edRender();return;}
+  const img=e.target.closest('[data-img]');
+  if(img){CARD.img=img.dataset.img;edRender();return;}
+  const co=e.target.closest('[data-cutout]');
+  if(co){if(CARD.img==='photo'){CARD.cutout=!CARD.cutout;edRender();}return;}
   const opt=e.target.closest('.ed-opt');
-  if(opt){CARD[edCat]=opt.dataset.v;edRender();return;}
+  if(opt&&opt.dataset.v!==undefined){CARD[edCat]=opt.dataset.v;edRender();return;}
 });
 edRender();
 </script>
