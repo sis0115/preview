@@ -13,5 +13,6 @@
 | [06_gamification_ai_design_v0.3.md](06_gamification_ai_design_v0.3.md) | 게임화·AI 설계안 v0.3 — 식물 아바타(자동 생성+커스텀), 정원 홈, GP 점수제·레벨·셀레브레이션, 부모-자식 가족 계정, AI 상태 리포트·환경 분석(유료), 추가 아이디어 |
 | [07_final_requirements_v1.0.md](07_final_requirements_v1.0.md) | **✅ 최종 요건 정의 v1.0 (확정)** — 전 결정 항목 확정, 개발 착수 기준 문서 |
 | [decisions.html](decisions.html) | 결정 보드 (2026-08-26 전 항목 결정 완료, 기록용) |
+| [08_platform_analysis.md](08_platform_analysis.md) | 플랫폼 선택 분석 — Flutter vs 네이티브, 게임성 구현 스택 검토 (2026-08 조사) |
 
 **진행 상태**: ✅ **v1.0 확정** (2026-08-26). 다음 액션: 틸/그린 두 컬러 안 병행 화면 목업 → D-6 최종 결정, 정원·아바타 아트 스타일은 사용자 스타일 이미지 공유 후 확정.
