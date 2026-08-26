@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Jua&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 <title>플랜트그램 목업 v3</title>
 <style>
 /* ============================================================
@@ -359,7 +361,18 @@ function gardenBlock(h=300){
 /* ============================================================
    화면 정의
    ============================================================ */
-const CARD={bg:'sage',pattern:'none',pot:'#c98a6a',sticker:'없음',img:'avatar',cutout:true};
+const CARD={bg:'sage',pattern:'none',pot:'#c98a6a',stickers:[],font:'basic',inkColor:'auto',img:'avatar',cutout:true};
+const STICKER_SET=['🏆','⭐','💧','🎀','✨','🌸','🦋','🍀','🐞','💚','🌈','📌'];
+const STICKER_POS=[
+  {css:'right:44px;top:2px',rot:12},{css:'left:34px;top:58px',rot:-12},
+  {css:'right:24px;top:148px',rot:8},{css:'left:46px;top:196px',rot:-8},
+  {css:'right:66px;top:238px',rot:14},{css:'left:24px;top:2px',rot:-14}];
+const FONTS={
+  basic:{name:'기본',fam:"-apple-system,'Apple SD Gothic Neo',sans-serif",w:800,size:26},
+  serif:{name:'명조',fam:"'Gowun Batang',Georgia,serif",w:700,size:25},
+  round:{name:'라운드',fam:"'Jua',sans-serif",w:400,size:27},
+  hand:{name:'손글씨',fam:"'Nanum Pen Script',cursive",w:400,size:38}};
+const INKS={auto:null,pink:'#d4728c',sage:'#3e5c4b',brown:'#8a6247',blue:'#5f7ba6'};
 const CARD_BG={sage:'#4a675a',blush:'#f5dbe2',mint:'#daeee0',cream:'#f6ecd4',lav:'#e5e0f2',sky:'#dbe9f2'};
 const CARD_DARK={sage:true};
 const CARD_PAT={
@@ -369,7 +382,6 @@ const CARD_PAT={
   grid:'background-image:linear-gradient(rgba(255,255,255,.4) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.4) 1.5px,transparent 1.5px);background-size:26px 26px;'
 };
 const CARD_POTS=['#c98a6a','#8fa89b','#dcc9a8','#b7a3c9','#e0a08c','#9fb8d0'];
-const CARD_STICKERS=['없음','🏆','⭐','💧','🎀','✨'];
 function barcode(){let s='';for(let i=0;i<14;i++){s+=`<i style="height:${8+((i*7)%9)}px"></i>`;}return s;}
 function plantCard(st){
   return `<div class="tcard" style="background:${CARD_BG[st.bg]};${CARD_PAT[st.pattern]}">
@@ -493,6 +505,10 @@ function detailHero(st){
       ${plant('monstera',118,st.pot)}
     </div>`;
   }
+  const F=FONTS[st.font]||FONTS.basic;
+  const nameColor=(st.inkColor&&st.inkColor!=='auto')?INKS[st.inkColor]:ink;
+  const stickers=(st.stickers||[]).map((e,i)=>{const p=STICKER_POS[i%STICKER_POS.length];
+    return `<span style="position:absolute;${p.css};font-size:31px;filter:drop-shadow(0 5px 9px rgba(0,0,0,.22));transform:rotate(${p.rot}deg);z-index:2">${e}</span>`;}).join('');
   return `<div style="background:${CARD_BG[st.bg]};${CARD_PAT[st.pattern]}">
     <div class="status" style="color:${ink}"><span>9:41</span><span class="r" style="color:${faint}">●●●●  ᯤ  ▮</span></div>
     <div class="pagepad" style="display:flex;align-items:center;padding-top:2px">
@@ -502,15 +518,15 @@ function detailHero(st){
       <button class="iconbtn plain" style="margin-right:-12px;color:${sub}">${ic('more',22)}</button>
     </div>
     <div style="text-align:center;padding:2px 24px 36px;position:relative">
-      ${st.sticker&&st.sticker!=='없음'?`<span style="position:absolute;right:52px;top:6px;font-size:32px;filter:drop-shadow(0 5px 9px rgba(0,0,0,.22));transform:rotate(12deg)">${st.sticker}</span>`:''}
+      ${stickers}
       ${img}
       <div style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:${faint};margin-top:20px">Monstera deliciosa</div>
-      <div style="font-size:26px;font-weight:800;letter-spacing:-.6px;margin-top:2px;color:${ink}">몬스테라</div>
+      <div style="font-family:${F.fam};font-weight:${F.w};font-size:${F.size}px;letter-spacing:-.6px;margin-top:2px;color:${nameColor};line-height:1.2">몬스테라</div>
       <div style="font-size:13.5px;color:${sub};margin-top:8px">함께한 지 124일 · 잘 자라고 있어요 · Lv.4</div>
     </div>
   </div>`;
 }
-screens.push({label:'식물 상세',interactive:true,note:'식물 상세 화면 자체를 카드처럼 꾸밉니다 — 별도의 카드를 관리하지 않습니다. 기본은 아이덴티티 세이지 그린이고, 꾸미면 그 테마가 곧 이 식물의 상세 화면이 됩니다. 아래로 스크롤하면 칸으로 나뉜 상세 섹션: 요약 · 할 일 · 기록 · 도구. 우상단 🎨 꾸미기를 누르면 아래 섹션 자리가 편집 시트(테마·패턴·사진·스티커, 누끼 토글 포함)로 바뀌고 상단이 실시간으로 바뀝니다 — 이 화면에서 직접 해보세요. 완료를 누르면 섹션으로 돌아옵니다.',
+screens.push({label:'식물 상세',interactive:true,note:'식물 상세 화면 자체를 카드처럼 꾸밉니다 — 별도의 카드를 관리하지 않습니다. 기본은 아이덴티티 세이지 그린이고, 꾸미면 그 테마가 곧 이 식물의 상세 화면이 됩니다. 아래로 스크롤하면 칸으로 나뉜 상세 섹션: 요약 · 할 일 · 기록 · 도구. 우상단 🎨 꾸미기를 누르면 아래 섹션 자리가 편집 시트(테마·패턴·사진·스티커·글자)로 바뀌고 상단이 실시간으로 바뀝니다 — 스티커는 여러 개 붙일 수 있고, 글자 탭에서 이름 서체(명조·라운드·손글씨)와 글자색을 바꿉니다. 사진 탭에는 ✂️ 누끼 토글. 이 화면에서 직접 해보세요. 완료를 누르면 섹션으로 돌아옵니다.',
 html:`
 <div id="detailHero" style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(CARD)}</div>
 <div id="detailSections" style="flex:1;background:#f1f0ea;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
@@ -574,6 +590,7 @@ html:`
     <button class="ed-tab" data-cat="pattern">패턴</button>
     <button class="ed-tab" data-cat="photo">사진</button>
     <button class="ed-tab" data-cat="sticker">스티커</button>
+    <button class="ed-tab" data-cat="text">글자</button>
   </div>
   <div id="edGrid" class="ed-grid"></div>
 </div>
@@ -581,8 +598,8 @@ ${nav('plant')}
 `});
 
 /* 개념 확인용: 같은 상세 화면의 '꾸미기 열림' 상태 (핑크 도트로 꾸민 예시) */
-const EX={bg:'blush',pattern:'dots',pot:'#c98a6a',sticker:'🏆',img:'avatar',cutout:true};
-screens.push({label:'식물 상세 — 꾸미기 열림 (같은 화면)',note:'별도 화면이 아닙니다 — 3번과 같은 화면의 두 번째 상태입니다. 🎨 꾸미기를 누르면 아래 섹션 자리가 이렇게 편집 시트로 바뀌고, 고르는 즉시 화면 전체 테마가 바뀝니다. 예시는 핑크 도트 + 🏆 스티커로 꾸민 모습. 실제 동작은 3번에서 해보세요.',
+const EX={bg:'blush',pattern:'dots',pot:'#c98a6a',stickers:['🏆','🌸','✨'],font:'hand',inkColor:'pink',img:'avatar',cutout:true};
+screens.push({label:'식물 상세 — 꾸미기 열림 (같은 화면)',note:'별도 화면이 아닙니다 — 3번과 같은 화면의 두 번째 상태입니다. 🎨 꾸미기를 누르면 아래 섹션 자리가 이렇게 편집 시트로 바뀌고, 고르는 즉시 화면 전체가 바뀝니다. 예시는 핑크 도트 테마에 스티커 여러 개(🏆🌸✨)를 붙이고 이름을 손글씨 서체·핑크색으로 꾸민 모습. 실제 동작은 3번에서 해보세요.',
 html:`
 <div style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(EX)}</div>
 <div style="flex:1;background:#fff;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
@@ -593,15 +610,16 @@ html:`
     <span style="font-size:14px;font-weight:800;color:var(--sage)">완료</span>
   </div>
   <div class="ed-tabs" style="margin-top:10px;justify-content:flex-start">
-    <button class="ed-tab on">테마</button>
+    <button class="ed-tab">테마</button>
     <button class="ed-tab">패턴</button>
     <button class="ed-tab">사진</button>
-    <button class="ed-tab">스티커</button>
+    <button class="ed-tab on">스티커</button>
+    <button class="ed-tab">글자</button>
   </div>
   <div class="ed-grid">
-    ${Object.entries(CARD_BG).map(([k,c])=>`<div class="ed-opt ${k===EX.bg?'on':''}"><span class="sw" style="background:${c}"></span></div>`).join('')}
+    ${STICKER_SET.slice(0,8).map(s=>`<div class="ed-opt ${EX.stickers.includes(s)?'on':''}" style="font-size:26px">${s}</div>`).join('')}
   </div>
-  <p class="tiny" style="margin-top:14px">테마를 고르면 상단만이 아니라 <b style="color:var(--sub)">이 식물의 상세 화면 전체</b>가 그 테마가 됩니다 · 사진 탭에는 ✂️ 배경 지우기(누끼) 토글</p>
+  <p class="tiny" style="margin-top:14px">스티커는 <b style="color:var(--sub)">여러 개</b> 골라 붙일 수 있고, 글자 탭에서는 <b style="color:var(--sub)">이름 서체와 글자색</b>을 바꿉니다 · 사진 탭에는 ✂️ 배경 지우기(누끼) 토글</p>
 </div>
 `});
 
@@ -849,8 +867,45 @@ function edRender(){
     if(edCat==='pattern') h=Object.keys(CARD_PAT).map(k=>opt(k,
         k==='none'?`<span style="font-size:12px;font-weight:700;color:var(--sub)">없음</span>`
         :`<span class="sw" style="background:${CARD_BG[CARD.bg]};${CARD_PAT[k]}"></span>`,CARD.pattern===k)).join('');
-    if(edCat==='sticker') h=CARD_STICKERS.map(st=>opt(st,
-        st==='없음'?`<span style="font-size:12px;font-weight:700;color:var(--sub)">없음</span>`:st,CARD.sticker===st)).join('');
+    if(edCat==='sticker'){
+      grid.style.display='block';
+      grid.innerHTML=`
+        <div class="ed-grid" style="margin-top:0">
+          ${STICKER_SET.map(s=>`<div class="ed-opt ${CARD.stickers.includes(s)?'on':''}" data-stk="${s}" style="font-size:26px">${s}</div>`).join('')}
+        </div>
+        <div style="display:flex;align-items:center;margin-top:13px;padding:0 4px">
+          <span class="tiny">여러 개 붙일 수 있어요 (최대 ${STICKER_POS.length}개) · 고르면 위에 바로 붙어요</span>
+          <div style="flex:1"></div>
+          <span data-stk-clear style="font-size:12.5px;font-weight:800;color:var(--sub);cursor:pointer;white-space:nowrap">모두 지우기</span>
+        </div>`;
+      document.querySelectorAll('.ed-tab[data-cat]').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
+      const h0=document.getElementById('detailHero'); if(h0) h0.innerHTML=detailHero(CARD);
+      return;
+    }
+    if(edCat==='text'){
+      grid.style.display='block';
+      grid.innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+          ${Object.entries(FONTS).map(([k,f])=>`
+          <div class="ed-opt ${CARD.font===k?'on':''}" data-font="${k}" style="aspect-ratio:auto;padding:13px 8px">
+            <div style="text-align:center">
+              <div style="font-family:${f.fam};font-weight:${f.w};font-size:${Math.round(f.size*.72)}px;line-height:1.15">몬스테라</div>
+              <div style="font-size:10.5px;font-weight:700;color:var(--sub);margin-top:4px">${f.name}</div>
+            </div>
+          </div>`).join('')}
+        </div>
+        <div class="tiny" style="margin-top:14px;padding:0 4px;font-weight:700">글자색</div>
+        <div class="ed-grid" style="grid-template-columns:repeat(5,1fr);margin-top:9px">
+          ${Object.entries(INKS).map(([k,c])=>`
+          <div class="ed-opt ${CARD.inkColor===k?'on':''}" data-ink="${k}">
+            ${k==='auto'?`<span style="font-size:11px;font-weight:700;color:var(--sub)">자동</span>`:`<span class="sw" style="background:${c};border-radius:99px"></span>`}
+          </div>`).join('')}
+        </div>
+        <div class="tiny" style="margin-top:10px;padding:0 4px">자동은 테마에 맞는 색으로 · 식물 이름의 서체와 색이 바뀌어요</div>`;
+      document.querySelectorAll('.ed-tab[data-cat]').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
+      const h0=document.getElementById('detailHero'); if(h0) h0.innerHTML=detailHero(CARD);
+      return;
+    }
     if(edCat==='photo'){
       grid.style.display='block';
       grid.innerHTML=`
@@ -898,6 +953,18 @@ document.addEventListener('click',e=>{
   if(img){CARD.img=img.dataset.img;edRender();return;}
   const co=e.target.closest('[data-cutout]');
   if(co){if(CARD.img==='photo'){CARD.cutout=!CARD.cutout;edRender();}return;}
+  const stk=e.target.closest('[data-stk]');
+  if(stk){
+    const s=stk.dataset.stk, i=CARD.stickers.indexOf(s);
+    if(i>=0) CARD.stickers.splice(i,1);
+    else if(CARD.stickers.length<STICKER_POS.length) CARD.stickers.push(s);
+    edRender(); return;
+  }
+  if(e.target.closest('[data-stk-clear]')){CARD.stickers=[];edRender();return;}
+  const fo=e.target.closest('[data-font]');
+  if(fo){CARD.font=fo.dataset.font;edRender();return;}
+  const ik=e.target.closest('[data-ink]');
+  if(ik){CARD.inkColor=ik.dataset.ink;edRender();return;}
   const opt=e.target.closest('.ed-opt');
   if(opt&&opt.dataset.v!==undefined){CARD[edCat]=opt.dataset.v;edRender();return;}
 });
