@@ -68,7 +68,9 @@ h1{font-size:25px;margin:0 0 6px}
 <body>
 <div class="wrap">
   <h1>정원 시뮬레이터 <span style="font-size:11px;font-weight:800;background:var(--brand-soft);color:var(--brand-ink);border-radius:99px;padding:2px 10px;vertical-align:3px">배치 + 돌보기 인터랙션</span></h1>
-  <p class="lede">아트 피드백 반영판: 식물이 화분 <b>안에서 자라 나오고</b>(앞 테두리가 줄기를 덮음), 모든 형태에 줄기가 생겼고, 그라디언트 셰이딩으로 입체감을 더했습니다. <b>돌보기 모드</b>에서 목마른 식물을 탭해 물을 주고, <b>꾸미기 모드</b>에서 식물을 옮기거나 새 식물을 배치해보세요.</p>
+  <p class="lede">칸 시스템 확장판: 정원이 <b>바닥 16칸 + 선반 8칸</b>으로 세분화됐고, 식물에 <b>크기 등급(소/중/대)</b>이 생겼습니다.
+  소형만 선반에 올라가고, 대형은 위로 두 칸을 차지해 선반 아래에 못 들어갑니다.
+  <b>돌보기 모드</b>에서 목마른 식물을 탭해 물을 주고, <b>꾸미기 모드</b>에서 제약을 직접 확인해보세요 — 놓을 수 있는 칸(초록)과 안 되는 칸(🚫)이 구분됩니다.</p>
 
   <div class="stagebox">
     <div class="scene" id="scene">
@@ -92,7 +94,11 @@ h1{font-size:25px;margin:0 0 6px}
   </div>
 
   <div class="note" id="designnote">
-    <b>구현된 규칙</b> — ① 목마른 식물: 채도↓ + 기울어짐 + 💧말풍선, 탭하면 물주기(+10 GP, 게이지 상승) ② 꾸미기: 식물 선택 → 초록 발광 타일로 이동, 트레이의 보유 식물을 빈 자리에 배치, 선반↔바닥 자유 이동 ③ 모든 상태 변화는 좌표+파츠 JSON 갱신뿐 — 이 데이터가 그대로 Firestore 문서입니다.
+    <b>칸·크기 시스템</b> — 정원은 <b>바닥 16칸 + 선반 8칸 = 24칸</b>입니다. 식물마다 크기 등급이 있습니다:
+    <b>소형(S)</b>은 어디든(선반 포함), <b>중형(M)</b>은 개방 바닥만, <b>대형(L)</b>은 위로 두 칸 높이를 차지해
+    선반 아래(천장 낮음)와 선반 위에는 둘 수 없습니다. 꾸미기 모드에서 식물을 선택하면 놓을 수 있는 칸은
+    초록으로, 크기 제약에 걸리는 칸은 🚫 붉은 표시로 구분되고, 탭하면 이유를 알려줍니다.
+    모든 배치는 여전히 <b>칸 ID + 파츠 JSON</b> 갱신뿐 — 이 데이터가 그대로 Firestore 문서입니다.
   </div>
 
   <a class="back" href="../garden-kit-2026-08-26/">← 파츠 카탈로그</a>
@@ -208,7 +214,7 @@ const TONES={green:{base:'#3f7d54',alt:'#4f9163',vein:'#2c5b3c'},
   variegated:{base:'#4a8b5c',alt:'#8fbf95',vein:'#2f6040'}};
 
 /* ================= 화분 (원통 셰이딩 + 앞테두리로 줄기 덮기) ================= */
-function avatar(it,w){
+function avatar(it,w,boost=1){
   const t=TONES[it.tone||'green'], g=toneGrads(t);
   const color=it.pot, RX=w*.5, RY=w*.22, H=w*.74, BR=w*.335;
   const dark=sh(color,-34), light=sh(color,22);
@@ -218,7 +224,8 @@ function avatar(it,w){
   const thirsty=it.state==='thirsty';
   const LIFT={rosette:.05,cactus:.3}[it.form] ?? .55;
 
-  const plant=`<g transform="translate(0,${n1(-H+RY*LIFT)}) ${thirsty?'rotate(-5)':''}"
+  /* boost: 대형 식물은 화분 대비 수형이 더 크고 높게 (위로 두 칸 차지하는 느낌) */
+  const plant=`<g transform="translate(0,${n1(-H+RY*LIFT)}) scale(${boost}) ${thirsty?'rotate(-5)':''}"
      ${thirsty?'opacity=".88"':''}>${FORMS[it.form].draw(w,it.stage,g)}</g>`;
 
   return `<g ${thirsty?'style="filter:saturate(.72)"':''}>
@@ -237,24 +244,40 @@ function avatar(it,w){
 
 /* ================= 씬 데이터 ================= */
 const SHELF=1.05, N=4;
-const SLOTS=[
-  {id:'s1',x:1.0,y:.5,z:SHELF,shelf:1},{id:'s2',x:2.2,y:.5,z:SHELF,shelf:1},{id:'s3',x:3.4,y:.5,z:SHELF,shelf:1},
-  {id:'s4',x:.5,y:1.6,z:SHELF,shelf:2},{id:'s5',x:.5,y:2.8,z:SHELF,shelf:2},
-  {id:'f1',x:1.5,y:1.5,z:0},{id:'f2',x:2.5,y:1.5,z:0},{id:'f3',x:3.5,y:1.5,z:0},
-  {id:'f4',x:1.5,y:2.5,z:0},{id:'f5',x:2.5,y:2.5,z:0},{id:'f6',x:3.5,y:2.5,z:0},
-  {id:'f7',x:1.5,y:3.5,z:0},{id:'f8',x:2.5,y:3.5,z:0},{id:'f9',x:3.5,y:3.5,z:0},
-];
+
+/* 슬롯 = 칸.
+   선반 8칸(shelf): 소형만.
+   바닥 16칸: 선반 아래(covered)는 천장이 낮아 소형만, 개방 칸은 소/중/대 모두. */
+const SLOTS=[];
+[[ .8,'sb1'],[1.55,'sb2'],[2.3,'sb3'],[3.05,'sb4'],[3.8,'sb5']]
+  .forEach(([x,id])=>SLOTS.push({id,x,y:.55,z:SHELF,kind:'shelf'}));
+[[1.4,'sl1'],[2.3,'sl2'],[3.2,'sl3']]
+  .forEach(([y,id])=>SLOTS.push({id,x:.55,y,z:SHELF,kind:'shelf'}));
+for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+  SLOTS.push({id:`f${i}${j}`,x:i+.5,y:j+.5,z:0,i,j,
+    kind:(i===0||j===0)?'covered':'open'});
+}
+
+/* 크기 규칙: S=어디든 / M=개방 바닥 / L=개방 바닥(위로 두 칸 높이 차지) */
+const SIZE={S:{name:'소형',w:{shelf:29,floor:33}},M:{name:'중형',w:{floor:48}},L:{name:'대형',w:{floor:66},boost:1.25}};
+function slotAllows(slot,p){
+  if(slot.kind==='shelf')   return p.size==='S' ? true : '선반에는 소형 식물만 올릴 수 있어요';
+  if(slot.kind==='covered') return p.size==='S' ? true : '선반 아래는 낮아서 소형 식물만 둘 수 있어요';
+  return true; /* open */
+}
+
 const state={
   gp:1240, gpMax:1600, lv:7, mode:'care', sel:null, traySel:null,
   plants:[
-    {id:'p1',n:'몬스테라',form:'broadleaf',stage:4,tone:'green',pot:'#c98a6a',slot:'f4',state:'thirsty',plv:4,dday:'D+1'},
-    {id:'p2',n:'스투키',form:'upright',stage:3,tone:'deep',pot:'#8fa89b',slot:'s1',state:'healthy',plv:6,dday:'D-5'},
-    {id:'p3',n:'몽이',form:'rosette',stage:2,tone:'green',pot:'#dcc9a8',slot:'s2',state:'thirsty',plv:2,dday:'오늘'},
-    {id:'p4',n:'칼라',form:'patterned',stage:3,tone:'variegated',pot:'#b7a3c9',slot:'s4',state:'healthy',plv:5,dday:'D-3'},
-    {id:'p5',n:'초코',form:'vine',stage:4,tone:'green',pot:'#a8785d',slot:'f8',state:'healthy',plv:8,dday:'D-2'},
-    {id:'p6',n:'테이블야자',form:'palm',stage:3,tone:'deep',pot:'#9fb8d0',slot:'f6',state:'healthy',plv:3,dday:'D-4'},
-    {id:'p7',n:'가시',form:'cactus',stage:3,tone:'green',pot:'#e0a08c',slot:null,state:'healthy',plv:1,dday:'D-12'},
-    {id:'p8',n:'보스턴',form:'fern',stage:2,tone:'green',pot:'#c98a6a',slot:null,state:'healthy',plv:2,dday:'D-6'},
+    {id:'p1',n:'몬스테라',size:'L',form:'broadleaf',stage:4,tone:'green',pot:'#c98a6a',slot:'f12',state:'thirsty',plv:4,dday:'D+1'},
+    {id:'p2',n:'스투키',size:'S',form:'upright',stage:3,tone:'deep',pot:'#8fa89b',slot:'sb2',state:'healthy',plv:6,dday:'D-5'},
+    {id:'p3',n:'몽이',size:'S',form:'rosette',stage:2,tone:'green',pot:'#dcc9a8',slot:'sb4',state:'thirsty',plv:2,dday:'오늘'},
+    {id:'p4',n:'칼라',size:'S',form:'patterned',stage:3,tone:'variegated',pot:'#b7a3c9',slot:'sl1',state:'healthy',plv:5,dday:'D-3'},
+    {id:'p9',n:'산세',size:'S',form:'upright',stage:2,tone:'green',pot:'#e0a08c',slot:'f02',state:'healthy',plv:2,dday:'D-7'},
+    {id:'p5',n:'초코',size:'M',form:'vine',stage:4,tone:'green',pot:'#a8785d',slot:'f23',state:'healthy',plv:8,dday:'D-2'},
+    {id:'p6',n:'테이블야자',size:'L',form:'palm',stage:3,tone:'deep',pot:'#9fb8d0',slot:'f31',state:'healthy',plv:3,dday:'D-4'},
+    {id:'p7',n:'가시',size:'S',form:'cactus',stage:3,tone:'green',pot:'#e0a08c',slot:null,state:'healthy',plv:1,dday:'D-12'},
+    {id:'p8',n:'보스턴',size:'M',form:'fern',stage:3,tone:'green',pot:'#c98a6a',slot:null,state:'healthy',plv:2,dday:'D-6'},
   ],
 };
 const bySlot=id=>state.plants.find(p=>p.slot===id);
@@ -308,16 +331,32 @@ function render(){
   o+=shelfRun(.2,.18,4.05,.18,.8);
   o+=shelfRun(.18,.2,.18,3.35,.8);
 
-  /* 빈 슬롯 하이라이트 (꾸미기 모드) */
-  if(state.mode==='edit'&&(state.sel||state.traySel)){
+  /* 빈 칸 표시 (꾸미기 모드) */
+  if(state.mode==='edit'){
+    const moving = state.sel ? state.plants.find(p=>p.id===state.sel)
+                 : state.traySel ? state.plants.find(p=>p.id===state.traySel) : null;
     SLOTS.forEach(s=>{
       if(bySlot(s.id))return;
       const c=P(s.x,s.y,s.z);
-      o+=`<g class="slotmark" data-slot="${s.id}" style="cursor:pointer">
-        <ellipse cx="${c[0]}" cy="${c[1]}" rx="30" ry="14" fill="rgba(22,143,128,.16)"/>
-        <ellipse cx="${c[0]}" cy="${c[1]}" rx="30" ry="14" fill="none" stroke="#168f80" stroke-width="2" stroke-dasharray="6 5">
-          <animate attributeName="stroke-dashoffset" from="0" to="22" dur="1.2s" repeatCount="indefinite"/>
-        </ellipse></g>`;
+      const tile = s.kind!=='shelf'
+        ? `points="${pts([P(s.i+.12,s.j+.12),P(s.i+.88,s.j+.12),P(s.i+.88,s.j+.88),P(s.i+.12,s.j+.88)])}"`
+        : null;
+      if(!moving){ /* 선택 전: 칸 위치만 은은하게 */
+        o+= tile
+          ? `<polygon ${tile} fill="none" stroke="#b9c9bb" stroke-width="1.2" stroke-dasharray="3 4" opacity=".8"/>`
+          : `<ellipse cx="${c[0]}" cy="${c[1]}" rx="24" ry="11" fill="none" stroke="#b9c9bb" stroke-width="1.2" stroke-dasharray="3 4" opacity=".8"/>`;
+        return;
+      }
+      const ok = slotAllows(s,moving)===true;
+      const col = ok?'#168f80':'#b45a4a';
+      const anim = ok?`<animate attributeName="stroke-dashoffset" from="0" to="22" dur="1.2s" repeatCount="indefinite"/>`:'';
+      const shape = tile
+        ? `<polygon ${tile} fill="${ok?'rgba(22,143,128,.15)':'rgba(180,90,74,.08)'}"/>
+           <polygon ${tile} fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="6 5" ${ok?'':'opacity=".55"'}>${anim}</polygon>`
+        : `<ellipse cx="${c[0]}" cy="${c[1]}" rx="27" ry="13" fill="${ok?'rgba(22,143,128,.16)':'rgba(180,90,74,.08)'}"/>
+           <ellipse cx="${c[0]}" cy="${c[1]}" rx="27" ry="13" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="6 5" ${ok?'':'opacity=".55"'}>${anim}</ellipse>`;
+      o+=`<g class="slotmark" data-slot="${s.id}" data-ok="${ok?1:0}" style="cursor:pointer">${shape}
+        ${ok?'':`<text x="${c[0]}" y="${c[1]+4}" text-anchor="middle" font-size="12" opacity=".8">🚫</text>`}</g>`;
     });
   }
 
@@ -326,11 +365,12 @@ function render(){
     .sort((a,b)=>(a.s.x+a.s.y)-(b.s.x+b.s.y));
   placed.forEach(({p,s})=>{
     const [sx,sy]=P(s.x,s.y,s.z);
-    const w=(s.z>0?34:46)*(0.85+p.stage*0.08);
+    const sz=SIZE[p.size]||SIZE.M;
+    const w=(s.kind==='shelf'?(sz.w.shelf||sz.w.floor):sz.w.floor)*(0.88+p.stage*0.04);
     const on=state.sel===p.id;
     o+=`<g class="plant" data-id="${p.id}" transform="translate(${sx},${sy})" style="cursor:pointer">
       ${on?`<ellipse cy="2" rx="${w*.72}" ry="${w*.3}" fill="none" stroke="#168f80" stroke-width="2.4" stroke-dasharray="6 5"/>`:''}
-      ${avatar(p,w)}
+      ${avatar(p,w,sz.boost||1)}
       ${p.state==='thirsty'&&state.mode==='care'?`
         <g transform="translate(${w*.42},${-w*1.32})">
           <rect x="-8" y="-30" width="52" height="22" rx="11" fill="#4088ff"/>
@@ -339,8 +379,8 @@ function render(){
           <animateTransform attributeName="transform" type="translate"
             values="${w*.42},${-w*1.32};${w*.42},${-w*1.38};${w*.42},${-w*1.32}" dur="1.6s" repeatCount="indefinite"/>
         </g>`:''}
-      ${on?`<g transform="translate(0,${-w*1.62})"><rect x="-40" y="-18" width="80" height="22" rx="11" fill="#168f80"/>
-        <text x="0" y="-2.5" text-anchor="middle" fill="#fff" font-size="11.5" font-weight="700">${p.n} Lv.${p.plv}</text></g>`:''}
+      ${on?`<g transform="translate(0,${-w*1.62})"><rect x="-56" y="-18" width="112" height="22" rx="11" fill="#168f80"/>
+        <text x="0" y="-2.5" text-anchor="middle" fill="#fff" font-size="11.5" font-weight="700">${p.n} Lv.${p.plv} · ${SIZE[p.size].name}</text></g>`:''}
     </g>`;
   });
 
@@ -362,14 +402,19 @@ function render(){
   tray.innerHTML='<span class="lb">보유 식물</span>'+(unplaced.length?unplaced.map(p=>{
     DEFS='';defId=0;
     const inner=avatar({...p,state:'healthy'},26);
-    return `<button data-tray="${p.id}" class="${state.traySel===p.id?'on':''}" title="${p.n}">
-      <svg width="46" height="52" viewBox="-23 -46 46 52"><defs>${DEFS}</defs>${inner}</svg></button>`;
+    return `<button data-tray="${p.id}" class="${state.traySel===p.id?'on':''}" title="${p.n}" style="position:relative">
+      <svg width="46" height="52" viewBox="-23 -46 46 52"><defs>${DEFS}</defs>${inner}</svg>
+      <span style="position:absolute;right:2px;top:2px;font-size:9px;font-weight:800;
+        background:${p.size==='L'?'#b45a4a':p.size==='M'?'#c8912b':'#168f80'};color:#fff;
+        border-radius:99px;padding:0 5px">${SIZE[p.size].name.slice(0,1)}</span></button>`;
   }).join(''):'<span style="font-size:11px;color:var(--faint);padding:0 6px">모두 배치됨</span>')
   +(state.sel?`<button style="width:auto;padding:0 12px;font-size:11.5px;font-weight:800;color:var(--muted)" data-unplace="1">↩ 선택 식물 치우기</button>`:'');
 
   document.getElementById('legend').innerHTML = state.mode==='care'
     ? `<span><b>💧 말풍선</b> 탭 → 물주기 (+10 GP)</span><span><b>식물</b> 탭 → 이름·레벨 확인</span>`
-    : `<span><b>식물</b> 탭 → 선택 후 <b>초록 점선 자리</b> 탭 → 이동</span><span><b>보유 식물</b> 탭 → 빈 자리에 배치</span><span>선반 ↔ 바닥 자유 이동</span>`;
+    : `<span><b>식물/보유 식물</b> 선택 → <b>초록 칸</b>에 배치</span>
+       <span><b>🚫 붉은 칸</b> = 크기 제약 (선반·선반 아래는 소형만)</span>
+       <span>배지: <b style="color:#168f80">소</b>=어디든 · <b style="color:#c8912b">중</b>=개방 바닥 · <b style="color:#b45a4a">대</b>=개방 바닥, 위로 두 칸 차지</span>`;
 }
 
 /* ================= 인터랙션 ================= */
@@ -395,10 +440,15 @@ document.addEventListener('click',e=>{
   const slot=e.target.closest('.slotmark');
   if(slot){
     const sid=slot.dataset.slot;
-    if(state.traySel){const p=state.plants.find(x=>x.id===state.traySel);p.slot=sid;state.traySel=null;
-      toast(`${p.n}을(를) 정원에 배치했어요 🌱`);}
-    else if(state.sel){const p=state.plants.find(x=>x.id===state.sel);p.slot=sid;
-      toast(`${p.n}을(를) 옮겼어요`);}
+    const s=SLOTS.find(x=>x.id===sid);
+    const p=state.traySel?state.plants.find(x=>x.id===state.traySel)
+           :state.sel?state.plants.find(x=>x.id===state.sel):null;
+    if(!p){return;}
+    const allowed=slotAllows(s,p);
+    if(allowed!==true){toast(`🚫 ${allowed}`);return;}
+    const wasTray=!p.slot;
+    p.slot=sid;state.traySel=null;
+    toast(wasTray?`${p.n}(${SIZE[p.size].name})을 정원에 배치했어요 🌱`:`${p.n}을(를) 옮겼어요`);
     render();return;}
 
   const pl=e.target.closest('.plant');
