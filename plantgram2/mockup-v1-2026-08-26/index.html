@@ -125,7 +125,7 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .window::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:5px;background:#f6f3ec;transform:translateX(-50%)}
 .sun{position:absolute;right:26px;top:22px;width:34px;height:34px;border-radius:50%;
   background:radial-gradient(circle,#ffe9a8,#ffd166);box-shadow:0 0 22px rgba(255,209,102,.7)}
-.row{position:absolute;left:16px;right:16px}
+.row{position:absolute;left:16px;right:16px;z-index:2}
 .row .items{display:flex;align-items:flex-end;justify-content:space-around}
 .row .bar{height:11px;border-radius:4px;margin-top:-1px;
   background:linear-gradient(#d9c1a0,#bb9a72);box-shadow:0 6px 13px rgba(90,70,45,.20)}
@@ -285,17 +285,59 @@ body{margin:0;background:var(--bg);color:var(--ink);
   display:grid;place-items:center;cursor:pointer;font-size:22px}
 .part.on{border-color:var(--brand);background:var(--brand-soft)}
 
+/* ---------- top bar & gallery ---------- */
+.topbar{position:sticky;top:0;z-index:60;background:rgba(238,241,236,.93);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:11px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar .tt{font-size:15px;font-weight:800;margin-right:auto}
+.topbar .tt small{display:block;font-size:11px;color:var(--muted);font-weight:600}
+.seg{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}
+.seg button{border:0;background:none;font:inherit;font-size:12px;font-weight:800;color:var(--muted);
+  padding:7px 13px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.seg button.on{background:var(--brand);color:#fff}
+.seg button i{width:11px;height:11px;border-radius:4px;display:block}
+
+#galleryWrap{display:none}
+body.gal #galleryWrap{display:block}
+body.gal .stage{display:none}
+.ghead{max-width:1320px;margin:0 auto;padding:22px 22px 2px}
+.ghead h1{margin:0 0 5px;font-size:24px}
+.ghead p{margin:0;color:var(--muted);font-size:13px;max-width:64ch;line-height:1.65}
+.gallery{display:grid;gap:32px 24px;grid-template-columns:repeat(auto-fill,minmax(392px,1fr));
+  max-width:1320px;margin:0 auto;padding:20px 22px 80px;align-items:start}
+.gitem{justify-self:center;width:392px;max-width:100%}
+.glabel{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;margin:0 2px 9px}
+.glabel b{background:var(--brand);color:#fff;width:21px;height:21px;border-radius:7px;
+  display:grid;place-items:center;font-size:11px;flex:0 0 auto}
+.glabel .ov{background:var(--sun-soft);color:#8a6420;border-radius:99px;padding:1px 8px;font-size:10.5px;font-weight:800}
+.gnote{margin:11px 2px 0;font-size:12.5px;color:var(--muted);line-height:1.65}
+.gitem .phone{width:100%}
+.gitem .screen{height:auto;min-height:858px}
+.gitem .view{overflow:visible}
+.gitem .pane{min-height:794px}
+.gitem .ovl{position:absolute;inset:0}
+.gitem .sheet,.gitem .celebrate{animation:none}
+.gallery,.gallery *{cursor:default}
+
 /* mobile */
 .mobbar{display:none}
 @media(max-width:940px){
   .stage{grid-template-columns:1fr;padding:0;gap:0;max-width:none}
   .panel{display:none}
   .phonewrap{display:block}
-  .phone{width:100%;border-radius:0;padding:0;box-shadow:none}
-  .screen{height:100dvh;border-radius:0}
-  .ovl{border-radius:0}
-  .statusbar{display:none}
-  .screen{padding-top:env(safe-area-inset-top)}
+  .phonewrap .phone{width:100%;border-radius:0;padding:0;box-shadow:none}
+  .phonewrap .screen{height:100dvh;border-radius:0}
+  .phonewrap .ovl{border-radius:0}
+  .phonewrap .statusbar{display:none}
+  .topbar{padding:9px 14px;gap:8px}
+  .topbar .tt{font-size:13.5px;width:100%;margin:0 0 2px}
+  .ghead{padding:16px 16px 0}
+  .ghead h1{font-size:20px}
+  .gallery{grid-template-columns:1fr;padding:14px 14px 50px;gap:26px}
+  .gitem{width:100%}
+  .gitem .phone{border-radius:24px;padding:7px}
+  .gitem .screen{border-radius:19px;min-height:0}
+  .gitem .pane{min-height:700px}
+  .phonewrap .screen{padding-top:env(safe-area-inset-top)}
   .mobbar{display:flex;flex-direction:column;position:absolute;right:0;top:44%;z-index:30;gap:0;
     background:rgba(255,255,255,.82);border-radius:12px 0 0 12px;padding:4px;box-shadow:var(--shadow);
     backdrop-filter:blur(6px)}
@@ -306,6 +348,26 @@ body{margin:0;background:var(--bg);color:var(--ink);
 </style>
 </head>
 <body>
+
+<div class="topbar">
+  <div class="tt">플랜트그램 목업 v1<small>요건 정의 v1.0 기준 · 2026-08-26</small></div>
+  <div class="seg" id="modeSeg">
+    <button data-mode="gal" class="on">▦ 전체 화면</button>
+    <button data-mode="proto">▶ 프로토타입</button>
+  </div>
+  <div class="seg">
+    <button data-brand="teal" class="on"><i style="background:#168f80"></i>틸</button>
+    <button data-brand="green"><i style="background:#2f8f5b"></i>그린</button>
+  </div>
+</div>
+
+<div id="galleryWrap">
+  <div class="ghead">
+    <h1>전체 화면 보기</h1>
+    <p>화면 8개와 오버레이 3개입니다. 각 화면은 스크롤 없이 내용 전체가 보이도록 펼쳐 두었습니다. 상단에서 브랜드 컬러(틸/그린)를 바꿔 비교하고, 프로토타입 모드로 전환하면 실제로 탭하며 이동할 수 있습니다.</p>
+  </div>
+  <div class="gallery" id="gallery"></div>
+</div>
 
 <div class="stage">
   <aside class="panel">
@@ -399,8 +461,8 @@ body{margin:0;background:var(--bg);color:var(--ink);
               </div>
 
               <!-- 바닥 화분 -->
-              <div class="slot" style="position:absolute;left:26px;bottom:78px">
-                <span data-av="monstera" data-size="112" data-pot="#a8785d"></span>
+              <div class="slot" style="position:absolute;left:24px;bottom:76px;z-index:1">
+                <span data-av="monstera" data-size="104" data-pot="#a8785d"></span>
                 <div style="text-align:center"><span style="font-size:10.5px;font-weight:800;color:#41544a;
                   background:rgba(255,255,255,.82);border-radius:99px;padding:1px 8px">초코 Lv.8</span></div>
               </div>
@@ -1053,18 +1115,22 @@ function go(id){
 }
 
 document.addEventListener('click',e=>{
-  const go_=e.target.closest('[data-go]');
-  const sheet=e.target.closest('[data-sheet]');
-  const close=e.target.closest('[data-close]');
-  const tab=e.target.closest('#bnav button');
+  const mode=e.target.closest('[data-mode]');
   const brand=e.target.closest('[data-brand]');
 
+  if(mode){ setMode(mode.dataset.mode); return; }
   if(brand){
     const v=brand.dataset.brand;
     document.documentElement.dataset.brand=v;
     document.querySelectorAll('[data-brand]').forEach(b=>b.classList.toggle('on',b.dataset.brand===v));
     return;
   }
+  if(e.target.closest('#gallery')) return;   /* 갤러리는 보기 전용 */
+
+  const go_=e.target.closest('[data-go]');
+  const sheet=e.target.closest('[data-sheet]');
+  const close=e.target.closest('[data-close]');
+  const tab=e.target.closest('#bnav button');
   if(close){ document.querySelectorAll('.ovl').forEach(o=>o.classList.remove('on')); }
   if(sheet){ e.preventDefault();
     document.querySelectorAll('.ovl').forEach(o=>o.classList.remove('on'));
@@ -1078,20 +1144,68 @@ document.addEventListener('click',e=>{
   if(ovl && e.target===ovl) ovl.classList.remove('on');
 });
 
-/* confetti (static-ish burst for the mockup) */
-function confetti(){
-  const b=document.getElementById('burst'); if(!b) return;
+/* confetti (static burst for the mockup) */
+function fillConfetti(b){
+  if(!b) return;
   const cols=['#f0c85f','#4088ff','#e07a5f','#57b384','#b7a3c9'];
   b.innerHTML='';
   for(let i=0;i<26;i++){
     const d=document.createElement('div');
     d.className='cf';
     d.style.background=cols[i%cols.length];
-    d.style.left=(8+Math.random()*84)+'%';
-    d.style.top=(4+Math.random()*46)+'%';
+    d.style.left=(6+Math.random()*88)+'%';
+    d.style.top=(6+Math.random()*70)+'%';
     d.style.transform=`rotate(${Math.random()*360}deg)`;
     b.appendChild(d);
   }
+}
+function confetti(){ fillConfetti(document.getElementById('burst')); }
+
+/* ---------- gallery (all screens at once) ---------- */
+const OVERLAYS=[
+  ['record','detail','기록 시트','하단 고정 "기록하기"를 누르면 열립니다. 자연어 AI 입력창이 위에, 기록 6종이 아래에 있고 각 항목에 획득 GP를 함께 보여줍니다.'],
+  ['celebrate','detail','레벨업 셀레브레이션','물주기·기록으로 레벨이 오르면 전면에 뜹니다. 실제 앱에서는 폭죽과 아바타 성장이 애니메이션(Lottie/Rive)으로 재생되고, 여기서 바로 피드에 자랑할 수 있습니다.'],
+  ['custom','detail','아바타 꾸미기','화분·크기·소품을 바꿉니다. 전부 무료이고 일부는 레벨로 열립니다. 화분 색을 누르면 위 미리보기가 실제로 바뀝니다.']
+];
+function buildGallery(){
+  const g=document.getElementById('gallery'); if(!g) return;
+  g.innerHTML='';
+  const items=[
+    ...SCREENS.map((s,i)=>({n:i+1,id:s[0],label:s[1],note:s[2]})),
+    ...OVERLAYS.map((o,i)=>({n:SCREENS.length+i+1,id:o[1],ovl:o[0],label:o[2],note:o[3]}))
+  ];
+  items.forEach(it=>{
+    const base=document.getElementById('p-'+it.id); if(!base) return;
+    const pane=base.cloneNode(true); pane.removeAttribute('id'); pane.classList.add('on');
+    const nav=document.getElementById('bnav').cloneNode(true); nav.removeAttribute('id');
+    nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.tab===TAB_OF[it.id]));
+
+    const item=document.createElement('div');
+    item.className='gitem';
+    item.innerHTML=`<div class="glabel"><b>${it.n}</b>${it.label}${it.ovl?'<span class="ov">오버레이</span>':''}</div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="dots">LTE ▮▮▮ 100%</span></div>
+        <div class="view"></div>
+      </div></div>
+      <p class="gnote">${it.note||''}</p>`;
+    const screen=item.querySelector('.screen');
+    item.querySelector('.view').appendChild(pane);
+    if(it.ovl){
+      const o=document.getElementById('ovl-'+it.ovl).cloneNode(true);
+      o.removeAttribute('id'); o.classList.add('on');
+      screen.appendChild(o);
+    }
+    screen.appendChild(nav);
+    g.appendChild(item);
+  });
+  renderAvatars(g);
+  g.querySelectorAll('.burst').forEach(fillConfetti);
+}
+function setMode(m){
+  document.body.classList.toggle('gal',m==='gal');
+  document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+  if(m==='gal') buildGallery();
+  window.scrollTo(0,0);
 }
 
 /* avatar customize preview */
@@ -1104,6 +1218,7 @@ document.getElementById('potParts')?.addEventListener('click',e=>{
 });
 
 go('garden');
+setMode('gal');
 </script>
 </body>
 </html>
