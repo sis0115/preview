@@ -359,6 +359,32 @@ function gardenBlock(h=300){
 /* ============================================================
    화면 정의
    ============================================================ */
+const CARD={bg:'blush',pattern:'dots',pot:'#c98a6a',sticker:'🏆'};
+const CARD_BG={blush:'#f5dbe2',mint:'#daeee0',cream:'#f6ecd4',lav:'#e5e0f2',sky:'#dbe9f2'};
+const CARD_PAT={
+  none:'',
+  dots:'background-image:radial-gradient(rgba(255,255,255,.55) 2.5px,transparent 2.6px);background-size:22px 22px;',
+  stripe:'background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.35) 0 10px,transparent 10px 26px);',
+  grid:'background-image:linear-gradient(rgba(255,255,255,.4) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.4) 1.5px,transparent 1.5px);background-size:26px 26px;'
+};
+const CARD_POTS=['#c98a6a','#8fa89b','#dcc9a8','#b7a3c9','#e0a08c','#9fb8d0'];
+const CARD_STICKERS=['없음','🏆','⭐','💧','🎀','✨'];
+function barcode(){let s='';for(let i=0;i<14;i++){s+=`<i style="height:${8+((i*7)%9)}px"></i>`;}return s;}
+function plantCard(st){
+  return `<div class="tcard" style="background:${CARD_BG[st.bg]};${CARD_PAT[st.pattern]}">
+    <div class="hole"></div>
+    <div class="brand"><span class="bl">PLANTGRAM</span><span class="bc">${barcode()}</span></div>
+    <div class="plate"><span class="nm">몬스테라</span><span class="hd">@초록집사</span></div>
+    <div class="bubble">${plant('monstera',132,st.pot)}
+      ${st.sticker&&st.sticker!=='없음'?`<span class="sticker" style="right:12px;top:10px">${st.sticker}</span>`:''}
+    </div>
+    <div class="cfoot">
+      <span class="cpill">Lv.4</span><span class="cpill">함께한 지 124일</span>
+      <span class="sp">Monstera deliciosa</span>
+    </div>
+  </div>`;
+}
+
 const screens=[];
 
 /* ---------- 1. 홈 ---------- */
@@ -441,110 +467,95 @@ ${nav('plant')}
 `});
 
 /* ---------- 3. 식물 상세 ---------- */
-screens.push({label:'식물 상세',note:'레거시 아이덴티티의 딥 세이지 히어로로 — 초록 배경에 원형 일러스트와 이탤릭 학명, 상태는 반투명 문장. 아래 흰 시트는 v3 여백 문법 그대로: 헤어라인 3열, 급할 때만 나타나는 핑크 배너.',
+/* 상세 상단 = 꾸민 카드 (편집기와 연동) */
+function detailHero(st){
+  return `<div style="background:${CARD_BG[st.bg]};${CARD_PAT[st.pattern]}">
+    <div class="status"><span>9:41</span><span class="r" style="color:rgba(30,40,32,.45)">●●●●  ᯤ  ▮</span></div>
+    <div class="pagepad" style="display:flex;align-items:center;padding-top:2px">
+      <button class="iconbtn plain" style="margin-left:-12px">${ic('back',22)}</button>
+      <div style="flex:1"></div>
+      <span class="pill" style="background:rgba(255,255,255,.75);font-weight:800">🎨 꾸미기</span>
+      <button class="iconbtn plain" style="margin-right:-12px">${ic('more',22,'#8b928c')}</button>
+    </div>
+    <div style="padding:6px 24px 30px">
+      <div class="brand" style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:12px;letter-spacing:.12em">PLANTGRAM</span>
+        <span class="bc" style="display:flex;gap:2px;align-items:flex-end">${barcode()}</span>
+      </div>
+      <div class="plate" style="margin-top:10px;background:#20241f;color:#fff;border-radius:12px;padding:9px 14px;display:flex;align-items:baseline;gap:8px">
+        <span style="font-size:15px;font-weight:800">몬스테라</span>
+        <span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600;margin-left:auto">@초록집사</span>
+      </div>
+      <div style="margin-top:13px;height:212px;border-radius:22px;display:grid;place-items:center;position:relative;
+        background:linear-gradient(155deg,rgba(255,255,255,.92),rgba(255,255,255,.55));
+        box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.9), inset 0 -18px 30px rgba(40,60,45,.06), 0 8px 20px rgba(40,60,45,.08)">
+        <span style="position:absolute;left:14px;top:12px;width:52px;height:26px;border-radius:99px;
+          background:linear-gradient(120deg,rgba(255,255,255,.85),rgba(255,255,255,0));transform:rotate(-18deg)"></span>
+        ${plant('monstera',118,st.pot)}
+        ${st.sticker&&st.sticker!=='없음'?`<span style="position:absolute;right:12px;top:10px;font-size:30px;filter:drop-shadow(0 4px 8px rgba(60,70,62,.25));transform:rotate(12deg)">${st.sticker}</span>`:''}
+      </div>
+      <div style="margin-top:13px;display:flex;align-items:center;gap:8px">
+        <span class="cpill">Lv.4</span><span class="cpill">함께한 지 124일</span>
+        <span style="font-family:Georgia,serif;font-style:italic;font-size:11.5px;color:rgba(30,40,32,.45);margin-left:auto">Monstera deliciosa</span>
+      </div>
+    </div>
+  </div>`;
+}
+screens.push({label:'식물 상세',note:'상세의 상단 전체가 곧 그 식물의 카드입니다 — 꾸미기가 이 영역(배경·패턴·화분·스티커)을 테마링하고, 식물마다 다른 카드를 갖습니다. 아래로 스크롤하면 칸으로 나뉜 상세 섹션: 요약 · 할 일 · 기록 · 도구. 편집기(6번)에서 바꾸면 이 화면도 함께 바뀝니다.',
 html:`
-<div style="background:var(--sage);border-radius:39px 39px 0 0">
-  <div class="status" style="color:#fff"><span>9:41</span><span class="r" style="color:rgba(255,255,255,.6)">●●●●  ᯤ  ▮</span></div>
-</div>
-<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
-  <div style="background:var(--sage);color:#fff;padding-bottom:34px">
-    <div class="pagepad" style="display:flex;justify-content:space-between;padding-top:2px">
-      <button class="iconbtn plain" style="margin-left:-12px;color:#fff">${ic('back',22)}</button>
-      <button class="iconbtn plain" style="margin-right:-12px;color:rgba(255,255,255,.8)">${ic('more',22)}</button>
-    </div>
-    <div style="text-align:center;margin-top:4px">
-      <div class="avatar" style="width:180px;height:180px;margin:0 auto;background:radial-gradient(circle at 42% 32%,#f4f6f1,#e3ebe1);box-shadow:0 18px 44px rgba(0,0,0,.18)">
-        ${plant('monstera',118)}
-      </div>
-      <div style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:rgba(255,255,255,.55);margin-top:22px">Monstera deliciosa</div>
-      <div style="font-size:26px;font-weight:800;letter-spacing:-.6px;margin-top:2px">몬스테라</div>
-      <div style="font-size:13.5px;color:rgba(255,255,255,.72);margin-top:8px">함께한 지 124일 · 잘 자라고 있어요</div>
-    </div>
-  </div>
+<div id="detailHero" style="border-radius:39px 39px 0 0;overflow:hidden">${detailHero(CARD)}</div>
+<div style="flex:1;background:#f1f0ea;border-radius:28px 28px 0 0;margin-top:-22px;position:relative;
+  display:flex;flex-direction:column;gap:12px;padding:24px 16px 16px">
 
-  <div style="background:var(--bg);border-radius:30px 30px 0 0;margin-top:-24px;flex:1;display:flex;flex-direction:column;padding-top:30px">
-  <div class="pagepad">
+  <div style="background:#fff;border-radius:22px;padding:18px 16px">
     <div style="display:flex;text-align:center">
-      <div style="flex:1"><div class="tiny">물주기</div><div style="font-size:16px;font-weight:800;margin-top:4px">7일마다</div></div>
-      <div style="flex:1;border-left:1px solid var(--hair);border-right:1px solid var(--hair)"><div class="tiny">레벨</div><div style="font-size:16px;font-weight:800;margin-top:4px">Lv.4</div></div>
-      <div style="flex:1"><div class="tiny">다음 분갈이</div><div style="font-size:16px;font-weight:800;margin-top:4px">64일 뒤</div></div>
+      <div style="flex:1"><div class="tiny">물주기</div><div style="font-size:15.5px;font-weight:800;margin-top:4px">7일마다</div></div>
+      <div style="flex:1;border-left:1px solid var(--hair);border-right:1px solid var(--hair)"><div class="tiny">레벨</div><div style="font-size:15.5px;font-weight:800;margin-top:4px">Lv.4 · 82%</div></div>
+      <div style="flex:1"><div class="tiny">다음 분갈이</div><div style="font-size:15.5px;font-weight:800;margin-top:4px">64일 뒤</div></div>
     </div>
   </div>
 
-  <div class="pagepad" style="margin-top:28px">
-    <div style="background:var(--pink-soft);border-radius:20px;padding:16px 18px;display:flex;align-items:center;gap:12px">
-      <span style="color:var(--pink)">${ic('drop',20)}</span>
-      <div style="flex:1;font-size:14px;font-weight:700;color:var(--pink)">물 줄 날이 하루 지났어요</div>
-      <span style="font-size:13.5px;font-weight:800;color:var(--pink)">물주기</span>
+  <div style="background:var(--pink-soft);border-radius:22px;padding:16px 18px;display:flex;align-items:center;gap:12px">
+    <span style="color:var(--pink)">${ic('drop',20)}</span>
+    <div style="flex:1;font-size:14px;font-weight:700;color:var(--pink)">물 줄 날이 하루 지났어요</div>
+    <span style="font-size:13.5px;font-weight:800;color:var(--pink)">물주기</span>
+  </div>
+
+  <div style="background:#fff;border-radius:22px;padding:6px 16px 10px">
+    <div style="display:flex;align-items:baseline;padding:12px 2px 0">
+      <div class="sec" style="flex:1;font-size:15px">기록</div><span class="tiny">전체보기</span>
+    </div>
+    ${[
+      ['물주기','민수 · 오늘 오전 9:20','+10'],
+      ['사진과 메모','나 · 3일 전 · “새잎이 올라옴”','+5'],
+      ['상태 좋음','나 · 5일 전','+3'],
+    ].map(([t,d,gp])=>`
+      <div class="row" style="min-height:54px">
+        <div style="width:7px;height:7px;border-radius:99px;background:var(--sage);flex:0 0 auto;margin:0 6px"></div>
+        <div class="grow"><div class="t" style="font-size:14px">${t}</div><div class="d">${d}</div></div>
+        <span class="tiny" style="color:var(--sage);font-weight:700">${gp} GP</span>
+      </div>`).join('')}
+  </div>
+
+  <div style="display:flex;gap:12px">
+    <div style="flex:1;background:#fff;border-radius:22px;padding:15px;display:flex;align-items:center;gap:10px">
+      <div style="font-size:19px">🎨</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:800">카드 꾸미기</div><div class="tiny">나만의 테마로</div></div>
+      <span class="chev">›</span>
+    </div>
+    <div style="flex:1;background:#fff;border-radius:22px;padding:15px;display:flex;align-items:center;gap:10px">
+      <div style="font-size:19px">🤖</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:800">환경 분석</div><div class="tiny">이 자리 맞을까?</div></div>
+      <span class="chev">›</span>
     </div>
   </div>
 
-  <div class="pagepad" style="margin-top:24px">
-    <div style="display:flex;gap:10px">
-      <div style="flex:1.2;background:#f5dbe2;border-radius:20px;padding:14px;display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:42px;border-radius:8px;background:rgba(255,255,255,.8);display:grid;place-items:center">${plant('monstera',19)}</div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:800">식물 카드</div><div class="tiny">꾸미고 자랑하기</div></div>
-        <span class="chev">›</span>
-      </div>
-      <div style="flex:1;background:var(--sage-soft);border-radius:20px;padding:14px;display:flex;align-items:center;gap:10px">
-        <div style="font-size:19px">🤖</div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:800">환경 분석</div><div class="tiny">이 자리 맞을까?</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="pagepad" style="margin-top:30px">
-    <div style="display:flex;align-items:baseline">
-      <div class="sec" style="flex:1">기록</div>
-      <span class="tiny">전체보기</span>
-    </div>
-    <div style="margin-top:8px">
-      ${[
-        ['물주기','민수 · 오늘 오전 9:20','+10'],
-        ['사진과 메모','나 · 3일 전 · “새잎이 올라옴”','+5'],
-        ['상태 좋음','나 · 5일 전','+3'],
-      ].map(([t,d,gp])=>`
-        <div class="row" style="min-height:58px">
-          <div style="width:7px;height:7px;border-radius:99px;background:var(--sage);flex:0 0 auto;margin:0 6px"></div>
-          <div class="grow"><div class="t" style="font-size:14.5px">${t}</div><div class="d">${d}</div></div>
-          <span class="tiny" style="color:var(--sage);font-weight:700">${gp} GP</span>
-        </div>`).join('')}
-    </div>
-  </div>
-
-  <div style="flex:1"></div>
-  <div class="pagepad" style="padding-bottom:14px"><button class="cta">기록하기</button></div>
-  </div>
+  <div style="margin-top:2px"><button class="cta">기록하기</button></div>
 </div>
 ${nav('plant')}
 `});
 
 /* ---------- 4·5. 식물 토이 카드 + 편집기 (본디 문법) ---------- */
-const CARD={bg:'blush',pattern:'dots',pot:'#c98a6a',sticker:'🏆'};
-const CARD_BG={blush:'#f5dbe2',mint:'#daeee0',cream:'#f6ecd4',lav:'#e5e0f2',sky:'#dbe9f2'};
-const CARD_PAT={
-  none:'',
-  dots:'background-image:radial-gradient(rgba(255,255,255,.55) 2.5px,transparent 2.6px);background-size:22px 22px;',
-  stripe:'background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.35) 0 10px,transparent 10px 26px);',
-  grid:'background-image:linear-gradient(rgba(255,255,255,.4) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.4) 1.5px,transparent 1.5px);background-size:26px 26px;'
-};
-const CARD_POTS=['#c98a6a','#8fa89b','#dcc9a8','#b7a3c9','#e0a08c','#9fb8d0'];
-const CARD_STICKERS=['없음','🏆','⭐','💧','🎀','✨'];
-function barcode(){let s='';for(let i=0;i<14;i++){s+=`<i style="height:${8+((i*7)%9)}px"></i>`;}return s;}
-function plantCard(st){
-  return `<div class="tcard" style="background:${CARD_BG[st.bg]};${CARD_PAT[st.pattern]}">
-    <div class="hole"></div>
-    <div class="brand"><span class="bl">PLANTGRAM</span><span class="bc">${barcode()}</span></div>
-    <div class="plate"><span class="nm">몬스테라</span><span class="hd">@초록집사</span></div>
-    <div class="bubble">${plant('monstera',132,st.pot)}
-      ${st.sticker&&st.sticker!=='없음'?`<span class="sticker" style="right:12px;top:10px">${st.sticker}</span>`:''}
-    </div>
-    <div class="cfoot">
-      <span class="cpill">Lv.4</span><span class="cpill">함께한 지 124일</span>
-      <span class="sp">Monstera deliciosa</span>
-    </div>
-  </div>`;
-}
 screens.push({label:'식물 카드',note:'식물마다 갖는 토이 블리스터 카드 — 걸이 구멍, 바코드, 네임 플레이트, 피규어 버블 안의 아바타, 하단 스펙. 상세에서 진입하고, 피드 자랑과 공유의 단위가 됩니다. 정원의 아바타 표시는 그대로, 카드는 별도의 수집 레이어입니다.',
 html:`
 ${statusbar}
@@ -563,7 +574,7 @@ ${statusbar}
   </div>
 </div>
 `});
-screens.push({label:'카드 편집기',interactive:true,note:'본디 에디터 문법 — 위에 카드 미리보기, 아래에 카테고리 탭과 옵션 그리드. 이 화면은 실제로 동작합니다: 배경·패턴·화분·스티커를 탭해서 바꿔보세요.',
+screens.push({label:'카드 편집기',interactive:true,note:'본디 에디터 문법 — 위에 카드 미리보기, 아래에 카테고리 탭과 옵션 그리드. 이 화면은 실제로 동작합니다: 배경·패턴·화분·스티커를 탭하면 3번 식물 상세의 상단까지 함께 바뀝니다.',
 html:`
 ${statusbar}
 <div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
@@ -835,6 +846,8 @@ function edRender(){
   document.querySelectorAll('.ed-tab').forEach(t=>t.classList.toggle('on',t.dataset.cat===edCat));
   const prev=document.getElementById('cardPrev');
   if(prev) prev.innerHTML=plantCard(CARD);
+  const hero=document.getElementById('detailHero');
+  if(hero) hero.innerHTML=detailHero(CARD);
 }
 document.addEventListener('click',e=>{
   const tab=e.target.closest('.ed-tab');
