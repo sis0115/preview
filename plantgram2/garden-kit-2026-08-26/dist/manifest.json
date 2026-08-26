@@ -1,0 +1,289 @@
+{
+  "version": 1,
+  "grid": {
+    "tileW": 78,
+    "tileH": 39,
+    "zH": 44
+  },
+  "stages": {
+    "count": 4,
+    "scale": [
+      0.52,
+      0.72,
+      0.9,
+      1
+    ],
+    "labels": [
+      "새싹",
+      "어린잎",
+      "무성",
+      "만개"
+    ]
+  },
+  "potColors": [
+    {
+      "id": "terracotta",
+      "name": "테라코타",
+      "hex": "#c98a6a",
+      "unlock": "free"
+    },
+    {
+      "id": "sage",
+      "name": "세이지",
+      "hex": "#8fa89b",
+      "unlock": "free"
+    },
+    {
+      "id": "sand",
+      "name": "샌드",
+      "hex": "#dcc9a8",
+      "unlock": "free"
+    },
+    {
+      "id": "clay",
+      "name": "클레이",
+      "hex": "#a8785d",
+      "unlock": "free"
+    },
+    {
+      "id": "lilac",
+      "name": "라일락",
+      "hex": "#b7a3c9",
+      "unlock": "lv3"
+    },
+    {
+      "id": "coral",
+      "name": "코랄",
+      "hex": "#e0a08c",
+      "unlock": "lv3"
+    },
+    {
+      "id": "sky",
+      "name": "스카이",
+      "hex": "#9fb8d0",
+      "unlock": "lv5"
+    },
+    {
+      "id": "charcoal",
+      "name": "차콜",
+      "hex": "#6b7169",
+      "unlock": "lv8"
+    }
+  ],
+  "leafTones": [
+    {
+      "id": "green",
+      "name": "기본 초록",
+      "base": "#3f7d54",
+      "alt": "#4f9163",
+      "vein": "#2c5b3c"
+    },
+    {
+      "id": "deep",
+      "name": "진초록",
+      "base": "#356a48",
+      "alt": "#437c55",
+      "vein": "#254d33"
+    },
+    {
+      "id": "light",
+      "name": "연초록",
+      "base": "#5c9c6c",
+      "alt": "#6bad7b",
+      "vein": "#3d7350"
+    },
+    {
+      "id": "variegated",
+      "name": "무늬종",
+      "base": "#4a8b5c",
+      "alt": "#8fbf95",
+      "vein": "#2f6040"
+    },
+    {
+      "id": "silver",
+      "name": "실버",
+      "base": "#6d9683",
+      "alt": "#9fbcac",
+      "vein": "#4c7060"
+    }
+  ],
+  "pots": [
+    {
+      "id": "basic",
+      "name": "기본 화분",
+      "unlock": "free",
+      "rimY": -0.74,
+      "topR": 0.5,
+      "baseR": 0.335
+    },
+    {
+      "id": "bowl",
+      "name": "낮은 볼",
+      "unlock": "free",
+      "rimY": -0.44,
+      "topR": 0.55,
+      "baseR": 0.4
+    },
+    {
+      "id": "tall",
+      "name": "긴 화분",
+      "unlock": "free",
+      "rimY": -1.02,
+      "topR": 0.42,
+      "baseR": 0.32
+    },
+    {
+      "id": "urn",
+      "name": "항아리",
+      "unlock": "lv3",
+      "rimY": -0.82,
+      "topR": 0.4,
+      "baseR": 0.3
+    },
+    {
+      "id": "rimmed",
+      "name": "테두리 화분",
+      "unlock": "lv5",
+      "rimY": -0.7,
+      "topR": 0.48,
+      "baseR": 0.34
+    },
+    {
+      "id": "tapered",
+      "name": "콘 화분",
+      "unlock": "lv8",
+      "rimY": -0.82,
+      "topR": 0.52,
+      "baseR": 0.22
+    }
+  ],
+  "forms": [
+    {
+      "id": "broadleaf",
+      "name": "대엽형",
+      "species": [
+        "몬스테라",
+        "필로덴드론",
+        "알로카시아",
+        "고무나무"
+      ]
+    },
+    {
+      "id": "upright",
+      "name": "직립형",
+      "species": [
+        "산세베리아",
+        "스투키",
+        "금전수"
+      ]
+    },
+    {
+      "id": "rosette",
+      "name": "로제트형",
+      "species": [
+        "다육식물",
+        "에케베리아",
+        "하월시아"
+      ]
+    },
+    {
+      "id": "patterned",
+      "name": "무늬엽형",
+      "species": [
+        "칼라데아",
+        "마란타",
+        "스킨답서스"
+      ]
+    },
+    {
+      "id": "vine",
+      "name": "덩굴형",
+      "species": [
+        "포토스",
+        "아이비",
+        "스킨답서스",
+        "립살리스"
+      ]
+    },
+    {
+      "id": "palm",
+      "name": "깃꼴형",
+      "species": [
+        "테이블야자",
+        "아레카야자",
+        "켄차야자"
+      ]
+    },
+    {
+      "id": "cactus",
+      "name": "기둥형",
+      "species": [
+        "선인장",
+        "유포르비아",
+        "용신목"
+      ]
+    },
+    {
+      "id": "fern",
+      "name": "양치형",
+      "species": [
+        "보스턴고사리",
+        "아디안텀",
+        "박쥐란"
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "none",
+      "name": "없음",
+      "unlock": "free"
+    },
+    {
+      "id": "label",
+      "name": "이름표",
+      "unlock": "free"
+    },
+    {
+      "id": "stake",
+      "name": "지지대",
+      "unlock": "lv3"
+    },
+    {
+      "id": "stones",
+      "name": "자갈",
+      "unlock": "lv3"
+    },
+    {
+      "id": "ribbon",
+      "name": "리본",
+      "unlock": "lv5"
+    },
+    {
+      "id": "lights",
+      "name": "전구줄",
+      "unlock": "lv8"
+    }
+  ],
+  "states": [
+    {
+      "id": "healthy",
+      "name": "건강"
+    },
+    {
+      "id": "thirsty",
+      "name": "목마름"
+    },
+    {
+      "id": "resting",
+      "name": "관리 종료"
+    }
+  ],
+  "counts": {
+    "pots": 6,
+    "potColors": 8,
+    "forms": 8,
+    "props": 6,
+    "combinations": 9216
+  }
+}
