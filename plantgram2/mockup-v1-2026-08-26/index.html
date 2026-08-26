@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="ko" data-brand="teal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>플랜트그램 목업 v1</title>
+<style>
+:root{
+  --brand:#168f80; --brand-soft:#e2f2ef; --brand-deep:#0f6b5f; --brand-ink:#0c4f46;
+  --water:#4088ff; --water-soft:#e9f1ff;
+  --sun:#e0a33c; --sun-soft:#fdf1d7;
+  --rose:#d2705c; --rose-soft:#fbe7e2;
+  --gold:#c8912b; --gold-soft:#fbf0d5;
+  --bg:#eef1ec; --paper:#ffffff; --soft:#f5f8f5;
+  --ink:#151d18; --muted:#6e7a72; --faint:#98a49c; --line:#e3eae4;
+  --phone:#0e1411;
+  --shadow:0 14px 32px rgba(22,32,25,.10);
+}
+html[data-brand="green"]{
+  --brand:#2f8f5b; --brand-soft:#e3f2e9; --brand-deep:#1f6d44; --brand-ink:#17512f;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  letter-spacing:0;line-height:1.5}
+
+/* ---------- desktop stage ---------- */
+.stage{display:grid;grid-template-columns:296px minmax(0,1fr);gap:26px;
+  max-width:1080px;margin:0 auto;padding:34px 22px 60px;align-items:start}
+.panel{position:sticky;top:34px}
+.panel h1{margin:0 0 6px;font-size:25px;line-height:1.25}
+.panel .sub{margin:0 0 18px;color:var(--muted);font-size:13px;line-height:1.6}
+.pblock{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.pblock h2{margin:0 0 10px;font-size:11px;letter-spacing:.09em;color:var(--faint);text-transform:uppercase;font-weight:800}
+.swatchrow{display:flex;gap:8px}
+.swatch{flex:1;border:1px solid var(--line);border-radius:9px;padding:9px 8px;cursor:pointer;background:var(--soft);
+  font-size:12px;font-weight:800;color:var(--muted);display:flex;align-items:center;gap:7px;justify-content:center}
+.swatch i{width:14px;height:14px;border-radius:5px;display:block}
+.swatch.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-ink)}
+.slist{display:flex;flex-direction:column;gap:3px}
+.slist button{border:0;background:none;text-align:left;padding:7px 9px;border-radius:8px;cursor:pointer;
+  font:inherit;font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.slist button:hover{background:var(--soft)}
+.slist button.on{background:var(--brand-soft);color:var(--brand-ink);font-weight:800}
+.slist button span.n{font-size:10px;color:var(--faint);font-variant-numeric:tabular-nums;width:14px}
+.slist button.on span.n{color:var(--brand)}
+.note{font-size:12px;color:var(--muted);line-height:1.65}
+.note b{color:var(--ink)}
+.panel .foot{font-size:11px;color:var(--faint);line-height:1.6;padding:0 4px}
+.panel .foot a{color:var(--brand)}
+
+/* ---------- phone ---------- */
+.phonewrap{display:flex;justify-content:center}
+.phone{width:390px;background:var(--phone);border-radius:42px;padding:11px;box-shadow:0 26px 60px rgba(20,30,24,.28)}
+.screen{position:relative;height:800px;background:var(--paper);border-radius:33px;overflow:hidden;display:flex;flex-direction:column}
+.statusbar{height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 22px 0 26px;
+  font-size:12px;font-weight:700;flex:0 0 auto;position:relative;z-index:5}
+.statusbar .dots{display:flex;gap:4px;align-items:center;font-size:10px;letter-spacing:.5px}
+.view{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:none}
+.view::-webkit-scrollbar{display:none}
+.pane{display:none;min-height:100%;flex-direction:column}
+.pane.on{display:flex}
+
+/* ---------- shared UI ---------- */
+.appbar{display:flex;align-items:center;gap:10px;padding:6px 18px 12px;flex:0 0 auto}
+.appbar h2{margin:0;font-size:21px;font-weight:800;letter-spacing:-.2px}
+.appbar .sp{flex:1}
+.ibtn{width:34px;height:34px;border-radius:11px;background:var(--soft);display:grid;place-items:center;
+  color:var(--brand);font-size:15px;border:0;cursor:pointer;flex:0 0 auto}
+.body{padding:0 18px 20px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card.soft{background:var(--soft);border-color:transparent}
+.rowt{display:flex;align-items:center;gap:8px;margin:4px 2px 0}
+.rowt h3{margin:0;font-size:14.5px;font-weight:800}
+.rowt .more{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700}
+.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 18px;margin:0 -18px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:999px;
+  padding:6px 13px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn{border:0;border-radius:13px;background:var(--brand);color:#fff;font:inherit;font-weight:800;
+  font-size:14.5px;padding:13px;cursor:pointer;width:100%}
+.btn.water{background:var(--water)}
+.btn.ghost{background:var(--soft);color:var(--ink)}
+.muted{color:var(--muted);font-size:12.5px}
+.tiny{font-size:11.5px;color:var(--faint)}
+.lv{display:inline-flex;align-items:center;gap:4px;background:var(--brand-soft);color:var(--brand-ink);
+  border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800}
+.gauge{height:7px;border-radius:99px;background:var(--line);overflow:hidden}
+.gauge i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-deep));border-radius:99px}
+.dday{font-size:11.5px;font-weight:800}
+.dday.due{color:var(--water)}
+.dday.ok{color:var(--muted)}
+
+/* bottom nav */
+.bnav{flex:0 0 auto;display:flex;background:var(--paper);border-top:1px solid var(--line);
+  padding:8px 6px 14px;position:relative;z-index:4}
+.bnav button{flex:1;border:0;background:none;cursor:pointer;font:inherit;display:flex;flex-direction:column;
+  align-items:center;gap:3px;color:var(--faint);font-size:10.5px;font-weight:700;padding:2px 0}
+.bnav button .ic{font-size:19px;line-height:1}
+.bnav button.on{color:var(--brand)}
+.fab{position:absolute;right:18px;bottom:88px;width:54px;height:54px;border-radius:19px;border:0;cursor:pointer;
+  background:var(--brand);color:#fff;font-size:23px;display:grid;place-items:center;
+  box-shadow:0 10px 22px color-mix(in srgb, var(--brand) 42%, transparent);z-index:3}
+
+/* ---------- garden scene ---------- */
+.garden{position:relative;flex:1;display:flex;flex-direction:column;
+  background:linear-gradient(178deg,#dcecf3 0%,#e8f0e6 46%,#f2efe6 100%)}
+.gtop{padding:2px 18px 10px;display:flex;align-items:center;gap:10px}
+.gname{font-size:17px;font-weight:800;display:flex;align-items:center;gap:6px}
+.gtop .wx{margin-left:auto;background:rgba(255,255,255,.72);border-radius:999px;padding:5px 11px;
+  font-size:11.5px;font-weight:700;color:#4a5a52;display:flex;gap:5px;align-items:center}
+.gplevel{padding:0 18px 8px}
+.gplevel .r{display:flex;align-items:baseline;gap:6px;margin-bottom:5px}
+.gplevel .r b{font-size:12px}
+.gplevel .r span{font-size:11px;color:#5f7169;margin-left:auto;font-variant-numeric:tabular-nums}
+.members{display:flex;align-items:center;gap:5px;padding:0 18px 6px}
+.mav{width:23px;height:23px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;
+  font-size:10px;font-weight:800;color:#fff;margin-right:-8px}
+.members .mlabel{margin-left:14px;font-size:11px;color:#5f7169;font-weight:600}
+.scene{flex:1;position:relative;padding:4px 0 0}
+.window{position:absolute;left:50%;transform:translateX(-50%);top:6px;width:186px;height:146px;
+  background:linear-gradient(170deg,#cfe6f2,#eaf4f6);border:7px solid #f6f3ec;border-radius:10px 10px 4px 4px;
+  box-shadow:0 6px 18px rgba(60,80,90,.10)}
+.window::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:5px;background:#f6f3ec;transform:translateX(-50%)}
+.sun{position:absolute;right:26px;top:22px;width:34px;height:34px;border-radius:50%;
+  background:radial-gradient(circle,#ffe9a8,#ffd166);box-shadow:0 0 22px rgba(255,209,102,.7)}
+.row{position:absolute;left:16px;right:16px}
+.row .items{display:flex;align-items:flex-end;justify-content:space-around}
+.row .bar{height:11px;border-radius:4px;margin-top:-1px;
+  background:linear-gradient(#d9c1a0,#bb9a72);box-shadow:0 6px 13px rgba(90,70,45,.20)}
+.row .labels{display:flex;justify-content:space-around;margin-top:5px}
+.row .labels span{font-size:10.5px;font-weight:800;color:#41544a;background:rgba(255,255,255,.82);
+  border-radius:99px;padding:1px 8px;white-space:nowrap}
+.slot{position:relative;cursor:pointer;display:grid;place-items:end center}
+.floorline{position:absolute;left:0;right:0;bottom:74px;height:44px;
+  background:linear-gradient(transparent,rgba(150,140,110,.16))}
+.bub{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--water);color:#fff;
+  font-size:9.5px;font-weight:800;border-radius:99px;padding:3px 8px;white-space:nowrap;z-index:3;
+  box-shadow:0 5px 12px rgba(64,136,255,.45)}
+.bub::after{content:"";position:absolute;left:50%;margin-left:-4px;bottom:-3px;width:8px;height:8px;
+  background:var(--water);transform:rotate(45deg);border-radius:2px}
+.thirsty svg{transform:rotate(-5deg);opacity:.82;filter:saturate(.7)}
+.gbar{position:absolute;left:0;right:0;bottom:0;padding:10px 16px 14px;
+  background:linear-gradient(transparent,rgba(255,255,255,.9)32%);display:flex;gap:9px;align-items:center}
+.viewtog{display:flex;background:rgba(255,255,255,.9);border-radius:11px;padding:3px;gap:2px;box-shadow:var(--shadow)}
+.viewtog button{border:0;background:none;font:inherit;font-size:12px;font-weight:800;color:var(--muted);
+  padding:7px 12px;border-radius:9px;cursor:pointer}
+.viewtog button.on{background:var(--brand);color:#fff}
+.gbar .waterall{margin-left:auto;border:0;border-radius:12px;background:var(--water);color:#fff;font:inherit;
+  font-weight:800;font-size:13px;padding:11px 15px;cursor:pointer;display:flex;gap:7px;align-items:center;
+  box-shadow:0 8px 18px rgba(64,136,255,.34)}
+.waterall .cnt{background:#fff;color:var(--water);border-radius:99px;font-size:11px;padding:0 6px}
+
+/* plant rows (list view) */
+.prow{display:flex;align-items:center;gap:12px;background:var(--paper);border:1px solid var(--line);
+  border-radius:14px;padding:11px 12px;cursor:pointer}
+.pthumb{width:54px;height:54px;border-radius:13px;background:var(--soft);display:grid;place-items:center;flex:0 0 auto}
+.prow .nm{font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:6px}
+.wbtn{width:40px;height:40px;border-radius:13px;border:0;cursor:pointer;background:var(--water-soft);
+  color:var(--water);font-size:17px;display:grid;place-items:center;flex:0 0 auto}
+.wbtn.done{background:var(--soft);color:var(--faint)}
+
+/* detail */
+.hero{background:linear-gradient(170deg,#ddecf1,#eef2e8);padding:14px 18px 18px;position:relative}
+.hero .top{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.hero .stagewrap{display:grid;place-items:center;padding:6px 0 10px}
+.hero h3{margin:0;font-size:20px;font-weight:800;text-align:center}
+.hero .sp{text-align:center;font-size:12px;color:#5f7169;margin-top:1px}
+.lvbox{background:rgba(255,255,255,.78);border-radius:13px;padding:10px 13px;margin-top:12px}
+.ddgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ddcard{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:11px 8px;text-align:center}
+.ddcard .ic{font-size:16px}
+.ddcard .lb{font-size:11px;color:var(--muted);margin-top:3px;font-weight:600}
+.ddcard .vl{font-size:14px;font-weight:800;margin-top:1px}
+.ddcard.due{background:var(--water-soft);border-color:transparent}
+.ddcard.due .vl{color:var(--water)}
+.tl{display:flex;gap:11px}
+.tl .ln{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;padding-top:3px}
+.tl .dot{width:9px;height:9px;border-radius:50%;background:var(--brand)}
+.tl .bar{flex:1;width:2px;background:var(--line);margin:3px 0}
+.tl .ct{padding-bottom:14px}
+.tl .ct .h{font-size:13.5px;font-weight:700}
+.tl .ct .m{font-size:12px;color:var(--muted)}
+.actor{display:inline-flex;align-items:center;gap:4px;background:var(--sun-soft);color:#8a6420;
+  border-radius:99px;padding:1px 7px;font-size:10.5px;font-weight:800;margin-left:4px}
+.stick{position:sticky;bottom:0;background:linear-gradient(transparent,var(--paper) 26%);padding:14px 18px 16px;margin-top:auto}
+.haspin .body{padding-bottom:86px}
+
+/* feed */
+.post{background:var(--paper);border:1px solid var(--line);border-radius:15px;overflow:hidden}
+.phead{display:flex;align-items:center;gap:9px;padding:11px 13px}
+.pav{width:33px;height:33px;border-radius:50%;display:grid;place-items:center;font-size:13px;flex:0 0 auto}
+.phead .nm{font-size:13px;font-weight:800}
+.phead .tm{font-size:11px;color:var(--faint)}
+.pbody{padding:0 13px 11px;font-size:13.5px;line-height:1.6}
+.pimg{height:158px;background:linear-gradient(150deg,#dfeee4,#cfe4dd);display:grid;place-items:center}
+.pfoot{display:flex;gap:16px;padding:10px 13px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-weight:700}
+.brag{background:linear-gradient(150deg,#fff9e8,#fdf2d8);border:1px solid #f2e2b4;border-radius:15px;padding:16px;text-align:center}
+.brag .bd{width:72px;height:72px;border-radius:50%;margin:0 auto 9px;display:grid;place-items:center;font-size:33px;
+  background:radial-gradient(circle at 40% 30%,#ffe9a9,#f0c85f);box-shadow:0 8px 20px rgba(200,145,43,.3)}
+.brag .t{font-size:15px;font-weight:800}
+.brag .d{font-size:12.5px;color:#8a6f36;margin-top:3px}
+.lvup{background:linear-gradient(150deg,var(--brand-soft),#eef7f0);border:1px solid color-mix(in srgb,var(--brand) 22%,transparent);
+  border-radius:15px;padding:15px;display:flex;gap:13px;align-items:center}
+
+/* dictionary */
+.search{display:flex;align-items:center;gap:9px;background:var(--soft);border-radius:13px;padding:11px 14px;
+  font-size:13.5px;color:var(--faint)}
+.today{border-radius:16px;overflow:hidden;background:linear-gradient(160deg,#d9ecdf,#c6dfd4);padding:16px;position:relative}
+.today .tag{font-size:11px;font-weight:800;color:var(--brand-ink);background:rgba(255,255,255,.72);
+  border-radius:99px;padding:3px 9px;display:inline-block}
+.today h3{margin:8px 0 2px;font-size:20px;font-weight:800}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dcell{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:11px;text-align:center}
+.dcell .im{height:64px;border-radius:11px;background:var(--soft);display:grid;place-items:center;margin-bottom:7px}
+.dcell .nm{font-size:13px;font-weight:800}
+.dcell .mt{font-size:11px;color:var(--faint);margin-top:1px}
+.info4{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.i4{background:var(--soft);border-radius:12px;padding:10px 4px;text-align:center}
+.i4 .ic{font-size:15px}
+.i4 .lb{font-size:10px;color:var(--muted);margin-top:3px}
+.i4 .vl{font-size:11.5px;font-weight:800;margin-top:1px}
+.growers{display:flex;gap:-6px;align-items:center}
+
+/* account */
+.prof{display:flex;gap:13px;align-items:center}
+.pbig{width:62px;height:62px;border-radius:22px;display:grid;place-items:center;font-size:27px;flex:0 0 auto}
+.title{display:inline-block;background:var(--gold-soft);color:var(--gold);border-radius:99px;
+  padding:2px 9px;font-size:11px;font-weight:800}
+.bgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.badge{text-align:center}
+.badge .cir{width:100%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:23px;
+  background:radial-gradient(circle at 40% 30%,#ffeeba,#eec964);box-shadow:0 5px 13px rgba(200,145,43,.24)}
+.badge.lock .cir{background:var(--soft);box-shadow:none;color:#cfd8d2;font-size:19px}
+.badge .nm{font-size:10px;margin-top:5px;font-weight:700;color:var(--muted);line-height:1.3}
+.badge.lock .nm{color:var(--faint)}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;text-align:center}
+.stat3 .v{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat3 .l{font-size:11px;color:var(--muted);margin-top:1px}
+.mlist{display:flex;flex-direction:column;gap:2px}
+.mitem{display:flex;align-items:center;gap:11px;padding:11px 2px;font-size:13.5px;border-bottom:1px solid var(--line)}
+.mitem:last-child{border-bottom:0}
+.mitem .ar{margin-left:auto;color:var(--faint);font-size:13px}
+.credit{background:linear-gradient(140deg,#eaf2ff,#e4ecfb);border:1px solid #d5e3fa;border-radius:15px;padding:14px}
+
+/* AI */
+.aishot{height:168px;border-radius:15px;background:linear-gradient(155deg,#e6ecf0,#dfe7e2);
+  display:grid;place-items:center;position:relative;overflow:hidden}
+.aitag{position:absolute;border:2px dashed var(--water);border-radius:9px;font-size:10px;font-weight:800;
+  color:var(--water);background:rgba(255,255,255,.85);padding:1px 6px}
+.score{display:flex;align-items:center;gap:13px}
+.ring{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;
+  background:conic-gradient(var(--sun) 0 68%, var(--line) 0);position:relative}
+.ring::after{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--paper)}
+.ring b{position:relative;z-index:1;font-size:19px;font-weight:800}
+.finding{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px;line-height:1.55}
+.finding:last-child{border-bottom:0}
+.finding .fi{width:27px;height:27px;border-radius:9px;display:grid;place-items:center;font-size:13px;flex:0 0 auto}
+
+/* sheets & overlays */
+.ovl{position:absolute;inset:0;background:rgba(18,26,22,.45);display:none;z-index:20;
+  align-items:flex-end;justify-content:center;border-radius:33px}
+.ovl.on{display:flex}
+.sheet{background:var(--paper);width:100%;border-radius:22px 22px 33px 33px;padding:8px 18px 22px;
+  animation:up .26s cubic-bezier(.2,.8,.3,1)}
+@keyframes up{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+.grab{width:38px;height:4px;border-radius:9px;background:var(--line);margin:6px auto 12px}
+.sheet h3{margin:0 0 3px;font-size:16.5px;font-weight:800}
+.rec6{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:14px 0 4px}
+.rec{background:var(--soft);border:0;border-radius:14px;padding:14px 6px;cursor:pointer;font:inherit;text-align:center}
+.rec .ic{font-size:22px}
+.rec .lb{font-size:12px;font-weight:800;margin-top:5px}
+.rec .gp{font-size:10px;color:var(--brand);font-weight:800;margin-top:1px}
+.ovl.center{align-items:center;padding:26px}
+.celebrate{background:var(--paper);border-radius:24px;padding:26px 22px;text-align:center;width:100%;position:relative;overflow:hidden}
+.celebrate .burst{position:absolute;inset:0;pointer-events:none;z-index:0}
+.celebrate>*:not(.burst){position:relative;z-index:1}
+.celebrate .cf{position:absolute;width:8px;height:12px;border-radius:2px;opacity:.9}
+.celebrate .big{font-size:12px;font-weight:800;color:var(--brand);letter-spacing:.1em}
+.celebrate h3{margin:6px 0 2px;font-size:23px;font-weight:800}
+.custom .parts{display:flex;gap:8px;overflow-x:auto;margin:12px -18px 0;padding:0 18px 4px;scrollbar-width:none}
+.custom .parts::-webkit-scrollbar{display:none}
+.part{flex:0 0 auto;width:60px;height:60px;border-radius:15px;background:var(--soft);border:2px solid transparent;
+  display:grid;place-items:center;cursor:pointer;font-size:22px}
+.part.on{border-color:var(--brand);background:var(--brand-soft)}
+
+/* mobile */
+.mobbar{display:none}
+@media(max-width:940px){
+  .stage{grid-template-columns:1fr;padding:0;gap:0;max-width:none}
+  .panel{display:none}
+  .phonewrap{display:block}
+  .phone{width:100%;border-radius:0;padding:0;box-shadow:none}
+  .screen{height:100dvh;border-radius:0}
+  .ovl{border-radius:0}
+  .statusbar{display:none}
+  .screen{padding-top:env(safe-area-inset-top)}
+  .mobbar{display:flex;flex-direction:column;position:absolute;right:0;top:44%;z-index:30;gap:0;
+    background:rgba(255,255,255,.82);border-radius:12px 0 0 12px;padding:4px;box-shadow:var(--shadow);
+    backdrop-filter:blur(6px)}
+  .mobbar button{border:0;border-radius:9px;background:none;width:30px;height:30px;
+    font:inherit;font-size:10px;font-weight:800;color:var(--muted);cursor:pointer;padding:0}
+  .mobbar button.on{background:var(--brand);color:#fff}
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <aside class="panel">
+    <h1>플랜트그램 목업 v1</h1>
+    <p class="sub">요건 정의 v1.0 기준. 탭·버튼이 실제로 동작하는 프로토타입입니다. 폰으로 열면 전체 화면으로 보입니다.</p>
+
+    <div class="pblock">
+      <h2>D-6 · 브랜드 컬러 비교</h2>
+      <div class="swatchrow">
+        <button class="swatch on" data-brand="teal"><i style="background:#168f80"></i>틸</button>
+        <button class="swatch" data-brand="green"><i style="background:#2f8f5b"></i>그린</button>
+      </div>
+    </div>
+
+    <div class="pblock">
+      <h2>화면</h2>
+      <div class="slist" id="slist"></div>
+    </div>
+
+    <div class="pblock">
+      <h2>이 화면 메모</h2>
+      <div class="note" id="pnote"></div>
+    </div>
+
+    <p class="foot">아바타·정원 아트는 임시 스타일(교체 전제)입니다. 모션(폭죽·아바타 성장)은 Flutter 단계에서 Lottie/Rive로 구현합니다.<br><br><a href="../requirements-2026-08-25/">← 요건 정의 문서</a></p>
+  </aside>
+
+  <div class="phonewrap">
+    <div class="phone"><div class="screen">
+      <div class="mobbar">
+        <button data-brand="teal" class="on">틸</button>
+        <button data-brand="green">그린</button>
+      </div>
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="dots">LTE ▮▮▮ 100%</span>
+      </div>
+
+      <div class="view" id="view">
+
+        <!-- ============ 1. 정원 ============ -->
+        <section class="pane" id="p-garden">
+          <div class="garden">
+            <div class="gtop">
+              <div class="gname">🏡 우리집 정원</div>
+              <div class="wx">☀️ 24° · 습도 58%</div>
+            </div>
+            <div class="gplevel">
+              <div class="r"><b>정원 Lv.7</b><span class="lv">🌿 정원사</span><span>1,240 / 1,600 GP</span></div>
+              <div class="gauge"><i style="width:72%"></i></div>
+            </div>
+            <div class="members">
+              <div class="mav" style="background:#168f80">초</div>
+              <div class="mav" style="background:#e0a33c">민</div>
+              <div class="mlabel">초록집사 · 민수 함께 관리 중</div>
+            </div>
+
+            <div class="scene" id="scene">
+              <div class="window"></div>
+              <div class="sun"></div>
+              <div class="floorline"></div>
+
+              <!-- 선반 1 -->
+              <div class="row" style="top:150px">
+                <div class="items">
+                  <div class="slot thirsty" data-go="detail">
+                    <div class="bub">목말라요 💧</div>
+                    <span data-av="monstera" data-size="84" data-pot="#c98a6a"></span>
+                  </div>
+                  <div class="slot">
+                    <span data-av="sansevieria" data-size="70" data-pot="#8fa89b"></span>
+                  </div>
+                </div>
+                <div class="bar"></div>
+                <div class="labels"><span>몬스테라 Lv.4</span><span>스투키 Lv.6</span></div>
+              </div>
+
+              <!-- 선반 2 -->
+              <div class="row" style="top:302px">
+                <div class="items">
+                  <div class="slot thirsty">
+                    <div class="bub">목말라요 💧</div>
+                    <span data-av="succulent" data-size="58" data-pot="#dcc9a8"></span>
+                  </div>
+                  <div class="slot">
+                    <span data-av="calathea" data-size="66" data-pot="#b7a3c9"></span>
+                  </div>
+                </div>
+                <div class="bar"></div>
+                <div class="labels"><span>몽이 Lv.2</span><span>칼라 Lv.5</span></div>
+              </div>
+
+              <!-- 바닥 화분 -->
+              <div class="slot" style="position:absolute;left:26px;bottom:78px">
+                <span data-av="monstera" data-size="112" data-pot="#a8785d"></span>
+                <div style="text-align:center"><span style="font-size:10.5px;font-weight:800;color:#41544a;
+                  background:rgba(255,255,255,.82);border-radius:99px;padding:1px 8px">초코 Lv.8</span></div>
+              </div>
+
+              <div class="gbar">
+                <div class="viewtog">
+                  <button class="on">🏡 정원</button>
+                  <button data-go="list">☰ 리스트</button>
+                </div>
+                <button class="waterall" data-sheet="celebrate">💧 일괄 물주기 <span class="cnt">2</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 2. 리스트 ============ -->
+        <section class="pane" id="p-list">
+          <div class="appbar">
+            <h2>내 식물</h2><div class="sp"></div>
+            <button class="ibtn" data-go="garden">🏡</button>
+            <button class="ibtn">🔍</button>
+          </div>
+          <div class="body">
+            <div class="card" style="display:flex;gap:12px;align-items:center;background:linear-gradient(140deg,#e3eff5,#eaf1e8);border-color:transparent">
+              <div style="font-size:30px">☀️</div>
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:800">오늘은 볕이 좋아요</div>
+                <div class="muted">서울 24° · 습도 58% · 통풍하기 좋은 날</div>
+              </div>
+            </div>
+
+            <div class="card" style="background:var(--water-soft);border-color:transparent;display:flex;gap:12px;align-items:center">
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:800;color:var(--water)">물주기가 필요한 식물 2개</div>
+                <div class="muted">몬스테라 · 몽이</div>
+              </div>
+              <button class="btn water" style="width:auto;padding:11px 15px" data-sheet="celebrate">일괄 물주기</button>
+            </div>
+
+            <div class="rowt"><h3>식물 4</h3><span class="more">최근 등록순 ▾</span></div>
+
+            <div class="prow" data-go="detail">
+              <div class="pthumb"><span data-av="monstera" data-size="46" data-pot="#c98a6a"></span></div>
+              <div style="flex:1">
+                <div class="nm">몬스테라 <span class="lv">Lv.4</span></div>
+                <div class="dday due">물주기 D+1 · 하루 지났어요</div>
+                <div class="gauge" style="margin-top:6px"><i style="width:64%"></i></div>
+              </div>
+              <button class="wbtn" data-sheet="celebrate">💧</button>
+            </div>
+
+            <div class="prow">
+              <div class="pthumb"><span data-av="sansevieria" data-size="46" data-pot="#8fa89b"></span></div>
+              <div style="flex:1">
+                <div class="nm">스투키 <span class="lv">Lv.6</span></div>
+                <div class="dday ok">물주기 D-5</div>
+                <div class="gauge" style="margin-top:6px"><i style="width:88%"></i></div>
+              </div>
+              <button class="wbtn done">✓</button>
+            </div>
+
+            <div class="prow">
+              <div class="pthumb"><span data-av="succulent" data-size="46" data-pot="#dcc9a8"></span></div>
+              <div style="flex:1">
+                <div class="nm">몽이 <span class="lv">Lv.2</span></div>
+                <div class="dday due">물주기 오늘이에요</div>
+                <div class="gauge" style="margin-top:6px"><i style="width:32%"></i></div>
+              </div>
+              <button class="wbtn" data-sheet="celebrate">💧</button>
+            </div>
+
+            <div class="prow">
+              <div class="pthumb"><span data-av="calathea" data-size="46" data-pot="#b7a3c9"></span></div>
+              <div style="flex:1">
+                <div class="nm">칼라 <span class="lv">Lv.5</span></div>
+                <div class="dday ok">물주기 D-3</div>
+                <div class="gauge" style="margin-top:6px"><i style="width:71%"></i></div>
+              </div>
+              <button class="wbtn done">✓</button>
+            </div>
+          </div>
+          <button class="fab">＋</button>
+        </section>
+
+        <!-- ============ 3. 식물 상세 ============ -->
+        <section class="pane haspin" id="p-detail">
+          <div class="hero">
+            <div class="top">
+              <button class="ibtn" style="background:rgba(255,255,255,.7)" data-go="garden">‹</button>
+              <div class="sp"></div>
+              <button class="ibtn" style="background:rgba(255,255,255,.7)" data-sheet="custom">🎨</button>
+              <button class="ibtn" style="background:rgba(255,255,255,.7)">⋯</button>
+            </div>
+            <div class="stagewrap"><span data-av="monstera" data-size="150" data-pot="#c98a6a"></span></div>
+            <h3>몬스테라</h3>
+            <div class="sp">몬스테라 델리시오사 · 함께한 지 124일</div>
+            <div class="lvbox">
+              <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:5px">
+                <b style="font-size:13px">Lv.4</b>
+                <span style="font-size:11px;color:#5f7169">다음 레벨까지 180 GP</span>
+                <span style="margin-left:auto;font-size:11px;color:#5f7169;font-variant-numeric:tabular-nums">820 / 1,000</span>
+              </div>
+              <div class="gauge"><i style="width:82%"></i></div>
+            </div>
+          </div>
+
+          <div class="body" style="padding-top:14px">
+            <div class="ddgrid">
+              <div class="ddcard due"><div class="ic">💧</div><div class="lb">물주기</div><div class="vl">D+1</div></div>
+              <div class="ddcard"><div class="ic">🧪</div><div class="lb">영양제</div><div class="vl">D-12</div></div>
+              <div class="ddcard"><div class="ic">🪴</div><div class="lb">분갈이</div><div class="vl">D-64</div></div>
+            </div>
+
+            <div class="card soft">
+              <div style="font-size:13px;line-height:1.9">
+                ✅ 물은 <b>7일에 한 번</b>씩 주고 있어요<br>
+                ✅ 밝은 간접광 · 18~26℃가 알맞아요<br>
+                📌 새잎이 올라오는 중
+              </div>
+            </div>
+
+            <div class="rowt"><h3>최근 기록</h3><span class="more">전체보기 ›</span></div>
+            <div class="card">
+              <div class="tl">
+                <div class="ln"><div class="dot"></div><div class="bar"></div></div>
+                <div class="ct">
+                  <div class="h">물주기 <span class="actor">👤 민수</span></div>
+                  <div class="m">오늘 오전 9:20 · +10 GP</div>
+                </div>
+              </div>
+              <div class="tl">
+                <div class="ln"><div class="dot" style="background:var(--sun)"></div><div class="bar"></div></div>
+                <div class="ct">
+                  <div class="h">사진 · 메모 <span class="actor">👤 나</span></div>
+                  <div class="m">3일 전 · "새잎이 올라옴" · +5 GP</div>
+                </div>
+              </div>
+              <div class="tl">
+                <div class="ln"><div class="dot" style="background:var(--faint)"></div></div>
+                <div class="ct" style="padding-bottom:0">
+                  <div class="h">상태 · 좋음</div>
+                  <div class="m">5일 전 · +3 GP</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="display:flex;gap:11px;align-items:center;background:var(--water-soft);border-color:transparent">
+              <div style="font-size:22px">🤖</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:800">이 자리, 이 식물에 맞을까요?</div>
+                <div class="tiny">사진 한 장으로 채광·통풍을 분석해드려요</div>
+              </div>
+              <button class="ibtn" style="background:#fff" data-go="ai">›</button>
+            </div>
+          </div>
+
+          <div class="stick"><button class="btn" data-sheet="record">기록하기</button></div>
+        </section>
+
+        <!-- ============ 4. 피드 ============ -->
+        <section class="pane" id="p-feed">
+          <div class="appbar">
+            <h2>피드</h2><div class="sp"></div>
+            <button class="ibtn">🔍</button>
+            <button class="ibtn">🔔</button>
+          </div>
+          <div class="chips">
+            <div class="chip on">전체</div>
+            <div class="chip">🌿 몬스테라</div>
+            <div class="chip">🪴 스투키</div>
+            <div class="chip">🌵 다육이</div>
+            <div class="chip">🍃 칼라데아</div>
+          </div>
+          <div class="body" style="padding-top:12px">
+
+            <div class="brag">
+              <div class="bd">🏆</div>
+              <div class="t">30일 연속 기록 달성!</div>
+              <div class="d">초록집사님이 <b>꾸준함 · 한 달 개근</b> 뱃지를 얻었어요</div>
+              <div style="display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:12.5px;color:#8a6f36;font-weight:700">
+                <span>♥ 42</span><span>💬 8</span><span>축하 보내기</span>
+              </div>
+            </div>
+
+            <div class="post">
+              <div class="phead">
+                <div class="pav" style="background:#dcece4">🌿</div>
+                <div style="flex:1"><div class="nm">식물집사민수</div><div class="tm">몬스테라 · 2시간 전</div></div>
+                <div style="color:var(--faint)">⋯</div>
+              </div>
+              <div class="pbody">새잎이 드디어 펼쳐졌어요! 무늬가 예쁘게 나왔네요 🌱</div>
+              <div class="pimg"><span data-av="monstera" data-size="112" data-pot="#c98a6a"></span></div>
+              <div class="pfoot"><span>♥ 128</span><span>💬 21</span><span style="margin-left:auto">몬스테라 채널</span></div>
+            </div>
+
+            <div class="lvup">
+              <div style="width:52px;height:52px;border-radius:17px;background:#fff;display:grid;place-items:center;flex:0 0 auto">
+                <span data-av="sansevieria" data-size="40" data-pot="#8fa89b"></span>
+              </div>
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:800">스투키가 Lv.6이 되었어요 🎉</div>
+                <div class="muted">초록집사 · 1일 전</div>
+              </div>
+              <div style="font-size:12.5px;color:var(--brand);font-weight:800">♥ 31</div>
+            </div>
+
+            <div class="post">
+              <div class="phead">
+                <div class="pav" style="background:#f3e8dc">🪴</div>
+                <div style="flex:1"><div class="nm">초보집사</div><div class="tm">칼라데아 · 4시간 전</div></div>
+                <div style="color:var(--faint)">⋯</div>
+              </div>
+              <div class="pbody">잎 끝이 자꾸 마르는데 물이 부족한 걸까요? 조언 부탁드려요 🙏</div>
+              <div class="pfoot"><span>♥ 12</span><span>💬 34</span><span style="margin-left:auto">칼라데아 채널</span></div>
+            </div>
+          </div>
+          <button class="fab">✎</button>
+        </section>
+
+        <!-- ============ 5. 도감 ============ -->
+        <section class="pane" id="p-dict">
+          <div class="appbar"><h2>도감</h2><div class="sp"></div><button class="ibtn">☰</button></div>
+          <div class="body">
+            <div class="search">🔍 식물 이름을 검색하세요</div>
+
+            <div class="today" data-go="dictDetail">
+              <span class="tag">오늘의 식물</span>
+              <h3>칼라데아</h3>
+              <div class="muted" style="color:#4a6156">밤이면 잎을 접는 기도하는 식물</div>
+              <div style="position:absolute;right:14px;bottom:6px"><span data-av="calathea" data-size="88" data-pot="#b7a3c9"></span></div>
+            </div>
+
+            <div class="chips" style="margin-top:2px">
+              <div class="chip on">초보 추천</div>
+              <div class="chip">공기정화</div>
+              <div class="chip">인테리어</div>
+              <div class="chip">반려동물 주의</div>
+              <div class="chip">물 좋아함</div>
+            </div>
+
+            <div class="rowt"><h3>초보 집사에게 추천</h3><span class="more">식물 124종</span></div>
+            <div class="dgrid">
+              <div class="dcell" data-go="dictDetail">
+                <div class="im"><span data-av="monstera" data-size="58" data-pot="#c98a6a"></span></div>
+                <div class="nm">몬스테라</div><div class="mt">물 보통 · 밝은 간접광</div>
+              </div>
+              <div class="dcell">
+                <div class="im"><span data-av="sansevieria" data-size="52" data-pot="#8fa89b"></span></div>
+                <div class="nm">산세베리아</div><div class="mt">물 적게 · 반음지 OK</div>
+              </div>
+              <div class="dcell">
+                <div class="im"><span data-av="succulent" data-size="50" data-pot="#dcc9a8"></span></div>
+                <div class="nm">다육식물</div><div class="mt">물 적게 · 햇빛 많이</div>
+              </div>
+              <div class="dcell">
+                <div class="im"><span data-av="calathea" data-size="54" data-pot="#b7a3c9"></span></div>
+                <div class="nm">칼라데아</div><div class="mt">물 자주 · 간접광</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 6. 도감 상세 ============ -->
+        <section class="pane haspin" id="p-dictDetail">
+          <div class="hero" style="background:linear-gradient(170deg,#e2eee6,#eef2e8)">
+            <div class="top">
+              <button class="ibtn" style="background:rgba(255,255,255,.7)" data-go="dict">‹</button>
+              <div class="sp"></div>
+              <button class="ibtn" style="background:rgba(255,255,255,.7)">♡</button>
+            </div>
+            <div class="stagewrap"><span data-av="monstera" data-size="132" data-pot="#c98a6a"></span></div>
+            <h3>몬스테라</h3>
+            <div class="sp">Monstera deliciosa · 천남성과</div>
+          </div>
+          <div class="body" style="padding-top:14px">
+            <div class="info4">
+              <div class="i4"><div class="ic">💧</div><div class="lb">물주기</div><div class="vl">7일</div></div>
+              <div class="i4"><div class="ic">☀️</div><div class="lb">햇빛</div><div class="vl">간접광</div></div>
+              <div class="i4"><div class="ic">💦</div><div class="lb">수분</div><div class="vl">보통</div></div>
+              <div class="i4"><div class="ic">🌡️</div><div class="lb">온도</div><div class="vl">18~26°</div></div>
+            </div>
+
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="chip on" style="pointer-events:none">초보 추천</span>
+              <span class="chip" style="pointer-events:none">공기정화</span>
+              <span class="chip" style="background:var(--rose-soft);border-color:transparent;color:var(--rose)">반려동물 주의</span>
+            </div>
+
+            <div class="rowt"><h3>관리 팁</h3></div>
+            <div class="card soft" style="font-size:13px;line-height:1.9">
+              🌱 겉흙이 마르면 흠뻑 주세요<br>
+              ☀️ 직사광선은 잎을 태울 수 있어요<br>
+              🍃 잎이 노래지면 과습을 의심해보세요
+            </div>
+
+            <div class="card" style="display:flex;gap:11px;align-items:center;background:var(--brand-soft);border-color:transparent">
+              <div style="font-size:20px">💬</div>
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:800">몬스테라 이야기</div>
+                <div class="tiny">게시글 328개 · 오늘 12개</div>
+              </div>
+              <button class="ibtn" style="background:#fff" data-go="feed">›</button>
+            </div>
+
+            <div class="rowt"><h3>이 식물을 키우는 사람들</h3><span class="more">1,204명</span></div>
+            <div style="display:flex;gap:9px">
+              <div class="pav" style="background:#dcece4;width:38px;height:38px">🌿</div>
+              <div class="pav" style="background:#f3e8dc;width:38px;height:38px">🪴</div>
+              <div class="pav" style="background:#e6e2f2;width:38px;height:38px">🌵</div>
+              <div class="pav" style="background:var(--soft);width:38px;height:38px;font-size:11px;font-weight:800;color:var(--muted)">+1.2k</div>
+            </div>
+          </div>
+          <div class="stick"><button class="btn">내 식물로 등록하기</button></div>
+        </section>
+
+        <!-- ============ 7. 계정 ============ -->
+        <section class="pane" id="p-account">
+          <div class="appbar"><h2>계정</h2><div class="sp"></div><button class="ibtn">⚙️</button></div>
+          <div class="body">
+            <div class="prof">
+              <div class="pbig" style="background:var(--brand-soft)">🌿</div>
+              <div style="flex:1">
+                <div style="font-size:17px;font-weight:800">초록집사</div>
+                <div style="margin-top:3px"><span class="title">🌿 정원사 · 정원 Lv.7</span></div>
+                <div class="gauge" style="margin-top:7px"><i style="width:72%"></i></div>
+              </div>
+            </div>
+
+            <div class="card stat3">
+              <div><div class="v">124</div><div class="l">함께한 날</div></div>
+              <div><div class="v">86</div><div class="l">누적 물주기</div></div>
+              <div><div class="v">31</div><div class="l">연속 기록</div></div>
+            </div>
+
+            <div class="rowt"><h3>뱃지 진열장</h3><span class="more">12 / 40 ›</span></div>
+            <div class="bgrid">
+              <div class="badge"><div class="cir">🌱</div><div class="nm">첫 식물</div></div>
+              <div class="badge"><div class="cir">💧</div><div class="nm">물주기 50</div></div>
+              <div class="badge"><div class="cir">🏆</div><div class="nm">한 달 개근</div></div>
+              <div class="badge"><div class="cir">👨‍👩‍👧</div><div class="nm">함께 30일</div></div>
+              <div class="badge lock"><div class="cir">🔒</div><div class="nm">100일</div></div>
+              <div class="badge lock"><div class="cir">🔒</div><div class="nm">개화</div></div>
+              <div class="badge lock"><div class="cir">🔒</div><div class="nm">Lv.10</div></div>
+              <div class="badge lock"><div class="cir">🔒</div><div class="nm">식물 10</div></div>
+            </div>
+
+            <div class="rowt"><h3>우리집 정원</h3><span class="more">관리 ›</span></div>
+            <div class="card">
+              <div style="display:flex;gap:9px;align-items:center;margin-bottom:10px">
+                <div class="mav" style="background:#168f80;margin:0">초</div>
+                <div style="flex:1;margin-left:4px">
+                  <div style="font-size:13px;font-weight:800">초록집사 <span class="tiny">· 정원 오너</span></div>
+                  <div class="tiny">이번 달 기여 62%</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:9px;align-items:center">
+                <div class="mav" style="background:#e0a33c;margin:0">민</div>
+                <div style="flex:1;margin-left:4px">
+                  <div style="font-size:13px;font-weight:800">민수 <span class="tiny">· 가드너</span></div>
+                  <div class="tiny">이번 달 기여 38%</div>
+                </div>
+              </div>
+              <button class="btn ghost" style="margin-top:12px">+ 가드너 초대하기</button>
+            </div>
+
+            <div class="credit">
+              <div style="display:flex;align-items:center;gap:9px">
+                <div style="font-size:20px">🤖</div>
+                <div style="flex:1">
+                  <div style="font-size:13.5px;font-weight:800">AI 분석 크레딧</div>
+                  <div class="tiny">이번 달 2회 남음 · 매월 3회 무료</div>
+                </div>
+                <span class="chip" style="pointer-events:none;background:var(--water);color:#fff;border-color:transparent">플러스</span>
+              </div>
+            </div>
+
+            <div class="card mlist">
+              <div class="mitem">🔔 알림 설정<span class="ar">오전 9:00 ›</span></div>
+              <div class="mitem">🌐 내 식물 공개<span class="ar">공개 ›</span></div>
+              <div class="mitem">📄 약관 · 개인정보<span class="ar">›</span></div>
+              <div class="mitem">↩ 로그아웃<span class="ar">›</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 8. AI 환경 분석 ============ -->
+        <section class="pane" id="p-ai">
+          <div class="appbar">
+            <button class="ibtn" data-go="detail">‹</button>
+            <h2 style="font-size:18px">AI 환경 분석</h2><div class="sp"></div>
+          </div>
+          <div class="body">
+            <div class="aishot">
+              <div style="font-size:44px;opacity:.45">🪟</div>
+              <div class="aitag" style="left:16px;top:20px">창 · 남향 추정</div>
+              <div class="aitag" style="right:18px;bottom:44px;border-color:var(--sun);color:var(--sun)">직사광 구간</div>
+              <div class="aitag" style="left:28px;bottom:22px;border-color:var(--brand);color:var(--brand)">현재 위치</div>
+            </div>
+
+            <div class="card score">
+              <div class="ring"><b>68</b></div>
+              <div style="flex:1">
+                <div style="font-size:14.5px;font-weight:800">몬스테라에게 괜찮은 자리예요</div>
+                <div class="muted" style="margin-top:2px">다만 <b>통풍</b>과 <b>물주기 주기</b>를 조금 조정하면 더 좋아져요</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="finding">
+                <div class="fi" style="background:var(--sun-soft)">☀️</div>
+                <div><b>채광 · 양호</b><br><span class="muted">창에서 1.5m 이내 밝은 간접광으로 보여요. 몬스테라에 알맞습니다.</span></div>
+              </div>
+              <div class="finding">
+                <div class="fi" style="background:var(--rose-soft)">💨</div>
+                <div><b>통풍 · 주의</b><br><span class="muted">창을 등진 구석이라 공기 흐름이 약해 보여요. 과습 위험이 올라갑니다.</span></div>
+              </div>
+              <div class="finding">
+                <div class="fi" style="background:var(--water-soft)">💧</div>
+                <div><b>과습 위험 · 중간</b><br><span class="muted">최근 기록상 7일 주기로 주고 계신데, 이 자리 조건에는 조금 잦을 수 있어요.</span></div>
+              </div>
+            </div>
+
+            <div class="card" style="background:var(--brand-soft);border-color:transparent">
+              <div style="font-size:13.5px;font-weight:800;margin-bottom:3px">추천 · 물주기 주기 조정</div>
+              <div class="muted" style="margin-bottom:11px">7일 → <b style="color:var(--brand-ink)">9일</b>로 늘려보는 걸 권해요</div>
+              <button class="btn">이대로 적용하기 <span style="font-size:11px;opacity:.85">+10 GP</span></button>
+            </div>
+
+            <p class="tiny" style="text-align:center;line-height:1.6;margin:2px 0 0">
+              AI 분석은 참고용 안내이며 확정 진단이 아니에요.<br>이번 달 남은 크레딧 1회
+            </p>
+          </div>
+        </section>
+
+      </div><!-- /view -->
+
+      <!-- ===== 기록 시트 ===== -->
+      <div class="ovl" id="ovl-record">
+        <div class="sheet">
+          <div class="grab"></div>
+          <h3>오늘 어떤 돌봄을 했나요?</h3>
+          <p class="muted" style="margin:0">몬스테라 · 기록하면 GP를 얻어요</p>
+
+          <div class="card soft" style="margin-top:13px;display:flex;gap:9px;align-items:center">
+            <div style="font-size:17px">🤖</div>
+            <div style="flex:1;font-size:13px;color:var(--muted)">"물 줬고 새잎이 올라왔어" 처럼 말해보세요</div>
+            <span class="chip" style="pointer-events:none;background:var(--brand);color:#fff;border-color:transparent">AI</span>
+          </div>
+
+          <div class="rec6">
+            <button class="rec" data-sheet="celebrate"><div class="ic">💧</div><div class="lb">물주기</div><div class="gp">+10 GP</div></button>
+            <button class="rec"><div class="ic">🧪</div><div class="lb">영양제</div><div class="gp">+15 GP</div></button>
+            <button class="rec"><div class="ic">🪴</div><div class="lb">분갈이</div><div class="gp">+15 GP</div></button>
+            <button class="rec"><div class="ic">✎</div><div class="lb">메모</div><div class="gp">+5 GP</div></button>
+            <button class="rec"><div class="ic">📷</div><div class="lb">사진</div><div class="gp">+5 GP</div></button>
+            <button class="rec"><div class="ic">🌡️</div><div class="lb">상태</div><div class="gp">+3 GP</div></button>
+          </div>
+          <button class="btn ghost" style="margin-top:12px" data-close>닫기</button>
+        </div>
+      </div>
+
+      <!-- ===== 레벨업 셀레브레이션 ===== -->
+      <div class="ovl center" id="ovl-celebrate">
+        <div class="celebrate">
+          <div class="burst" id="burst"></div>
+          <div class="big">LEVEL UP</div>
+          <h3>몬스테라 Lv.5</h3>
+          <p class="muted" style="margin:2px 0 0">물주기 +10 GP · 잎이 한 장 더 자랐어요</p>
+          <div style="padding:16px 0 6px"><span data-av="monstera" data-size="128" data-pot="#c98a6a"></span></div>
+          <div class="card soft" style="display:flex;gap:9px;align-items:center;text-align:left">
+            <div style="font-size:20px">🎨</div>
+            <div style="flex:1;font-size:12.5px"><b>새 화분 3종</b>이 열렸어요</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn ghost" style="flex:1" data-close>닫기</button>
+            <button class="btn" style="flex:1.4" data-go="feed" data-close>피드에 자랑하기</button>
+          </div>
+          <p class="tiny" style="margin:10px 0 0">※ 실제 앱에서는 폭죽·아바타 성장이 애니메이션으로 재생됩니다</p>
+        </div>
+      </div>
+
+      <!-- ===== 아바타 꾸미기 ===== -->
+      <div class="ovl" id="ovl-custom">
+        <div class="sheet custom">
+          <div class="grab"></div>
+          <h3>몬스테라 꾸미기</h3>
+          <p class="muted" style="margin:0">모두 무료 · 레벨이 오르면 더 열려요</p>
+          <div style="display:grid;place-items:center;padding:14px 0 4px">
+            <span data-av="monstera" data-size="132" data-pot="#c98a6a" id="customPreview"></span>
+          </div>
+
+          <div style="font-size:12px;font-weight:800;color:var(--muted);margin-top:8px">화분</div>
+          <div class="parts" id="potParts">
+            <button class="part on" data-pot="#c98a6a" style="color:#c98a6a">●</button>
+            <button class="part" data-pot="#8fa89b" style="color:#8fa89b">●</button>
+            <button class="part" data-pot="#dcc9a8" style="color:#dcc9a8">●</button>
+            <button class="part" data-pot="#b7a3c9" style="color:#b7a3c9">●</button>
+            <button class="part" data-pot="#e8b0a0" style="color:#e8b0a0">●</button>
+            <button class="part" data-pot="#9fb8d0" style="color:#9fb8d0">🔒</button>
+          </div>
+
+          <div style="font-size:12px;font-weight:800;color:var(--muted);margin-top:12px">크기</div>
+          <div class="parts">
+            <button class="part" data-size="112">S</button>
+            <button class="part on" data-size="132">M</button>
+            <button class="part" data-size="152">L</button>
+          </div>
+
+          <div style="font-size:12px;font-weight:800;color:var(--muted);margin-top:12px">소품</div>
+          <div class="parts">
+            <button class="part on">없음</button>
+            <button class="part">🏷️</button>
+            <button class="part">🪵</button>
+            <button class="part">✨</button>
+            <button class="part">🔒</button>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:16px">
+            <button class="btn ghost" style="flex:1" data-close>취소</button>
+            <button class="btn" style="flex:1.4" data-close>저장하기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- bottom nav -->
+      <nav class="bnav" id="bnav">
+        <button data-tab="feed"><span class="ic">🗨️</span>피드</button>
+        <button data-tab="garden" class="on"><span class="ic">🏡</span>내 식물</button>
+        <button data-tab="dict"><span class="ic">📖</span>도감</button>
+        <button data-tab="account"><span class="ic">👤</span>계정</button>
+      </nav>
+
+    </div></div>
+  </div>
+</div>
+
+<script>
+/* ---------- plant avatars (layered SVG placeholders) ---------- */
+function pot(color, w){
+  const d = shade(color,-18);
+  return `<path d="M${-w*.30},0 L${-w*.24},${w*.30} Q${-w*.23},${w*.35} ${-w*.18},${w*.35} L${w*.18},${w*.35} Q${w*.23},${w*.35} ${w*.24},${w*.30} L${w*.30},0 Z" fill="${color}"/>
+  <rect x="${-w*.34}" y="${-w*.055}" width="${w*.68}" height="${w*.11}" rx="${w*.045}" fill="${d}"/>`;
+}
+function shade(hex,amt){
+  const n=parseInt(hex.slice(1),16);
+  let r=(n>>16)+amt, g=((n>>8)&255)+amt, b=(n&255)+amt;
+  r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));
+  return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+}
+function leaf(x,y,rot,s,fill,vein){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+    <path d="M0,0 C-17,-7 -21,-29 0,-41 C21,-29 17,-7 0,0 Z" fill="${fill}"/>
+    <path d="M0,-2 L0,-38" stroke="${vein}" stroke-width="1.4" opacity=".55" fill="none"/>
+    <path d="M0,-14 L-9,-20 M0,-22 L-9,-28 M0,-14 L9,-20 M0,-22 L9,-28" stroke="${vein}" stroke-width="1.1" opacity=".35" fill="none"/>
+  </g>`;
+}
+const AV = {
+  monstera(w,potc){
+    const g1='#3f7d54', g2='#4f9163', v='#2c5b3c';
+    return `<g>
+      <path d="M0,${-w*.02} C-3,${-w*.20} -8,${-w*.30} -14,${-w*.36}" stroke="${v}" stroke-width="2.4" fill="none"/>
+      <path d="M0,${-w*.02} C3,${-w*.22} 9,${-w*.33} 16,${-w*.38}" stroke="${v}" stroke-width="2.4" fill="none"/>
+      <path d="M0,${-w*.02} C0,${-w*.28} 1,${-w*.42} 1,${-w*.50}" stroke="${v}" stroke-width="2.4" fill="none"/>
+      ${leaf(-16,-w*.34,-32,w*.0135,g1,v)}
+      ${leaf(17,-w*.36,30,w*.0125,g2,v)}
+      ${leaf(1,-w*.49,-4,w*.0145,g1,v)}
+      ${leaf(-9,-w*.20,-58,w*.0100,g2,v)}
+      ${leaf(11,-w*.19,54,w*.0095,g1,v)}
+    </g>`;
+  },
+  sansevieria(w,potc){
+    const g1='#4d8a5f', g2='#5e9c6d', e='#c9b96a';
+    let s='';
+    const set=[[-13,-w*.52,-13,.92],[0,-w*.62,0,1.05],[13,-w*.54,13,.95],[-6,-w*.42,-6,.75],[7,-w*.44,7,.78]];
+    set.forEach(([x,y,r,sc],i)=>{
+      s+=`<g transform="translate(${x},0) rotate(${r})">
+        <path d="M0,0 C${-5*sc},${y*.55} ${-4*sc},${y*.85} 0,${y} C${4*sc},${y*.85} ${5*sc},${y*.55} 0,0 Z" fill="${i%2?g2:g1}"/>
+        <path d="M0,0 C${-5*sc},${y*.55} ${-4*sc},${y*.85} 0,${y}" stroke="${e}" stroke-width="1.2" fill="none" opacity=".6"/>
+      </g>`;
+    });
+    return `<g>${s}</g>`;
+  },
+  succulent(w,potc){
+    const c=['#6fa07a','#7cae86','#8bbd93','#9ccba3'];
+    let s='';
+    for(let i=0;i<9;i++){
+      const a=i*40, r=w*.13;
+      s+=`<g transform="rotate(${a}) translate(0,${-r})">
+        <ellipse cx="0" cy="0" rx="${w*.055}" ry="${w*.105}" fill="${c[i%4]}"/>
+      </g>`;
+    }
+    return `<g transform="translate(0,${-w*.10})">${s}<circle cx="0" cy="0" r="${w*.05}" fill="#5c8f68"/></g>`;
+  },
+  calathea(w,potc){
+    const g1='#43795a', g2='#54906b', v='#d7e4c9';
+    let s='';
+    [[-18,-w*.32,-40,.95],[0,-w*.46,-6,1.06],[18,-w*.34,38,.97],[-8,-w*.20,-62,.72],[10,-w*.21,58,.74]].forEach(([x,y,r,sc],i)=>{
+      s+=`<g transform="translate(${x},${y}) rotate(${r}) scale(${w*.012*sc})">
+        <ellipse cx="0" cy="-18" rx="12" ry="21" fill="${i%2?g2:g1}"/>
+        <ellipse cx="0" cy="-18" rx="5.5" ry="15" fill="${v}" opacity=".55"/>
+        <path d="M0,2 L0,-34" stroke="${v}" stroke-width="1.5" opacity=".7"/>
+      </g>`;
+    });
+    return `<g><path d="M0,0 L0,${-w*.22}" stroke="#3d6b4d" stroke-width="2.2"/>${s}</g>`;
+  }
+};
+function renderAvatars(root){
+  (root||document).querySelectorAll('[data-av]').forEach(el=>{
+    const kind=el.dataset.av, w=+(el.dataset.size||80), potc=el.dataset.pot||'#c98a6a';
+    const h=w*1.2;
+    el.innerHTML=`<svg width="${w}" height="${h}" viewBox="${-w/2} ${-h*.72} ${w} ${h}" style="display:block;overflow:visible">
+      <ellipse cx="0" cy="${w*.36}" rx="${w*.30}" ry="${w*.055}" fill="rgba(60,80,60,.13)"/>
+      ${AV[kind]?AV[kind](w,potc):''}
+      ${pot(potc,w)}
+    </svg>`;
+  });
+}
+renderAvatars();
+
+/* ---------- navigation ---------- */
+const SCREENS=[
+  ['garden','정원 뷰 (홈)','정원 뷰가 기본 홈입니다. 아바타를 선반에 배치하고, 목마른 식물은 시든 모습 + 말풍선으로 표시돼요. 상단에 정원 레벨·GP 게이지와 함께 관리 중인 멤버가 보입니다.'],
+  ['list','리스트 뷰','관리 효율용 뷰. 날씨 카드, 물주기 대상 일괄 처리, D-Day 정렬 카드. 정원 뷰와 토글로 오갑니다.'],
+  ['detail','식물 상세','아바타 히어로 + 레벨 게이지, D-Day 3종, 최근 기록(행위자 표시 — 누가 물을 줬는지), AI 환경 분석 진입. 하단 고정 버튼은 기록하기 → 6종 액션시트.'],
+  ['feed','피드','팔로우 없이 식물종 채널 중심. 뱃지 자랑 카드와 레벨업 카드가 일반 게시물과 섞여 흐릅니다.'],
+  ['dict','도감','검색 · 오늘의 식물 · 추천 섹션 · 124종 목록. 레거시 도감 DB를 이관합니다.'],
+  ['dictDetail','도감 상세','관리 정보 4종, 주의 라벨, 관리 팁, "{식물명} 이야기" → 피드 채널로 연결, 키우는 사람들. 하단은 내 식물로 등록.'],
+  ['account','계정','정원 레벨·칭호, 뱃지 진열장(획득/미획득), 돌봄 통계, 가드너 초대·기여도, AI 크레딧, 기본 설정.'],
+  ['ai','AI 환경 분석','킬러 기능 후보. 자리 사진 → 채광·통풍·과습 위험 분석 → 물주기 주기 원탭 보정(+GP). 게임 루프와 AI가 만나는 지점입니다.']
+];
+const TAB_OF={garden:'garden',list:'garden',detail:'garden',ai:'garden',feed:'feed',dict:'dict',dictDetail:'dict',account:'account'};
+let cur='garden';
+
+const slist=document.getElementById('slist');
+SCREENS.forEach(([id,label],i)=>{
+  const b=document.createElement('button');
+  b.innerHTML=`<span class="n">${i+1}</span>${label}`;
+  b.dataset.go=id; slist.appendChild(b);
+});
+
+function go(id){
+  if(!document.getElementById('p-'+id)) return;
+  cur=id;
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+id));
+  document.querySelectorAll('#bnav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===TAB_OF[id]));
+  document.querySelectorAll('#slist button').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+  const meta=SCREENS.find(s=>s[0]===id);
+  document.getElementById('pnote').innerHTML=meta?`<b>${meta[1]}</b><br>${meta[2]}`:'';
+  document.getElementById('view').scrollTop=0;
+}
+
+document.addEventListener('click',e=>{
+  const go_=e.target.closest('[data-go]');
+  const sheet=e.target.closest('[data-sheet]');
+  const close=e.target.closest('[data-close]');
+  const tab=e.target.closest('#bnav button');
+  const brand=e.target.closest('[data-brand]');
+
+  if(brand){
+    const v=brand.dataset.brand;
+    document.documentElement.dataset.brand=v;
+    document.querySelectorAll('[data-brand]').forEach(b=>b.classList.toggle('on',b.dataset.brand===v));
+    return;
+  }
+  if(close){ document.querySelectorAll('.ovl').forEach(o=>o.classList.remove('on')); }
+  if(sheet){ e.preventDefault();
+    document.querySelectorAll('.ovl').forEach(o=>o.classList.remove('on'));
+    const o=document.getElementById('ovl-'+sheet.dataset.sheet);
+    if(o){ o.classList.add('on'); if(sheet.dataset.sheet==='celebrate') confetti(); }
+    if(!go_) return;
+  }
+  if(tab){ go(tab.dataset.tab); return; }
+  if(go_){ go(go_.dataset.go); return; }
+  const ovl=e.target.closest('.ovl');
+  if(ovl && e.target===ovl) ovl.classList.remove('on');
+});
+
+/* confetti (static-ish burst for the mockup) */
+function confetti(){
+  const b=document.getElementById('burst'); if(!b) return;
+  const cols=['#f0c85f','#4088ff','#e07a5f','#57b384','#b7a3c9'];
+  b.innerHTML='';
+  for(let i=0;i<26;i++){
+    const d=document.createElement('div');
+    d.className='cf';
+    d.style.background=cols[i%cols.length];
+    d.style.left=(8+Math.random()*84)+'%';
+    d.style.top=(4+Math.random()*46)+'%';
+    d.style.transform=`rotate(${Math.random()*360}deg)`;
+    b.appendChild(d);
+  }
+}
+
+/* avatar customize preview */
+document.getElementById('potParts')?.addEventListener('click',e=>{
+  const p=e.target.closest('.part'); if(!p||!p.dataset.pot) return;
+  document.querySelectorAll('#potParts .part').forEach(x=>x.classList.remove('on'));
+  p.classList.add('on');
+  const pv=document.getElementById('customPreview');
+  pv.dataset.pot=p.dataset.pot; renderAvatars(pv.parentElement);
+});
+
+go('garden');
+</script>
+</body>
+</html>
