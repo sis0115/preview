@@ -27703,7 +27703,7 @@ eL(a,b,c,d,e){var s='" stroke-opacity="',r='" stroke-linecap="round"/>',q=c?'<li
 return q+'<line x1="'+A.e(a[0])+'" y1="'+A.e(a[1])+'" x2="'+A.e(b[0])+'" y2="'+A.e(b[1])+'" stroke="#fdfdfb" stroke-width="'+A.e(e)+s+A.e(d)+r},
 M0(a,b,c,d,e,f,g){var s=new A.aFm()
 return'<polygon points="'+A.h2(A.b([s.$3(a,b,e),s.$3(a,b,f),s.$3(c,d,f),s.$3(c,d,e)],t.zg))+'" fill="#ffffff" opacity="'+A.e(g)+'"/>'},
-aRX(){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,b0,b1,b2,b3,b4,b5,b6,b7,b8,b9='<polygon points="',c0=new A.cq(""),c1=new A.aFR(A.aG(-0.4,-0.4,0),A.aG(7.4,-0.4,0),A.aG(7.4,7.4,0),A.aG(-0.4,7.4,0)),c2=A.e(c1.$2(11,"#9dbb80"))
+aRX(){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,b0,b1,b2,b3,b4,b5,b6,b7,b8,b9='<polygon points="',c0=new A.cq(""),c1=new A.aFR(A.aG(-0.4,-0.4,0),A.aG(7.75,-0.4,0),A.aG(7.75,7.75,0),A.aG(-0.4,7.75,0)),c2=A.e(c1.$2(11,"#9dbb80"))
 c0.a=c2
 c0.a=c2+A.e(c1.$2(0,"#c6dda2"))
 for(c2=t.zg,s=0;s<7;s=r)for(r=s+1,q=s>=1,p=s<6,o=(s&1)===1,n=0;n<7;++n){m=q&&p&&n>=1&&n<6
@@ -27721,12 +27721,16 @@ o=h[1]
 l=p+0.6
 g=o+0.55
 g=b9+A.h2(A.b([A.aG(p,o,0),A.aG(l,o,0),A.aG(l,g,0),A.aG(p,g,0)],c2))+'" fill="#e4e2d8" stroke="#c9c6ba" stroke-width=".7"/>'
-c0.a+=g}f=A.aG(1,1,0)
+c0.a+=g}q=A.aJx(0.45,1.35,"#f6c7d4")
+q=(c0.a+=q)+A.aJx(6.62,0.78,"#ffffff")
+c0.a=q
+f=A.aG(1,1,0)
 e=A.aG(6,1,0)
 d=A.aG(1,1,2.05)
 c=A.aG(6,1,2.05)
-q=b9+A.h2(A.b([f,e,c,d],c2))+'" fill="#d3e9f4" opacity=".28"/>'
-q=(c0.a+=q)+A.M0(f,e,d,c,0.12,0.24,0.18)
+q+=b9+A.h2(A.b([f,e,c,d],c2))+'" fill="#d3e9f4" opacity=".28"/>'
+c0.a=q
+q+=A.M0(f,e,d,c,0.12,0.24,0.18)
 c0.a=q
 q+=A.M0(f,e,d,c,0.3,0.36,0.13)
 c0.a=q
@@ -27790,16 +27794,7 @@ p=a9[0]
 o=a8[1]
 b8=[l+(p-l)*b6,o+(a9[1]-o)*b6]
 c2+='<line x1="'+A.e(b7[0])+'" y1="'+A.e(b7[1])+'" x2="'+A.e(b8[0])+'" y2="'+A.e(b8[1])+'" stroke="#d8c096" stroke-width=".9"/>'
-c0.a=c2}c2+=A.b5c(0.72,4.35)
-c0.a=c2
-c2+=A.b3J(0.55,2.05)
-c0.a=c2
-c2+=A.aJx(0.45,1.35,"#f6c7d4")
-c0.a=c2
-c2+=A.aJx(6.62,0.78,"#ffffff")
-c0.a=c2
-c2=c0.a=c2+A.aJx(0.28,5.62,"#ffffff")
-return c2.charCodeAt(0)==0?c2:c2},
+c0.a=c2}return c2.charCodeAt(0)==0?c2:c2},
 b5c(a5,a6){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e='<polygon points="',d='" stroke="#a87e52" stroke-width="2.4" stroke-linecap="round"/>',c=new A.aFq(a5,a6),b=J.d1(c.$2(0.55,0.5),0),a=J.d1(c.$2(0.55,0.5),1),a0=c.$3(0.15,0.75,0),a1=J.b4(a0),a2=a1.i(a0,0),a3=a1.i(a0,1),a4=a1.i(a0,0)
 a1=a1.i(a0,1)
 s=c.$3(0,0.2,0.42)
@@ -27837,13 +27832,13 @@ i=e.$3(0,1.26,0.38)
 s=t.zg
 s=c+(f+A.h2(A.b([i,j,e.$3(0.72,1.26,0.29000000000000004),e.$3(0,1.26,0.29000000000000004)],s))+'" fill="#c2a273"/>')+(f+A.h2(A.b([l,k,j,i],s))+'" fill="#ecd9b6" stroke="#c9ae7f" stroke-width=".8"/>')
 for(c=[0.16,1.1],r=0;r<2;++r,s=m){h=c[r]
-p=e.$3(0.06,h,0.38)
-o=e.$3(0.06,h,0.82)
+p=e.$3(0.66,h,0.38)
+o=e.$3(0.66,h,0.82)
 n=J.b4(p)
 m=J.b4(o)
 m=s+('<line x1="'+A.e(n.i(p,0))+'" y1="'+A.e(n.i(p,1))+'" x2="'+A.e(m.i(o,0))+'" y2="'+A.e(m.i(o,1))+'" stroke="#c9ae7f" stroke-width="2.6" stroke-linecap="round"/>')}for(c=[0.75,0.5399999999999999],r=0;r<2;++r,s=m){g=c[r]
-p=e.$3(0.06,0.04,g)
-o=e.$3(0.06,1.22,g)
+p=e.$3(0.66,0.04,g)
+o=e.$3(0.66,1.22,g)
 n=J.b4(p)
 m=J.b4(o)
 m=s+('<line x1="'+A.e(n.i(p,0))+'" y1="'+A.e(n.i(p,1))+'" x2="'+A.e(m.i(o,0))+'" y2="'+A.e(m.i(o,1))+'" stroke="#e3cda2" stroke-width="3.4" stroke-linecap="round"/>')}return s.charCodeAt(0)==0?s:s},
@@ -27869,7 +27864,8 @@ o=A.aG(6,3.84,0.7452000000000001)
 p=l+j+'" fill="#e4f2f8" opacity=".06"/>'+(l+i+'" fill="#e4f2f8" opacity=".05"/>')+(l+d+'" fill="#eaf5f9" opacity=".07"/>')+c+(l+k+'" fill="#cfe7f3" opacity=".22"/>')+s+r+q+p+('<circle cx="'+A.e(o[0])+'" cy="'+A.e(o[1])+'" r="2.2" fill="#8a9298"/>')+A.eL(A.aG(6,6,0),A.aG(6,6,2.05),!0,0.58,2.6)+A.eL(A.aG(1,6,2.05),A.aG(6,6,2.05),!0,0.6,2.4)+A.eL(A.aG(6,1,2.05),A.aG(6,6,2.05),!0,0.6,2.4)+A.eL(A.aG(1,6,2.05),A.aG(1,3.5,2.95),!0,0.65,2.2)+A.eL(A.aG(6,6,2.05),A.aG(6,3.5,2.95),!0,0.65,2.2)
 for(k=[2.25,3.5,4.75],j=p,n=0;n<3;++n){m=k[n]
 j+=A.eL(A.aG(m,6,0),A.aG(m,6,2.05),!1,0.38,1.1)}for(k=[2.25,4.75],n=0;n<2;++n){m=k[n]
-j+=A.eL(A.aG(6,m,0),A.aG(6,m,2.05),!1,0.38,1.1)}return j.charCodeAt(0)==0?j:j},
+j+=A.eL(A.aG(6,m,0),A.aG(6,m,2.05),!1,0.38,1.1)}k=j+A.b5c(2.95,6.85)+A.b3J(6.85,1.9)+A.aJx(4.75,7.05,"#ffffff")
+return k.charCodeAt(0)==0?k:k},
 aJZ(a){var s=a.at,r=s.a,q=!1
 if(r>=1)if(r<6.3){s=s.b
 s=s>=1&&s<6}else s=q
