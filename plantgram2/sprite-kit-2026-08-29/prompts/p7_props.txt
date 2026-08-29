@@ -1,4 +1,4 @@
-Match the art style, color palette and shading of the attached images exactly.
+Match the attached sheet exactly — the same isometric 2:1 camera angle, the same soft cel shading, the same clean vector rendering, the same terracotta and green palette, the same light coming from the upper left, and the same soft light-gray contact shadow. These must look like they were cut from that same sheet.
 
 A sprite sheet of 12 garden props, left to right, top to bottom:
 1. metal watering can
@@ -14,20 +14,12 @@ A sprite sheet of 12 garden props, left to right, top to bottom:
 11. open bag of potting soil
 12. small curved stone border piece
 
-Terracotta items use #C85014 with #DC641E highlights and #A03C14 shadows. Wood is a warm brown in the same family. Metal is a desaturated gray-green so it does not compete with the plants.
+Terracotta items use exactly the terracotta of the pots in the attached sheet. Wood is a warm brown in the same family. Metal is a desaturated gray-green so it does not compete with the plants.
 
-Scale reference: the watering can is about 70 units tall, the wheelbarrow about 120 units wide, the shelf unit about 150 units tall — all relative to a floor tile 156 units wide.
+Scale reference: the standard terracotta pot in the attached sheet is 78 units wide. The watering can is about 70 units tall, the wheelbarrow about 120 units wide, the shelf unit about 150 units tall.
 
-Style: isometric 2:1 dimetric projection, camera elevated about 30 degrees, viewed from the front-upper-left. Flat vector illustration with soft cel shading, clean crisp edges, no outlines. Single light source from the upper left; one soft contact shadow directly beneath each object.
+Layout: an evenly spaced grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps. Every item drawn at the same camera angle and in the same scale relationship.
 
-Palette — use these exact values:
-terracotta highlight #DC641E, base #C85014, mid #BE4614, shadow #A03C14, rim top edge #C8823C
-soil light #462814, base #3C2814, dark #1E140A
-leaf light #78BE1E, leaf dark #328214
-Keep the light-to-dark contrast at roughly 4:1 — clearly shaded, never flat.
-
-Layout: arranged on an evenly spaced grid, each item fully separated with at least 60 pixels of empty space around it. Every item drawn at the same camera angle and in the same scale relationship.
-
-Background: fully transparent PNG with alpha. No background color, no gradient, no ground plane, no surface, no table. No text, no labels, no numbers, no watermark.
+Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep contact shadows soft light gray, never black. No text, no labels, no numbers, no watermark.
 
 Output: 1536x1024 PNG with transparency.

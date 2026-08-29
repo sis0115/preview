@@ -1,32 +1,31 @@
-Match the attached sheet exactly — the same rendering, the same leaf detail, the same green palette, the same light direction from the upper left, and the same front-facing camera. These plants must look like they came from that same sheet.
+Match the attached sheet exactly — the same isometric camera angle, the same soft cel shading, the same clean vector rendering, the same terracotta pot, the same light coming from the upper left, and the same soft light-gray contact shadow. These must look like they were cut from that same sheet.
 
 A sprite sheet of 3 plant species at 4 growth stages each, on a 4-wide by 3-tall grid. Each ROW is one species. Left to right within a row: stage 1 seedling, stage 2 young, stage 3 mature, stage 4 full grown.
 
-Row 1 — pothos:
-  1. a short vine with three small heart-shaped leaves
-  2. a vine with six leaves beginning to trail downward
-  3. several vines with many yellow-and-green variegated heart-shaped leaves draping downward
-  4. a full plant with long vines trailing well below the soil line, dense with variegated leaves
-  For this species the trailing vines may hang below the cut line — draw them, they will hang over the pot rim in the app.
+Row 1 — rose bush:
+  1. a short green stem with three toothed leaves, no flower
+  2. a bushier stem with one closed pink bud
+  3. a full bush with two open pink roses and several buds
+  4. a dense bush with five open pink roses of slightly different sizes and facing different directions
 
-Row 2 — boston fern:
-  1. one small arching frond of tiny toothed leaflets
-  2. three fronds
-  3. seven arching fronds spreading outward
-  4. a dense rosette of twelve long arching fronds curving down at the tips
+Row 2 — lavender:
+  1. a small tuft of narrow grey-green leaves, no flowers
+  2. the tuft with two short purple flower spikes
+  3. a bushy clump with six purple spikes of different heights
+  4. a full clump with twelve tall purple spikes leaning slightly outward
 
-Row 3 — rubber plant (ficus elastica):
-  1. one glossy dark oval leaf with a red new-leaf sheath at the tip, on a short stem
-  2. three glossy leaves alternating up the stem at different heights
-  3. six large glossy dark green leaves with red midribs, alternating up a woody stem
-  4. nine big glossy leaves spaced up a tall stem, with a red sheath at the growing tip
+Row 3 — tomato plant:
+  1. a single seedling with two seed leaves and one true leaf
+  2. a young plant with several compound leaves, no fruit
+  3. a staked plant with small yellow flowers and two green tomatoes
+  4. a tall staked plant heavy with six ripe red tomatoes among the leaves
 
-Every plant except the pothos is drawn WITHOUT any pot or container, cut off cleanly at the soil line. No pot, no soil, no roots, no saucer, no ground.
+Every plant is shown planted in a pot, exactly like the attached sheet. Within one row it is THE SAME pot at all four stages — same shape, same size, same color. Only the plant grows. Do not scale the pot up as the plant grows. Use the standard tapered terracotta pot for every row unless the row says otherwise.
 
-Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. Stage 1 is about a quarter the height of stage 4. Across all three rows the stage 4 plants are about the same height as each other, matching the plants in the attached sheet.
+Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. At stage 1 the foliage is shorter than the pot is tall. At stage 4 the foliage rises about three times the pot height above the rim and spans about 1.6 times the pot width. Never draw foliage so wide that it would reach into a neighboring plant.
 
-Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every plant. No plant touches or overlaps another.
+Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps.
 
-Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane. Every pixel must be either fully opaque plant or fully transparent — no faint semi-transparent tint anywhere. No text, no labels, no numbers, no watermark.
+Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep the small contact shadow beneath the pot, drawn in soft light gray, never black or dark brown. No text, no labels, no numbers, no watermark.
 
 Output: 1536x1024 PNG with transparency.

@@ -1,4 +1,4 @@
-Match the attached sheet exactly — the same rendering, the same leaf detail, the same green palette, the same light direction from the upper left, and the same front-facing camera. These plants must look like they came from that same sheet.
+Match the attached sheet exactly — the same isometric camera angle, the same soft cel shading, the same clean vector rendering, the same terracotta pot, the same light coming from the upper left, and the same soft light-gray contact shadow. These must look like they were cut from that same sheet.
 
 A sprite sheet of 3 plant species at 4 growth stages each, on a 4-wide by 3-tall grid. Each ROW is one species. Left to right within a row: stage 1 seedling, stage 2 young, stage 3 mature, stage 4 full grown.
 
@@ -13,20 +13,21 @@ Row 2 — silver dollar eucalyptus:
   2. two stems with round leaves in opposite pairs up their length
   3. four branching stems, denser
   4. a tall many-branched spray of round blue-green leaves in opposite pairs
-  Keep this species clearly bluer and paler than every other plant on the sheet.
+  Keep this species clearly bluer and paler than every other plant on the sheet. Use a white glazed pot for this row.
 
 Row 3 — dieffenbachia:
   1. one small lance-shaped leaf with a faint cream marking down the centre
   2. three leaves, the cream marking clearer
   3. six broad leaves with strong cream variegation spreading from the midrib
   4. nine large broad leaves, heavily variegated cream and green, spreading in a full rosette
+  Use a pale mint glazed pot for this row.
 
-Every plant is drawn WITHOUT any pot or container, cut off cleanly at the soil line. No pot, no soil, no roots, no saucer, no ground.
+Every plant is shown planted in a pot, exactly like the attached sheet. Within one row it is THE SAME pot at all four stages — same shape, same size, same color. Only the plant grows. Do not scale the pot up as the plant grows. Use the standard tapered terracotta pot for every row unless the row says otherwise.
 
-Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. Stage 1 is about a quarter the height of stage 4. Across all three rows the stage 4 plants are about the same height as each other, matching the plants in the attached sheet.
+Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. At stage 1 the foliage is shorter than the pot is tall. At stage 4 the foliage rises about three times the pot height above the rim and spans about 1.6 times the pot width. Never draw foliage so wide that it would reach into a neighboring plant.
 
-Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every plant. No plant touches or overlaps another.
+Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps.
 
-Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane. Every pixel must be either fully opaque plant or fully transparent — no faint semi-transparent tint anywhere. No text, no labels, no numbers, no watermark.
+Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep the small contact shadow beneath the pot, drawn in soft light gray, never black or dark brown. No text, no labels, no numbers, no watermark.
 
 Output: 1536x1024 PNG with transparency.

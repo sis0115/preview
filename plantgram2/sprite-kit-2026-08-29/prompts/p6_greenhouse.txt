@@ -1,6 +1,6 @@
-Match the art style, color palette and shading of the attached images exactly.
+Match the attached sheet exactly — the same isometric 2:1 camera angle, the same soft cel shading, the same clean vector rendering, the same terracotta and green palette, the same light coming from the upper left, and the same soft light-gray contact shadow. These must look like they were cut from that same sheet.
 
-A sprite sheet of 10 modular greenhouse building parts with a white-painted frame and pale glass panels. The parts must fit together like a construction kit when assembled in code.
+A sprite sheet of 10 modular greenhouse building parts with a white-painted frame and pale glass panels, drawn as a construction kit that fits together.
 
 Parts, left to right, top to bottom:
 1. wall panel facing left
@@ -14,22 +14,14 @@ Parts, left to right, top to bottom:
 9. gable end panel
 10. low foundation wall section
 
-All parts share the same wall height and the same 2:1 isometric angle so their edges align when placed next to each other. Glass is pale blue-white and slightly transparent with one soft diagonal highlight streak.
+All parts share the same wall height and the same isometric angle so their edges align when placed next to each other. Glass is pale blue-white and slightly transparent with one soft diagonal highlight streak. The frame is a warm off-white, not pure white, so it sits with the terracotta.
 
-The white frame is a warm off-white, not pure white, so it sits with the terracotta. Any wood is a warm brown in the #A03C14 family. The greenhouse is a backdrop — keep it lower contrast than the plants so the plants stay the subject.
+The greenhouse is a backdrop — keep it lower contrast than the plants in the attached sheet so the plants stay the subject.
 
-Scale reference: one wall panel is 156 units wide, matching one floor tile, and 180 units tall.
+Scale reference: one wall panel is 156 units wide and 180 units tall. The standard terracotta pot in the attached sheet is about 78 units wide.
 
-Style: isometric 2:1 dimetric projection, camera elevated about 30 degrees, viewed from the front-upper-left. Flat vector illustration with soft cel shading, clean crisp edges, no outlines. Single light source from the upper left; one soft contact shadow directly beneath each object.
+Layout: an evenly spaced grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps. Every item drawn at the same camera angle and in the same scale relationship.
 
-Palette — use these exact values:
-terracotta highlight #DC641E, base #C85014, mid #BE4614, shadow #A03C14, rim top edge #C8823C
-soil light #462814, base #3C2814, dark #1E140A
-leaf light #78BE1E, leaf dark #328214
-Keep the light-to-dark contrast at roughly 4:1 — clearly shaded, never flat.
-
-Layout: arranged on an evenly spaced grid, each item fully separated with at least 60 pixels of empty space around it. Every item drawn at the same camera angle and in the same scale relationship.
-
-Background: fully transparent PNG with alpha. No background color, no gradient, no ground plane, no surface, no table. No text, no labels, no numbers, no watermark.
+Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep contact shadows soft light gray, never black. No text, no labels, no numbers, no watermark.
 
 Output: 1536x1024 PNG with transparency.

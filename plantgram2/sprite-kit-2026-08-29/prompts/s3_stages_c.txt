@@ -1,31 +1,34 @@
-Match the attached sheet exactly — the same rendering, the same leaf detail, the same green palette, the same light direction from the upper left, and the same front-facing camera. These plants must look like they came from that same sheet.
+Match the attached sheet exactly — the same isometric camera angle, the same soft cel shading, the same clean vector rendering, the same terracotta pot, the same light coming from the upper left, and the same soft light-gray contact shadow. These must look like they were cut from that same sheet.
 
 A sprite sheet of 3 plant species at 4 growth stages each, on a 4-wide by 3-tall grid. Each ROW is one species. Left to right within a row: stage 1 seedling, stage 2 young, stage 3 mature, stage 4 full grown.
 
-Row 1 — jade plant (crassula ovata):
-  1. a short woody stem with two pairs of thick round leaves
-  2. a branching stem with six thick leaves
-  3. a small thick brown trunk with three branches and many round leaves
-  4. a stout thick brown trunk with many branches, densely covered in thick glossy round leaves
-
-Row 2 — fiddle leaf fig:
+Row 1 — fiddle leaf fig:
   1. one small violin-shaped leaf on a short stem
   2. three leaves alternating up a thin trunk at different heights
   3. six large violin-shaped leaves with strong pale veins on an upright woody trunk
   4. nine very large leaves up a tall woody trunk, attached at different heights and facing different directions
+  Use a dark charcoal pot for this row.
 
-Row 3 — snake plant (sansevieria):
+Row 2 — snake plant (sansevieria):
   1. two short stiff upright blades
   2. four blades of different heights
   3. seven tall blades with clear horizontal banding and yellow edges
   4. a dense fan of eleven tall sword blades, banded, with bright yellow margins
+  Use a white glazed pot for this row.
 
-Every plant is drawn WITHOUT any pot or container, cut off cleanly at the soil line. No pot, no soil, no roots, no saucer, no ground.
+Row 3 — zz plant (zamioculcas):
+  1. one short upright stalk with four glossy oval leaflets
+  2. two stalks with leaflets in opposite pairs up their length
+  3. four arching glossy stalks
+  4. seven thick glossy stalks fanning outward, each lined with paired dark green leaflets
+  Use a white glazed pot for this row.
 
-Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. Stage 1 is about a quarter the height of stage 4. Across all three rows the stage 4 plants are about the same height as each other, matching the plants in the attached sheet.
+Every plant is shown planted in a pot, exactly like the attached sheet. Within one row it is THE SAME pot at all four stages — same shape, same size, same color. Only the plant grows. Do not scale the pot up as the plant grows. Use the standard tapered terracotta pot for every row unless the row says otherwise.
 
-Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every plant. No plant touches or overlaps another.
+Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. At stage 1 the foliage is shorter than the pot is tall. At stage 4 the foliage rises about three times the pot height above the rim and spans about 1.6 times the pot width. Never draw foliage so wide that it would reach into a neighboring plant.
 
-Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane. Every pixel must be either fully opaque plant or fully transparent — no faint semi-transparent tint anywhere. No text, no labels, no numbers, no watermark.
+Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep the small contact shadow beneath the pot, drawn in soft light gray, never black or dark brown. No text, no labels, no numbers, no watermark.
 
 Output: 1536x1024 PNG with transparency.
