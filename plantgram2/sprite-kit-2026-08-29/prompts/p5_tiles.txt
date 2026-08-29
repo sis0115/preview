@@ -1,0 +1,25 @@
+Match the art style, color palette and shading of the attached images exactly.
+
+A sprite sheet of 8 isometric floor tiles. Each tile is a perfect rhombus (diamond) with a 2:1 width-to-height ratio, drawn so that tiles placed edge to edge tile seamlessly with no gaps and no visible seams.
+
+Tiles, left to right: dark garden soil, short green grass, light gravel, wooden deck planks, pale stone paving, terracotta brick, mulch bark chips, shallow water.
+
+Each tile has a slight thickness at the front edge, about 8 percent of the tile height, so it reads as a raised slab. All 8 tiles are exactly the same size and the same diamond shape.
+
+Soil tiles use #3C2814 with #462814 highlights. Grass uses the leaf greens #78BE1E and #328214. Terracotta brick uses #C85014. The ground must sit quietly under the plants, so keep tile shading slightly softer than the plant and pot sheets while staying in the same color family.
+
+Scale reference: each tile is 156 units wide and 78 units tall.
+
+Style: isometric 2:1 dimetric projection, camera elevated about 30 degrees, viewed from the front-upper-left. Flat vector illustration with soft cel shading, clean crisp edges, no outlines. Single light source from the upper left; one soft contact shadow directly beneath each object.
+
+Palette — use these exact values:
+terracotta highlight #DC641E, base #C85014, mid #BE4614, shadow #A03C14, rim top edge #C8823C
+soil light #462814, base #3C2814, dark #1E140A
+leaf light #78BE1E, leaf dark #328214
+Keep the light-to-dark contrast at roughly 4:1 — clearly shaded, never flat.
+
+Layout: arranged on an evenly spaced grid, each item fully separated with at least 60 pixels of empty space around it. Every item drawn at the same camera angle and in the same scale relationship.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no ground plane, no surface, no table. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.

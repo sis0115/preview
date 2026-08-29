@@ -1,0 +1,35 @@
+Match the art style, color palette, shading and camera angle of the attached images exactly.
+
+A sprite sheet of 12 houseplants, each drawn WITHOUT any pot or container. Each plant is cut off cleanly at the soil line — show only the stems and leaves, nothing below. No pot, no soil, no roots, no saucer.
+
+Plants, left to right, top to bottom:
+1. monstera deliciosa — large fenestrated leaves with deep edge splits and holes, on a thick upright climbing stem
+2. bird of paradise (strelitzia nicolai) — huge paddle leaves on long stalks, fanning out in two ranks on one plane
+3. lucky bamboo — several segmented green canes with leaf tufts along the upper nodes
+4. areca palm — multiple clustered canes with arching feathery fronds of very narrow leaflets
+5. silver dollar eucalyptus — small round blue-green leaves in opposite pairs sitting directly on the stem
+6. dieffenbachia — broad lance-shaped leaves with a wide cream marking spreading from the midrib
+7. jade plant (crassula ovata) — thick round leaves in opposite pairs on woody brown stems
+8. fiddle leaf fig — very large violin-shaped leaves with strong veins on an upright trunk
+9. snake plant (sansevieria) — stiff upright sword blades with horizontal banding and yellow edges
+10. pothos — trailing vine with heart-shaped leaves draping downward
+11. boston fern — arching fronds of many small toothed leaflets
+12. rubber plant (ficus elastica) — glossy oval leaves alternating up a single stem
+
+Each plant keeps its real growth habit and its real leaf shape. Plants that grow on a stem must show the stem with leaves attached at different heights along it — not all leaves springing from one point at the base.
+
+Scale reference: each plant is drawn as it would look planted in a pot that is 100 units wide. The foliage spans about 150-180 units wide and rises about 120-200 units above the soil line depending on the species.
+
+Style: isometric 2:1 dimetric projection, camera elevated about 30 degrees, viewed from the front-upper-left. Flat vector illustration with soft cel shading, clean crisp edges, no outlines. Single light source from the upper left; one soft contact shadow directly beneath each object.
+
+Palette — use these exact values:
+terracotta highlight #DC641E, base #C85014, mid #BE4614, shadow #A03C14, rim top edge #C8823C
+soil light #462814, base #3C2814, dark #1E140A
+leaf light #78BE1E, leaf dark #328214
+Keep the light-to-dark contrast at roughly 4:1 — clearly shaded, never flat.
+
+Layout: arranged on an evenly spaced grid, each item fully separated with at least 60 pixels of empty space around it. Every item drawn at the same camera angle and in the same scale relationship.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no ground plane, no surface, no table. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.

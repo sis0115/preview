@@ -1,0 +1,25 @@
+Match the art style, color palette, shading and camera angle of the attached images exactly.
+
+A sprite sheet showing ONE monstera deliciosa plant at 4 growth stages, arranged left to right in a single row:
+1. seedling — a single small heart-shaped leaf with no splits, on a very short stem
+2. young — 3 leaves, shallow notches beginning at the leaf edges, short stem
+3. mature — 5 leaves with deep edge splits and one hole appearing beside the midrib, taller stem
+4. full — 7 leaves on a thick tall stem, deeply split with holes in rows on both sides of the midrib
+
+All four drawn WITHOUT pots, cut cleanly at the soil line. Same camera angle, same lighting, same style across all four. The plant gets visibly taller and fuller from left to right, and the leaves get more deeply cut.
+
+Scale reference: stage 4 is drawn as it would look planted in a pot 100 units wide, rising about 180 units above the soil line. Stage 1 is about a quarter of that height.
+
+Style: isometric 2:1 dimetric projection, camera elevated about 30 degrees, viewed from the front-upper-left. Flat vector illustration with soft cel shading, clean crisp edges, no outlines. Single light source from the upper left; one soft contact shadow directly beneath each object.
+
+Palette — use these exact values:
+terracotta highlight #DC641E, base #C85014, mid #BE4614, shadow #A03C14, rim top edge #C8823C
+soil light #462814, base #3C2814, dark #1E140A
+leaf light #78BE1E, leaf dark #328214
+Keep the light-to-dark contrast at roughly 4:1 — clearly shaded, never flat.
+
+Layout: arranged on an evenly spaced grid, each item fully separated with at least 60 pixels of empty space around it. Every item drawn at the same camera angle and in the same scale relationship.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no ground plane, no surface, no table. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.

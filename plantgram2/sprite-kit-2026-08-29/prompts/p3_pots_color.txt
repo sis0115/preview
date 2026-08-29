@@ -1,0 +1,33 @@
+Match the art style, color palette, shading and camera angle of the attached images exactly.
+
+A sprite sheet of 10 EMPTY plant containers. No plants, no leaves, nothing growing — each container shows only the dark soil surface inside, except the glass jar which is empty.
+
+Containers, left to right, top to bottom:
+1. standard tapered terracotta flower pot with a raised rim
+2. low wide terracotta bowl, about half the height of pot 1
+3. tall terracotta cylinder pot
+4. round-bellied terracotta urn
+5. white glazed ceramic pot
+6. pale mint green glazed ceramic pot
+7. dark charcoal gray concrete cube planter
+8. long rectangular terracotta window box
+9. wooden trough with four short legs
+10. small clear glass jar
+
+Terracotta pieces use base #C85014 with highlight #DC641E on the upper-left face, shadow #A03C14 on the lower-right face, and rim top edge #C8823C. Soil surface is #3C2814 with darker #1E140A in the shaded inner edge against the rim.
+
+Scale reference: container 1 is 100 units wide and 55 units tall. Draw the others relative to it — the low bowl is 110 wide and 32 tall, the tall cylinder is 84 wide and 96 tall, the urn is 92 wide and 70 tall, the window box is 170 wide and 45 tall.
+
+Style: isometric 2:1 dimetric projection, camera elevated about 30 degrees, viewed from the front-upper-left. Flat vector illustration with soft cel shading, clean crisp edges, no outlines. Single light source from the upper left; one soft contact shadow directly beneath each object.
+
+Palette — use these exact values:
+terracotta highlight #DC641E, base #C85014, mid #BE4614, shadow #A03C14, rim top edge #C8823C
+soil light #462814, base #3C2814, dark #1E140A
+leaf light #78BE1E, leaf dark #328214
+Keep the light-to-dark contrast at roughly 4:1 — clearly shaded, never flat.
+
+Layout: arranged on an evenly spaced grid, each item fully separated with at least 60 pixels of empty space around it. Every item drawn at the same camera angle and in the same scale relationship.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no ground plane, no surface, no table. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.

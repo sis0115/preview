@@ -1,0 +1,33 @@
+Match the art style, color palette and shading of the attached images exactly.
+
+A sprite sheet of 12 garden props, left to right, top to bottom:
+1. metal watering can
+2. wooden wheelbarrow
+3. potting bench with a work surface
+4. wooden shelf unit with 3 levels
+5. seed starting tray with small sprouts
+6. hand trowel and hand fork lying side by side
+7. coiled garden hose
+8. blank wooden sign board on a post
+9. hanging lantern
+10. stack of 3 empty terracotta pots
+11. open bag of potting soil
+12. small curved stone border piece
+
+Terracotta items use #C85014 with #DC641E highlights and #A03C14 shadows. Wood is a warm brown in the same family. Metal is a desaturated gray-green so it does not compete with the plants.
+
+Scale reference: the watering can is about 70 units tall, the wheelbarrow about 120 units wide, the shelf unit about 150 units tall — all relative to a floor tile 156 units wide.
+
+Style: isometric 2:1 dimetric projection, camera elevated about 30 degrees, viewed from the front-upper-left. Flat vector illustration with soft cel shading, clean crisp edges, no outlines. Single light source from the upper left; one soft contact shadow directly beneath each object.
+
+Palette — use these exact values:
+terracotta highlight #DC641E, base #C85014, mid #BE4614, shadow #A03C14, rim top edge #C8823C
+soil light #462814, base #3C2814, dark #1E140A
+leaf light #78BE1E, leaf dark #328214
+Keep the light-to-dark contrast at roughly 4:1 — clearly shaded, never flat.
+
+Layout: arranged on an evenly spaced grid, each item fully separated with at least 60 pixels of empty space around it. Every item drawn at the same camera angle and in the same scale relationship.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no ground plane, no surface, no table. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.
