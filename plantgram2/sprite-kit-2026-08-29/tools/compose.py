@@ -15,10 +15,7 @@ SOIL_V_MAX = 0.55        # 흙은 어둡습니다. 이보다 밝으면 화분 �
 
 
 def soil_anchor(pot):
-    """식물을 심을 자리 — 흙 윗면의 가로 한가운데, 세로는 앞쪽 3/4 지점.
-
-    한가운데에 심으면 새싹이 화분 테두리 뒤로 완전히 숨습니다.
-    앞쪽으로 내리면 작은 단계도 테두리 위로 올라옵니다."""
+    """식물을 심을 자리 — 흙 윗면의 한가운데."""
     px = pot.load()
     xs, ys = [], []
     for y in range(pot.height):
@@ -32,7 +29,7 @@ def soil_anchor(pot):
                 xs.append(x); ys.append(y)
     if not xs:
         return pot.width // 2, int(pot.height * 0.3)
-    return (min(xs) + max(xs)) // 2, int(min(ys) + (max(ys) - min(ys)) * 0.78)
+    return (min(xs) + max(xs)) // 2, (min(ys) + max(ys)) // 2
 
 
 def stem_anchor(plant, rows=10):
@@ -52,17 +49,14 @@ def compose(pot, plant, scale=1.0, pad=24):
     sx, sy = soil_anchor(pot)
     tx, ty = stem_anchor(plant)
     ox, oy = sx - tx, sy - ty
-    # 새싹은 잎이 넓고 줄기가 거의 없어 화분 테두리 뒤로 통째로 숨습니다.
-    # 화분 높이의 12% 만큼은 테두리 위로 올라오게 끌어올립니다.
-    clear = int(pot.height * 0.12)
-    if oy > -clear:
-        oy = -clear
     x0, y0 = min(0, ox), min(0, oy)
     W = max(pot.width, ox + plant.width) - x0 + pad * 2
     H = max(pot.height, oy + plant.height) - y0 + pad * 2
     out = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    out.alpha_composite(plant, (ox - x0 + pad, oy - y0 + pad))   # 잎이 뒤
-    out.alpha_composite(pot,   (0 - x0 + pad, 0 - y0 + pad))     # 화분이 앞
+    # 화분을 먼저, 식물을 위에. 반대로 하면 줄기가 흙 위로 올라오지 못하고
+    # 잎만 화분 뒤에 떠 있습니다.
+    out.alpha_composite(pot,   (0 - x0 + pad, 0 - y0 + pad))
+    out.alpha_composite(plant, (ox - x0 + pad, oy - y0 + pad))
     return out
 
 
