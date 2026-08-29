@@ -1,7 +1,7 @@
 /**
  * 형태별 자연 크기(bbox) 측정 — parts-v2.mjs의 FORM_EXT 표를 갱신하기 위한 도구.
  *
- *   node src/measure.mjs [v3]
+ *   node src/measure.mjs [v3|sp]
  *
  * 그림(draw)을 고치면 자연 크기가 달라지므로 이 표도 같이 갱신해야
  * "식물이 이웃을 침범하지 않는다"는 비율 보증이 유지됩니다.
@@ -9,8 +9,11 @@
 import { execSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { join } from 'node:path';
-const MOD = process.argv[2] === 'v3' ? './parts-v3.mjs' : './parts-v2.mjs';
-const { PLANT_FORMS, LEAF_TONES, FORM_EXT, FORM_FIT, POTS } = await import(MOD);
+const arg = process.argv[2];
+const MOD = arg === 'v3' ? './parts-v3.mjs' : arg === 'sp' ? './species-v1.mjs' : './parts-v2.mjs';
+const M = await import(MOD);
+const { LEAF_TONES, FORM_EXT, FORM_FIT, POTS } = M;
+const PLANT_FORMS = M.PLANT_FORMS || M.SPECIES;
 console.log(`측정 대상 ${MOD}\n`);
 
 /** playwright는 이 저장소의 의존성이 아니라 전역 설치본을 씁니다 */

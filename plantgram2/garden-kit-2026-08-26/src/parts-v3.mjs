@@ -36,7 +36,7 @@ const n1 = v => Math.round(v * 100) / 100;
 /* 난수 · 광원                                                          */
 /* ------------------------------------------------------------------ */
 
-function rng(seed) {
+export function rng(seed) {
   let a = seed >>> 0;
   return () => {
     a = (a + 0x6d2b79f5) >>> 0;
@@ -45,7 +45,7 @@ function rng(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-const seedOf = s => {
+export const seedOf = s => {
   let h = 2166136261;
   for (const ch of String(s)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
   return h >>> 0;
@@ -57,7 +57,7 @@ function litness(rot) {
   const d = ((rot - LIGHT_DIR) % 360 + 540) % 360 - 180;
   return 0.5 + 0.5 * Math.cos(d * Math.PI / 180);
 }
-function toneAt(tone, rot, depth) {
+export function toneAt(tone, rot, depth) {
   const t = litness(rot);
   const c = t < .5 ? mix(tone.shadow, tone.base, t * 2) : mix(tone.base, tone.hi, (t - .5) * 2);
   return depth ? mix(c, tone.shadow, .5 * depth) : c;
@@ -71,7 +71,7 @@ function toneAt(tone, rot, depth) {
  * 폭 프로파일: 잎맥을 따라 t(0 밑동 → 1 끝)에서 반폭 비율을 돌려줍니다.
  * 이 함수가 종을 가릅니다 — 넓은 잎, 창 모양, 띠 모양이 여기서 갈립니다.
  */
-const PROFILE = {
+export const PROFILE = {
   ovate:      t => Math.sin(Math.PI * Math.pow(t, .80)),
   cordate:    t => Math.sin(Math.PI * Math.pow(t, .98)) * 1.04,
   lanceolate: t => Math.sin(Math.PI * Math.pow(t, .60)) * .66,
@@ -88,11 +88,11 @@ const PROFILE = {
  * 잎 한 장을 SVG로.
  * 원점은 잎이 줄기에 붙는 지점, 잎은 위(-y)를 향해 자랍니다.
  */
-function blade(sp) {
+export function blade(sp) {
   const {
     kind = 'ovate', len = 34, wid = 18,
     bend = 0, sweep = 0, face = 1, fold = 0,
-    fill, under, vein, edge = null, N = 24,
+    fill, under, vein, edge = null, N = 34,
   } = sp;
   const prof = PROFILE[kind] || PROFILE.ovate;
 
@@ -146,7 +146,7 @@ function blade(sp) {
 }
 
 /** 잎 한 장을 위치·각도와 함께 배치 */
-function place(sp, tone) {
+export function place(sp, tone) {
   const rot = sp.rot || 0, depth = sp.depth || 0;
   // lit: 회전한 그룹 안에 있는 잎은 월드 기준 각도를 따로 받아야 명암이 맞습니다
   const fill = sp.fill || toneAt(tone, sp.lit ?? rot, depth);
@@ -156,7 +156,7 @@ function place(sp, tone) {
 }
 
 /** 잎자루 — 밑동에서 잎이 붙는 지점까지 */
-const stalk = (x, y, tone, w = 2) =>
+export const stalk = (x, y, tone, w = 2) =>
   `<path d="M0,2 Q${n1(x * .3)},${n1(y * .55)} ${n1(x)},${n1(y)}"
     stroke="${mix(tone.vein, tone.base, .38)}" stroke-width="${n1(w)}" fill="none" stroke-linecap="round"/>`;
 

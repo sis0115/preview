@@ -1,14 +1,17 @@
 /**
  * 측정값으로 FORM_EXT 표를 갱신합니다.
- *   node src/sync-ext.mjs [v3]
+ *   node src/sync-ext.mjs [v3|sp]
  * measure.mjs가 "갱신 필요"를 낼 때 이걸 돌리고, 다시 measure로 확인하세요.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { chromium } from 'playwright';
 
-const which = process.argv[2] === 'v3' ? 'v3' : 'v2';
-const file = new URL(`./parts-${which}.mjs`, import.meta.url);
-const { PLANT_FORMS, LEAF_TONES } = await import(`./parts-${which}.mjs`);
+const arg = process.argv[2];
+const name = arg === 'v3' ? 'parts-v3' : arg === 'sp' ? 'species-v1' : 'parts-v2';
+const file = new URL(`./${name}.mjs`, import.meta.url);
+const M = await import(`./${name}.mjs`);
+const { LEAF_TONES } = M;
+const PLANT_FORMS = M.PLANT_FORMS || M.SPECIES;
 
 const browser = await chromium.launch({
   executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
@@ -38,5 +41,5 @@ for (const [id, { w, h }] of Object.entries(m)) {
   src = src.replace(re, `$1${w}$2${h}$3`);
 }
 writeFileSync(file, src);
-console.log(`parts-${which}.mjs의 FORM_EXT를 갱신했습니다:`);
+console.log(`${name}.mjs의 FORM_EXT를 갱신했습니다:`);
 for (const [id, v] of Object.entries(m)) console.log(`  ${id.padEnd(11)} ${v.w}×${v.h}`);
