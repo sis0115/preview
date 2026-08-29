@@ -1,0 +1,33 @@
+Match the attached sheet exactly — the same isometric 2:1 camera angle, the same soft cel shading, the same clean vector rendering, the same terracotta color, the same light coming from the upper left, and the same soft light-gray contact shadow. These must look like they were cut from that same sheet.
+
+A sprite sheet of 12 EMPTY garden beds and long planters, on a 4-wide by 3-tall grid.
+
+Row 1 — terracotta and wood:
+  1. long rectangular terracotta window box — 170 wide, 45 tall
+  2. wooden trough with four short legs, warm brown planks — 170 wide, 60 tall
+  3. raised wooden garden bed, low and wide, plank sides with corner posts — 190 wide, 50 tall
+  4. wooden crate planter, slatted sides — 120 wide, 62 tall
+
+Row 2 — woven and stone:
+  5. long woven rattan planter, weave clearly drawn — 165 wide, 50 tall
+  6. round woven seagrass basket, pale straw color — 108 wide, 66 tall
+  7. carved stone trough, pale grey, slightly weathered — 175 wide, 52 tall
+  8. long grey concrete planter box, matte — 170 wide, 48 tall
+
+Row 3 — metal and glass:
+  9. galvanized metal tub, ridged sides, desaturated blue-grey — 112 wide, 58 tall
+  10. metal bucket with a handle, same desaturated metal — 84 wide, 74 tall
+  11. hanging basket with three thin ropes rising to a hook — 100 wide, 62 tall not counting the ropes
+  12. glass terrarium box with a thin white frame, pale blue-white glass — 120 wide, 90 tall
+
+IMPORTANT — every container is EMPTY. No plants, no leaves, no stems, no sprouts, nothing growing. Each container is filled with dark brown soil up to about four fifths of its inner depth, so the soil surface shows clearly as a flat ellipse with nothing on it. The glass pieces show soil the same way. A plant image will be dropped on top of that soil later, so keep the soil surface flat, centred and unobstructed.
+
+Every piece keeps the terracotta, white, mint and charcoal exactly as they appear in the attached sheet. New materials (rattan, concrete, metal, stone) must sit in the same warm family — nothing neon, nothing pure black.
+
+Scale reference: the standard tapered terracotta pot is 100 units wide and 55 units tall. Draw everything else relative to that.
+
+Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps — shrink an item rather than let two cells touch. Every item drawn at the same camera angle and in the same scale relationship, viewed from the same side.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep the small contact shadow beneath each container, drawn in soft light gray, never black. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.

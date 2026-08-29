@@ -1,0 +1,33 @@
+Match the attached sheet exactly — the same isometric 2:1 camera angle, the same soft cel shading, the same clean vector rendering, the same terracotta color, the same light coming from the upper left, and the same soft light-gray contact shadow. These must look like they were cut from that same sheet.
+
+A sprite sheet of 12 EMPTY plant pots, on a 4-wide by 3-tall grid.
+
+Row 1 — terracotta, the same clay as the attached sheet:
+  1. standard tapered flower pot with a raised rim — 100 wide, 55 tall
+  2. low wide bowl — 110 wide, 32 tall
+  3. tall cylinder pot — 84 wide, 96 tall
+  4. round-bellied urn with a narrow neck — 92 wide, 70 tall
+
+Row 2 — glazed ceramic, same shape family as row 1 pot 1:
+  5. white glazed pot
+  6. pale mint green glazed pot
+  7. dark charcoal glazed pot
+  8. sand beige glazed pot with a thin painted band near the rim
+
+Row 3 — other materials:
+  9. woven rattan basket, warm tan, with the weave clearly drawn as diagonal strands — 104 wide, 60 tall
+  10. grey concrete cylinder, matte, with a slightly rough speckled surface — 96 wide, 66 tall
+  11. grey concrete cube planter, matte, square in plan — 92 wide, 74 tall
+  12. clear glass jar, pale blue-white, slightly transparent, one soft diagonal highlight — 72 wide, 84 tall
+
+IMPORTANT — every container is EMPTY. No plants, no leaves, no stems, no sprouts, nothing growing. Each container is filled with dark brown soil up to about four fifths of its inner depth, so the soil surface shows clearly as a flat ellipse with nothing on it. The glass pieces show soil the same way. A plant image will be dropped on top of that soil later, so keep the soil surface flat, centred and unobstructed.
+
+Every piece keeps the terracotta, white, mint and charcoal exactly as they appear in the attached sheet. New materials (rattan, concrete, metal, stone) must sit in the same warm family — nothing neon, nothing pure black.
+
+Scale reference: the standard tapered terracotta pot is 100 units wide and 55 units tall. Draw everything else relative to that.
+
+Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps — shrink an item rather than let two cells touch. Every item drawn at the same camera angle and in the same scale relationship, viewed from the same side.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep the small contact shadow beneath each container, drawn in soft light gray, never black. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.
