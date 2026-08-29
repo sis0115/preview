@@ -227,8 +227,8 @@ export const PLANT_FORMS = {
       const s = STAGE_SCALE[stage - 1], k = w / 46, r = rng(seedOf('broadleaf', stage));
       const n = Math.max(2, Math.round(8 * STAGE_LEAVES[stage - 1]));
       // 잎자루를 길게 뽑고 끝에 잎을 답니다 — 레퍼런스의 몬스테라처럼 잎 사이에 공간이 생깁니다
-      const back = fan({ n: Math.max(1, n - 2), spread: 118, len: .88, lenVar: .2, rise: 44, riseVar: 16, r, depth: 1 });
-      const front = fan({ n, spread: 152, len: 1.0, lenVar: .28, rise: 32, riseVar: 22, r, depth: 0 });
+      const back = fan({ n: Math.max(1, n - 2), spread: 84, len: .88, lenVar: .2, rise: 54, riseVar: 18, r, depth: 1 });
+      const front = fan({ n, spread: 104, len: 1.0, lenVar: .28, rise: 40, riseVar: 26, r, depth: 0 });
       const stalk = L => {
         const a = L.rot * Math.PI / 180;
         return { x: Math.sin(a) * -L.y * .55, y: L.y };
@@ -247,8 +247,8 @@ export const PLANT_FORMS = {
     draw(w, stage, tone) {
       const s = STAGE_SCALE[stage - 1], k = w / 46, r = rng(seedOf('upright', stage));
       const n = Math.max(3, Math.round(11 * STAGE_LEAVES[stage - 1]));
-      const back = fan({ n: Math.max(2, n - 4), spread: 34, len: .92, lenVar: .18, rise: 2, riseVar: 2, r, depth: 1 });
-      const front = fan({ n, spread: 52, len: 1.05, lenVar: .22, rise: 0, riseVar: 3, r, depth: 0 });
+      const back = fan({ n: Math.max(2, n - 4), spread: 28, len: .92, lenVar: .18, rise: 2, riseVar: 2, r, depth: 1 });
+      const front = fan({ n, spread: 42, len: 1.05, lenVar: .22, rise: 0, riseVar: 3, r, depth: 0 });
       let o = '';
       const blade = (L, d) => leaf(L.x, L.y, L.rot, L.s, 'lanceolate', tone, d, { len: 60, wid: 13 })
         + `<g transform="translate(${n1(L.x)},${n1(L.y)}) rotate(${n1(L.rot)})">
@@ -292,8 +292,8 @@ export const PLANT_FORMS = {
       const s = STAGE_SCALE[stage - 1], k = w / 46, r = rng(seedOf('patterned', stage));
       const n = Math.max(2, Math.round(10 * STAGE_LEAVES[stage - 1]));
       const t2 = { ...tone, mark: tone.mark || '#dfeccb' };
-      const back = fan({ n: Math.max(1, n - 3), spread: 96, len: .9, lenVar: .16, rise: 22, riseVar: 6, r, depth: 1 });
-      const front = fan({ n, spread: 124, len: 1.02, lenVar: .22, rise: 14, riseVar: 8, r, depth: 0 });
+      const back = fan({ n: Math.max(1, n - 3), spread: 72, len: .9, lenVar: .16, rise: 30, riseVar: 8, r, depth: 1 });
+      const front = fan({ n, spread: 88, len: 1.02, lenVar: .22, rise: 22, riseVar: 10, r, depth: 0 });
       let o = '';
       const stalk = L => ({ x: Math.sin(L.rot * Math.PI / 180) * -L.y * .5, y: L.y });
       [...back, ...front].forEach(L => { const t = stalk(L); o += stem(t.x, t.y, tone, 2.1 * L.s); });
@@ -345,7 +345,7 @@ export const PLANT_FORMS = {
     draw(w, stage, tone) {
       const s = STAGE_SCALE[stage - 1], k = w / 46, r = rng(seedOf('palm', stage));
       const n = Math.max(2, Math.round(7 * STAGE_LEAVES[stage - 1]));
-      const fronds = fan({ n, spread: 116, len: 1, lenVar: .2, rise: 0, riseVar: 0, r, depth: 0 });
+      const fronds = fan({ n, spread: 92, len: 1, lenVar: .2, rise: 0, riseVar: 0, r, depth: 0 });
       let o = '';
       fronds.forEach((F, fi) => {
         const depth = fi % 3 === 0 ? 1 : 0;
@@ -403,7 +403,7 @@ export const PLANT_FORMS = {
     draw(w, stage, tone) {
       const s = STAGE_SCALE[stage - 1], k = w / 46, r = rng(seedOf('fern', stage));
       const n = Math.max(3, Math.round(9 * STAGE_LEAVES[stage - 1]));
-      const fronds = fan({ n, spread: 150, len: 1, lenVar: .26, rise: 0, riseVar: 0, r, depth: 0 });
+      const fronds = fan({ n, spread: 112, len: 1, lenVar: .26, rise: 0, riseVar: 0, r, depth: 0 });
       let o = '';
       fronds.forEach((F, fi) => {
         const depth = fi % 2 ? 1 : 0, H = 48 * F.s, bend = F.rot * .28, pin = 8;
@@ -428,8 +428,8 @@ export const PLANT_FORMS = {
     draw(w, stage, tone) {
       const s = STAGE_SCALE[stage - 1], k = w / 46, r = rng(seedOf('flower', stage));
       const n = Math.max(2, Math.round(8 * STAGE_LEAVES[stage - 1]));
-      const back = fan({ n: Math.max(1, n - 2), spread: 110, len: .88, lenVar: .18, rise: 26, riseVar: 8, r, depth: 1 });
-      const front = fan({ n, spread: 140, len: 1, lenVar: .24, rise: 18, riseVar: 10, r, depth: 0 });
+      const back = fan({ n: Math.max(1, n - 2), spread: 84, len: .88, lenVar: .18, rise: 32, riseVar: 10, r, depth: 1 });
+      const front = fan({ n, spread: 102, len: 1, lenVar: .24, rise: 24, riseVar: 12, r, depth: 0 });
       let o = '';
       [...back, ...front].forEach(L => { o += stem(L.x, L.y, tone, 2 * L.s); });
       back.forEach(L => { o += leaf(L.x, L.y, L.rot, L.s, 'palmate', tone, 1, { len: 32, wid: 30 }); });
@@ -449,17 +449,70 @@ export const PLANT_FORMS = {
   },
 };
 
+
+/* ------------------------------------------------------------------ */
+/* 크기 맞춤 — 식물이 화분을 압도하지도, 이웃을 침범하지도 않게          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 각 형태를 w=46·만개 단계로 그렸을 때의 실제 bbox. `node src/measure.mjs`가 재서
+ * 갱신합니다. 그림을 고치면 이 표도 같이 갱신해야 비율이 유지됩니다.
+ */
+export const FORM_EXT = {
+  broadleaf: { w: 115.3, h: 97.2 },
+  upright:   { w: 54.3,  h: 70.8 },
+  rosette:   { w: 41.8,  h: 41.7 },
+  patterned: { w: 79.7,  h: 68.7 },
+  vine:      { w: 99.6,  h: 82.8 },
+  palm:      { w: 108.6, h: 86.6 },
+  cactus:    { w: 40.0,  h: 60.0 },
+  fern:      { w: 104.5, h: 76.7 },
+  flower:    { w: 81.5,  h: 68.5 },
+};
+
+/**
+ * 형태별 목표 비율 — h는 화분 높이의 몇 배, w는 화분 폭의 몇 배까지 허용할지.
+ * 레퍼런스 표본에서 잰 값이 기준입니다 (잎높이÷화분높이 2.5~4.5, 잎폭÷화분폭 1.4~1.9).
+ * w가 곧 "이웃 칸을 침범하지 않는다"는 보증입니다 — 격자 한 칸이 tileW라
+ * 화분 폭의 1.9배를 넘지 않으면 옆 화분과 겹치지 않습니다.
+ */
+export const FORM_FIT = {
+  broadleaf: { h: 3.2, w: 1.75 },
+  upright:   { h: 3.0, w: 1.15 },
+  rosette:   { h: 1.6, w: 1.05 },
+  patterned: { h: 2.6, w: 1.55 },
+  vine:      { h: 2.6, w: 1.85 },
+  palm:      { h: 3.0, w: 1.80 },
+  cactus:    { h: 3.4, w: 0.95 },
+  fern:      { h: 2.6, w: 1.80 },
+  flower:    { h: 2.8, w: 1.60 },
+};
+
+/** 목표 높이·폭을 둘 다 만족하는 배율 (작은 쪽을 따릅니다) */
+export function fitScale(form, w, potId) {
+  const ext = FORM_EXT[form], fit = FORM_FIT[form];
+  if (!ext || !fit) return 1;
+  const { rx, h } = (POTS[potId] || POTS.basic).p;
+  const potH = w * h, potW = w * rx * 2;
+  return Math.min(fit.h * potH / ext.h, fit.w * potW / ext.w);
+}
+
 /* ------------------------------------------------------------------ */
 /* 화분 — 림 두께 · 안쪽 그늘 · 흙 알갱이                                */
 /* ------------------------------------------------------------------ */
 
+/**
+ * 화분. h는 기준 폭 대비 높이 — 레퍼런스에서 잰 화분 높이÷폭은 0.30~0.55 대역이고,
+ * 그림에서 화분이 차지하는 면적이 이 정도여야 식물이 주인공이 됩니다.
+ * (v2.0은 0.74~1.02라 화분이 그림의 절반을 먹었습니다)
+ */
 export const POTS = {
-  basic:   { name: '기본 화분',   unlock: 'free', p: { rx: .50, ry: .22, h: .74, br: .335 } },
-  bowl:    { name: '낮은 볼',     unlock: 'free', p: { rx: .55, ry: .24, h: .44, br: .40 } },
-  tall:    { name: '긴 화분',     unlock: 'free', p: { rx: .42, ry: .19, h: 1.02, br: .32 } },
-  urn:     { name: '항아리',      unlock: 'lv3',  p: { rx: .40, ry: .18, h: .82, br: .30, bulge: .34 } },
-  rimmed:  { name: '테두리 화분', unlock: 'lv5',  p: { rx: .48, ry: .21, h: .70, br: .34, rim: .07 } },
-  tapered: { name: '콘 화분',     unlock: 'lv8',  p: { rx: .52, ry: .23, h: .82, br: .22, bulge: -.16 } },
+  basic:   { name: '기본 화분',   unlock: 'free', p: { rx: .50, ry: .22, h: .44, br: .38 } },
+  bowl:    { name: '낮은 볼',     unlock: 'free', p: { rx: .56, ry: .25, h: .30, br: .46 } },
+  tall:    { name: '긴 화분',     unlock: 'free', p: { rx: .44, ry: .20, h: .62, br: .35 } },
+  urn:     { name: '항아리',      unlock: 'lv3',  p: { rx: .44, ry: .20, h: .52, br: .32, bulge: .30 } },
+  rimmed:  { name: '테두리 화분', unlock: 'lv5',  p: { rx: .50, ry: .22, h: .42, br: .38, rim: .07 } },
+  tapered: { name: '콘 화분',     unlock: 'lv8',  p: { rx: .54, ry: .24, h: .50, br: .28, bulge: -.14 } },
 };
 
 export function drawPot(potId, w, color) {
@@ -493,8 +546,9 @@ export function drawPot(potId, w, color) {
 export function potFront(potId, w, color) {
   const { rx, ry, h } = (POTS[potId] || POTS.basic).p;
   const RX = w * rx, RY = w * ry, H = w * h;
-  return `<path d="M${n1(-RX)},${n1(-H)} A${n1(RX)},${n1(RY)} 0 0 0 ${n1(RX)},${n1(-H)}"
-    fill="none" stroke="${shade(color, 30)}" stroke-width="${n1(RY * .8)}"/>`;
+  const ax = RX * .94, ay = RY * .94;
+  return `<path d="M${n1(-ax)},${n1(-H + RY * .08)} A${n1(ax)},${n1(ay)} 0 0 0 ${n1(ax)},${n1(-H + RY * .08)}"
+    fill="none" stroke="${shade(color, 30)}" stroke-width="${n1(RY * .55)}"/>`;
 }
 
 export const potRimY = (potId, w) => -w * (POTS[potId] || POTS.basic).p.h;
@@ -555,12 +609,13 @@ export function composeAvatar({
   const { rx, ry, h } = (POTS[pot] || POTS.basic).p;
   const rimY = -w * h + w * ry * (LIFT[form] ?? .55);
   const RX = w * rx;
+  const fit = fitScale(form, w, pot);
 
   return `<g class="avatar" style="${st.filter ? `filter:${st.filter}` : ''}">
     <ellipse cx="${n1(RX * .06)}" cy="1.5" rx="${n1(RX * 1.12)}" ry="${n1(RX * .42)}" fill="rgba(44,62,46,.10)"/>
     <ellipse cx="${n1(RX * .04)}" cy="1" rx="${n1(RX * .84)}" ry="${n1(RX * .3)}" fill="rgba(44,62,46,.16)"/>
     ${drawPot(pot, w, potColor)}
-    <g transform="translate(0,${n1(rimY)}) rotate(${st.tilt})">${formDef.draw(w, stage, toneDef)}</g>
+    <g transform="translate(0,${n1(rimY)}) rotate(${st.tilt}) scale(${n1(fit)})">${formDef.draw(w, stage, toneDef)}</g>
     ${drapesOverRim(form) ? '' : potFront(pot, w, potColor)}
     ${propDef.draw(w, potRimY(pot, w))}
   </g>`;

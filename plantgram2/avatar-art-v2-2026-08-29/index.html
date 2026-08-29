@@ -32,6 +32,13 @@
   .sw{width:62px;font-size:10px;color:var(--mut);text-align:center}
   .sw i{display:block;height:34px;border-radius:8px;margin-bottom:4px}
   .foot{color:var(--mut);font-size:12px;line-height:1.7}
+  table.num{margin-top:6px}
+  table.num th{text-align:right;padding:6px 10px;border-bottom:1px solid var(--line)}
+  table.num th:first-child{text-align:left}
+  table.num td{text-align:right;padding:5px 10px;font-variant-numeric:tabular-nums;font-size:13px}
+  table.num td:first-child{text-align:left;color:var(--mut)}
+  table.num tr.med td{font-weight:700;border-top:1px solid var(--line);color:var(--ink)}
+  table.num td.warn{color:#b4552f;font-weight:700}
 </style>
 </head>
 <body>
@@ -52,6 +59,33 @@
       ④ 팔레트 채도 상향 — 레퍼런스의 연두와 어두운 초록 대비
     </p>
     <div class="swatches" id="swatches"></div>
+  </div>
+
+  <div class="card">
+    <h2>레퍼런스에서 잰 비율</h2>
+    <p class="note">
+      레퍼런스 9장에서 개별 화분을 따로 떼어내 픽셀로 잰 값입니다. 화분 색(테라코타)으로 화분을,
+      초록으로 잎을 마스킹해 각각의 bbox를 재고, 화분 바로 위쪽 영역만 잎으로 셌습니다.
+      <b>잎폭÷화분폭</b>이 곧 “옆 화분을 침범하지 않는다”는 조건입니다.
+    </p>
+    <table class="num">
+      <tr><th>표본</th><th>잎높이÷화분높이</th><th>잎폭÷화분폭</th><th>화분 높이÷폭</th></tr>
+      <tr><td>R8-a 넓은잎·낮은 볼</td><td>8.79</td><td>1.77</td><td>0.29</td></tr>
+      <tr><td>R8-c 넓은잎·낮은 볼</td><td>3.91</td><td>1.44</td><td>0.53</td></tr>
+      <tr><td>R8-h 넓은잎 로제트</td><td>4.42</td><td>1.92</td><td>0.41</td></tr>
+      <tr><td>R9-a 산세베리아</td><td>2.49</td><td>1.71</td><td>1.15</td></tr>
+      <tr><td>R9-f 흰꽃 관목</td><td>3.46</td><td>2.37</td><td>1.02</td></tr>
+      <tr class="med"><td>중앙값 → 목표 대역</td><td>2.5 ~ 4.5</td><td>1.4 ~ 1.9</td><td>0.30 ~ 0.55</td></tr>
+    </table>
+    <p class="note" style="margin-top:12px">
+      v2.0을 같은 방법으로 재보니 <b>화분 높이÷폭 0.72~1.38</b>(화분이 그림의 절반),
+      <b>잎높이÷화분높이 0.06~1.31</b>(식물이 화분보다 작음),
+      대엽형·덩굴형은 <b>잎폭÷화분폭 2.14 / 2.31</b>로 옆 칸을 침범했습니다.
+      그래서 v2.1에 크기 맞춤(fit) 단계를 넣었습니다 — 형태마다 목표 비율을 선언하고,
+      그림을 배치하기 전에 배율을 계산해 <b>높이·폭 두 조건을 동시에</b> 만족시킵니다.
+      아래가 지금 값입니다.
+    </p>
+    <table class="num" id="fitTable"></table>
   </div>
 
   <div class="card">
@@ -120,6 +154,21 @@ function matrix(M, id){
   document.getElementById(id).innerHTML = h;
 }
 matrix(V1,'tv1'); matrix(V2,'tv2');
+
+/* ---- 크기 맞춤 결과 ---- */
+{
+  const {rx,h} = V2.POTS.basic.p, potH = 46*h, potW = 46*rx*2;
+  let rows = `<tr><th>형태</th><th>배율</th><th>잎높이÷화분높이</th><th>잎폭÷화분폭</th></tr>`;
+  for(const f of FORMS){
+    const e = V2.FORM_EXT[f], sc = V2.fitScale(f,46,'basic');
+    const rh = e.h*sc/potH, rw = e.w*sc/potW;
+    const warn = rw > 1.9 ? ' class="warn"' : '';
+    rows += `<tr><td>${V2.PLANT_FORMS[f].name}</td><td>${sc.toFixed(2)}</td>
+      <td>${rh.toFixed(2)}</td><td${warn}>${rw.toFixed(2)}</td></tr>`;
+  }
+  rows += `<tr class="med"><td>목표 대역</td><td>—</td><td>2.5 ~ 4.5</td><td>≤ 1.9</td></tr>`;
+  document.getElementById('fitTable').innerHTML = rows;
+}
 
 /* ---- 실루엣 ---- */
 function silhouette(M, id){
