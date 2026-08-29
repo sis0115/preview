@@ -1,0 +1,19 @@
+A single illustration that establishes the art style for a cozy garden game. Everything below is drawn in ONE picture, in one consistent style, at one consistent camera angle.
+
+Arrange it as follows, all on the same plain white background:
+- LEFT, large: one small glass greenhouse seen from outside, drawn as a complete little object sitting on a rounded rectangular patch of bright green lawn — like a single game piece you could pick up. White painted frame, pale blue-white glass, a pitched roof, a door, and a few plants visible inside.
+- TOP RIGHT: four isometric floor tiles in a row — garden soil, grass, pale stone paving, wooden deck. Each a rhombus twice as wide as it is tall, with a slight thickness at the front edge.
+- BOTTOM RIGHT: four potted plants in a row — a monstera, a palm, a snake plant, a small flowering plant. Each in a simple terracotta pot.
+
+Style, and this matters more than the content:
+- FLAT VECTOR. Solid fills, at most two tones per surface: a lit tone and a shade tone. No gradients, no texture, no speckling, no watercolour, no painterly brushwork, no photographic detail, no glossy highlights.
+- BRIGHT AND AIRY. Keep everything light — pale, clean, high-key. Nothing dark or heavy. The greens are fresh and gentle, not deep or vivid.
+- SIMPLE SHAPES. A plant is six to nine clear leaf shapes, not forty. Every object must read instantly at the size of a thumbnail. Silhouette first, detail almost never.
+- Soft even daylight, no strong shadows. One faint soft shadow under each object.
+- Isometric: every single item — the greenhouse, the tiles, the pots — is drawn at the SAME camera angle, tilted so a square on the ground appears twice as wide as it is tall.
+
+Everything in this one picture must look like it belongs to the same game. Same angle, same light, same amount of detail, same brightness.
+
+No text, no labels, no numbers, no watermark, no UI, no border, no people.
+
+Output: 1536x1024 PNG on a plain white background.
