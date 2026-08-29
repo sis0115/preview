@@ -1,0 +1,31 @@
+Redraw the attached image as a finished illustration of a small glass greenhouse, keeping its geometry exactly.
+
+WHAT MUST NOT MOVE — this is the whole point of the attached image.
+
+The pale floor in the middle is a 6 by 6 grid of 36 diamond tiles. Every one of those grid lines must stay at the exact same pixel position. Do not move, resize, rotate, or re-space the floor. Do not change the number of tiles. Do not change the angle of the diamonds. Draw the grid lines as the seams between floor tiles, so the finished floor still shows all 36 tiles clearly.
+
+The grey outline around and above the floor is the greenhouse frame. Keep every one of those lines where it is — the four corner posts, the base frame, the top frame, the roof ridge and the roof edges. Build the finished greenhouse on exactly those lines.
+
+The green diamond underneath is the lawn the greenhouse sits on. Keep its shape and position.
+
+WHAT TO ADD.
+
+Turn the wireframe into a real greenhouse: white painted metal frame on those exact lines, with pale blue-white glass panels filling the walls and the pitched roof. The glass is slightly transparent and clean.
+
+Against the walls, and only there, add greenhouse things: a potting bench along one wall, a wooden shelf of small pots against another, a watering can, a coiled hose, a stack of empty terracotta pots, a few climbing vines on the frame near the roof. Around the outside on the lawn, add a few small shrubs and a stone path.
+
+THE FLOOR STAYS COMPLETELY EMPTY. Nothing stands on the 36 tiles — no pots, no plants, no benches, no tools, no boxes. The player's plants get placed on those tiles later, so anything there would collide with them. Every object you add sits against a wall or outside on the lawn.
+
+STYLE.
+
+Flat vector. Solid fills, at most two tones per surface — a lit tone and a shade tone. No gradients, no photographic texture, no painterly brushwork, no speckling.
+
+Pale and bright. Low saturation, high value. Nothing dark, nothing vivid. The floor is a quiet near-white so plants placed on it will stand out.
+
+Simple shapes. Every object reads at thumbnail size. Silhouette first, detail almost never.
+
+Light comes from the upper left, soft and even. One faint shadow under each object.
+
+Plain white background outside the lawn. No text, no labels, no numbers, no watermark, no UI, no border, no people.
+
+Output at the same pixel size as the attached image, 1536x1024.
