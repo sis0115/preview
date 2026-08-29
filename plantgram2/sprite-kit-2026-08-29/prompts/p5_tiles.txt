@@ -10,7 +10,7 @@ These tiles go UNDER the plants in the attached sheet, so keep their shading a l
 
 Scale reference: each tile is 156 units wide and 78 units tall, which is about twice the width of the standard terracotta pot in the attached sheet.
 
-Layout: an evenly spaced grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps. Every item drawn at the same camera angle and in the same scale relationship.
+Layout: an evenly spaced grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps — shrink an item rather than let two cells touch. Every item drawn at the same camera angle and in the same scale relationship.
 
 Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep contact shadows soft light gray, never black. No text, no labels, no numbers, no watermark.
 

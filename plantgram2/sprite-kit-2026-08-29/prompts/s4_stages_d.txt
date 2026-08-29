@@ -24,7 +24,7 @@ Every plant is shown planted in a pot, exactly like the attached sheet. Within o
 
 Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. At stage 1 the foliage is shorter than the pot is tall. At stage 4 the foliage rises about three times the pot height above the rim and spans about 1.6 times the pot width. Never draw foliage so wide that it would reach into a neighboring plant.
 
-Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps.
+Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps. The tallest plants in the last column must not let their leaves reach into the row above or below — shrink the plant rather than let two cells touch.
 
 Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep the small contact shadow beneath the pot, drawn in soft light gray, never black or dark brown. No text, no labels, no numbers, no watermark.
 
