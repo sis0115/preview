@@ -10,12 +10,16 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(__file__))
 from split import hue_sat
 
-FOLIAGE_OVER_POT = 1.6   # 성체 잎 폭 ÷ 화분 폭 — 이웃을 침범하지 않는 상한
 SOIL_V_MAX = 0.55        # 흙은 어둡습니다. 이보다 밝으면 화분 몸통입니다
 
 
 def soil_anchor(pot):
-    """식물을 심을 자리 — 흙 윗면의 한가운데."""
+    """식물을 심을 자리 — 흙 윗면의 무게중심.
+
+    외접 사각형의 한가운데를 쓰면 안 됩니다. 등각으로 그린 긴 텃밭은
+    흙 윗면이 평행사변형이라, 외접 사각형 중심이 실제 심는 자리에서
+    한참 벗어납니다. 무게중심은 평행사변형에서도 눈에 보이는 한가운데에
+    떨어집니다."""
     px = pot.load()
     xs, ys = [], []
     for y in range(pot.height):
@@ -29,7 +33,7 @@ def soil_anchor(pot):
                 xs.append(x); ys.append(y)
     if not xs:
         return pot.width // 2, int(pot.height * 0.3)
-    return (min(xs) + max(xs)) // 2, (min(ys) + max(ys)) // 2
+    return round(sum(xs) / len(xs)), round(sum(ys) / len(ys))
 
 
 def stem_anchor(plant, rows=10):
@@ -61,8 +65,12 @@ def compose(pot, plant, scale=1.0, pad=24):
 
 
 def species_scale(pot, mature_plant):
-    """성체 잎 폭이 화분 폭의 1.6배가 되도록 — 종마다 한 번만 정합니다"""
-    return pot.width * FOLIAGE_OVER_POT / mature_plant.width
+    """배율 없음 — 시트가 이미 같은 축척으로 그려져 있습니다.
+
+    규격 1단위가 실측 1.88~2.33 픽셀로 ±11% 안에 들어옵니다. 여기서
+    화분 폭에 맞춰 다시 키우면, 가로로 긴 텃밭에 얹을 때 식물이
+    텃밭 길이만큼 부풀어 버립니다. 원본 크기 그대로가 맞습니다."""
+    return 1.0
 
 
 if __name__ == "__main__":

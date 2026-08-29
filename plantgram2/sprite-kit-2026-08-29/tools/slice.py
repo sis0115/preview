@@ -25,13 +25,18 @@ def slice_sheet(path, outdir, alpha_min=60, min_px=900, pad=6, gap=3):
         d[1:] |= m[:-1]; d[:-1] |= m[1:]; d[:, 1:] |= m[:, :-1]; d[:, :-1] |= m[:, 1:]
         m = d.copy()
     seen = np.zeros((H, W), bool); boxes = []
+    # 어느 픽셀이 어느 덩어리인지 기록해 둡니다. 잘라낼 때 네모로만 오리면
+    # 옆 조각이나 떨어져 나온 잎끝이 함께 딸려 들어옵니다.
+    label = np.zeros((H, W), np.int32)
     for y in range(H):
         for x in range(W):
             if not d[y, x] or seen[y, x]: continue
             q = deque([(y, x)]); seen[y, x] = True
+            tag = len(boxes) + 1
             y0 = y1 = y; x0 = x1 = x; n = 0
             while q:
                 cy, cx = q.popleft(); n += 1
+                label[cy, cx] = tag
                 if cy < y0: y0 = cy
                 if cy > y1: y1 = cy
                 if cx < x0: x0 = cx
@@ -40,7 +45,10 @@ def slice_sheet(path, outdir, alpha_min=60, min_px=900, pad=6, gap=3):
                     ny, nx = cy+dy, cx+dx
                     if 0 <= ny < H and 0 <= nx < W and d[ny, nx] and not seen[ny, nx]:
                         seen[ny, nx] = True; q.append((ny, nx))
-            if n >= min_px: boxes.append((x0, y0, x1, y1))
+            if n >= min_px:
+                boxes.append((x0, y0, x1, y1, tag))
+            else:
+                label[label == tag] = 0
     # 위→아래, 왼→오른 순서로 정렬 (행 단위)
     #
     # 행은 밑선(y1)으로 나눕니다. 위쪽(y0)으로 나누면 같은 줄에 있어도
@@ -64,9 +72,15 @@ def slice_sheet(path, outdir, alpha_min=60, min_px=900, pad=6, gap=3):
         boxes.sort(key=lambda b: (row_of(b), b[0]))
     os.makedirs(outdir, exist_ok=True)
     meta = []
-    for i, (x0, y0, x1, y1) in enumerate(boxes):
+    for i, (x0, y0, x1, y1, tag) in enumerate(boxes):
         box = (max(0, x0-pad), max(0, y0-pad), min(W, x1+1+pad), min(H, y1+1+pad))
-        im.crop(box).save(f"{outdir}/s{i:02d}.png")
+        crop = im.crop(box)
+        # 이 덩어리에 속하지 않는 픽셀은 지웁니다
+        own = label[box[1]:box[3], box[0]:box[2]] == tag
+        arr = np.array(crop)
+        arr[~own, 3] = 0
+        crop = Image.fromarray(arr)
+        crop.save(f"{outdir}/s{i:02d}.png")
         meta.append({"id": f"s{i:02d}", "box": box, "w": box[2]-box[0], "h": box[3]-box[1]})
     return meta
 
