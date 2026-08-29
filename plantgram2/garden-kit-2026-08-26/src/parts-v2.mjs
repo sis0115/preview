@@ -103,7 +103,7 @@ const seedOf = (form, stage) => {
  * 각 잎은 밑동 (0,0) → 끝 (0,-L), 최대폭 W 인 로컬 좌표로 그립니다.
  * 반환: { body, high } — 몸통 path와 빛 받는 쪽 하이라이트 path
  */
-const LEAF_SHAPES = {
+export const LEAF_SHAPES = {
   /* 넓은 타원 — 고무나무·칼라데아 */
   ovate: (L, W) => ({
     body: `M0,0 C${n1(-W * .58)},${n1(-L * .16)} ${n1(-W * .64)},${n1(-L * .7)} 0,${-L}
@@ -186,6 +186,11 @@ function leaf(x, y, rot, s, kind, tone, depth = 0, opts = {}) {
     <path d="M0,${n1(-L * .05)} L0,${n1(-L * .88)}" stroke="${tone.vein}" stroke-width="${n1(1.1 * s)}" opacity="${veinOp}"/>
     <path d="${sh.body}" fill="none" stroke="${tone.vein}" stroke-width="${n1(.9 * s)}" opacity="${depth ? .1 : .2}"/>
   </g>`;
+}
+
+/** 잎 한 장을 크게 뽑아 보여줍니다 — 카탈로그·검수용 */
+export function leafSwatch(kind, tone, len = 60, rot = -18) {
+  return leaf(0, 0, rot, 1, kind, tone, 0, { len, wid: len * 0.55, variegate: kind === 'ovate' });
 }
 
 /** 줄기 — 밑동에서 잎 밑동까지 휘어 올라갑니다 */
