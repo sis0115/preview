@@ -1,0 +1,47 @@
+Match the attached sheet exactly — the same isometric camera angle, the same flat shading, the same pale bright palette, the same amount of detail, the same light from the upper left.
+
+ONE sprite sheet containing TWO groups, both drawn in this same picture so they share one angle, one scale and one style.
+
+TOP HALF — 12 EMPTY pots, in two rows of six.
+No plants, no leaves, no sprouts, nothing growing. Each pot is filled with soil to about four fifths of its inner depth so the soil surface shows as a flat ellipse with nothing on it.
+  1. standard tapered terracotta pot with a raised rim
+  2. low wide terracotta bowl
+  3. tall terracotta cylinder
+  4. round-bellied terracotta urn
+  5. white glazed ceramic pot
+  6. pale mint glazed ceramic pot
+  7. dark charcoal glazed ceramic pot
+  8. woven rattan basket, the weave clearly drawn
+  9. grey concrete cylinder, matte
+  10. long rectangular terracotta window box
+  11. wooden trough with four short legs
+  12. galvanised metal bucket with a handle
+
+BOTTOM HALF — 12 plants with NO pot, in two rows of six.
+Each plant is cut off at a flat horizontal line at the bottom, as if sliced level with the soil surface. The stems meet that cut line at the horizontal centre of the plant. No pot, no soil, no roots, no shadow, nothing below the cut line.
+  1. monstera — large leaves with deep edge splits
+  2. bird of paradise — big paddle leaves fanning in one plane
+  3. lucky bamboo — segmented canes with leaf tufts at the nodes
+  4. areca palm — arching feathery fronds
+  5. eucalyptus — small round blue-green leaves in opposite pairs
+  6. dieffenbachia — broad leaves with a cream centre marking
+  7. snake plant — stiff upright banded blades
+  8. fiddle leaf fig — large violin-shaped leaves up a trunk
+  9. zz plant — glossy stalks lined with paired leaflets
+  10. pothos — heart-shaped leaves trailing downward
+  11. boston fern — arching fronds of small toothed leaflets
+  12. rubber plant — glossy oval leaves alternating up a stem
+
+SCALE — this is why both groups are in one picture. Draw them so that any plant from the bottom half, placed on the soil of pot 1 from the top half, would look right: the pot is 100 units wide, and each plant is about 160 units wide and 180 units tall. Never wider than 1.6 times the pot.
+
+STYLE — flat vector. Solid fills, at most two tones per surface: a lit tone and a shade tone. No gradients, no photographic texture, no painterly brushwork, no glossy highlights. Simple shapes — a plant is six to nine clear leaf shapes, not forty. Every item must read at thumbnail size.
+
+Keep everything pale and bright: low saturation, high value. Fresh gentle greens, not deep or vivid.
+
+Every item — every pot and every plant — is drawn at the SAME camera angle, tilted so a circle on the ground appears about 1.6 times wider than it is tall.
+
+Layout: an evenly spaced grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps — shrink an item rather than let two touch.
+
+Background: fully transparent PNG with alpha. No background colour, no gradient, no haze, no ground plane. Every pixel is either fully opaque or fully transparent. No cast shadows. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.

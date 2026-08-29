@@ -1,0 +1,63 @@
+{
+ "iso": 1.64,
+ "tileW": 168,
+ "tileH": 102,
+ "tiles": [
+  {
+   "name": "tile_soil",
+   "cx": 210,
+   "cy": 105,
+   "tileW": 168,
+   "tileH": 102
+  },
+  {
+   "name": "tile_grass",
+   "cx": 588,
+   "cy": 105,
+   "tileW": 168,
+   "tileH": 102
+  },
+  {
+   "name": "tile_gravel",
+   "cx": 966,
+   "cy": 105,
+   "tileW": 168,
+   "tileH": 102
+  },
+  {
+   "name": "tile_deck",
+   "cx": 1344,
+   "cy": 105,
+   "tileW": 168,
+   "tileH": 102
+  },
+  {
+   "name": "tile_stone",
+   "cx": 210,
+   "cy": 372,
+   "tileW": 168,
+   "tileH": 102
+  },
+  {
+   "name": "tile_brick",
+   "cx": 588,
+   "cy": 372,
+   "tileW": 168,
+   "tileH": 102
+  },
+  {
+   "name": "tile_mulch",
+   "cx": 966,
+   "cy": 372,
+   "tileW": 168,
+   "tileH": 102
+  },
+  {
+   "name": "tile_water",
+   "cx": 1344,
+   "cy": 372,
+   "tileW": 168,
+   "tileH": 102
+  }
+ ]
+}

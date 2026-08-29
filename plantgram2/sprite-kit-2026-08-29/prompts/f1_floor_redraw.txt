@@ -1,0 +1,25 @@
+Redraw the FIRST attached image, keeping its geometry exactly, in the visual style of the SECOND attached image.
+
+GEOMETRY — do not change any of it. Every diamond stays in the exact same position, at the exact same size, at the exact same angle. Do not move, scale, rotate or reshape anything. Do not add or remove shapes. Do not change the layout or the spacing between groups. The eight groups stay where they are.
+
+SURFACE — this is the only thing you change. Each group is one floor material, drawn as four tiles laid edge to edge. Draw each material so the four tiles read as ONE CONTINUOUS SURFACE with no visible seam between them — the pattern must run across the whole group.
+
+Left to right, top row then bottom row:
+1. dark garden soil, loose and crumbly
+2. short green grass
+3. pale gravel of small rounded stones
+4. wooden deck with planks running in one direction
+5. pale stone paving of irregular slabs
+6. terracotta brick laid in a running bond
+7. bark mulch chips
+8. shallow clear water with a soft ripple
+
+STYLE — flat vector. Solid fills, at most two tones per surface: a lit tone and a shade tone. No gradients, no photographic texture, no painterly brushwork, no speckling, no outline around the whole shape.
+
+Keep everything pale and bright, matching the second attached image: low saturation, high value. Nothing dark, nothing vivid, nothing heavy. These sit under plants and must stay quiet.
+
+Light comes from the upper left. The thin front edge under each group stays exactly one tone darker than its top face.
+
+Plain white background. No text, no labels, no numbers, no cast shadows, no border.
+
+Output at the same pixel size as the first attached image.
