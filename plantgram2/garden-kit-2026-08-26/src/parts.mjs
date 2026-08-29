@@ -203,7 +203,7 @@ export const PLANT_FORMS = {
     name: '깃꼴형', species: ['테이블야자', '아레카야자', '켄차야자'],
     draw(w, stage, tone) {
       const s = STAGE_SCALE[stage - 1], k = w / 46;
-      const F = pick([[0, -1.0], [-26, -.86], [26, -.86], [-14, -.7], [14, -.7]], STAGE_COUNT[stage - 1]);
+      const F = pick([[0, 1.0], [-26, .86], [26, .86], [-14, .7], [14, .7]], STAGE_COUNT[stage - 1]);
       let o = '';
       F.forEach(([rot, len], i) => {
         const H = 52 * len, fill = i % 2 ? tone.alt : tone.base;
