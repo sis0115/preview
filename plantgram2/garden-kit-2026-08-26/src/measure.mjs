@@ -6,8 +6,21 @@
  * 그림(draw)을 고치면 자연 크기가 달라지므로 이 표도 같이 갱신해야
  * "식물이 이웃을 침범하지 않는다"는 비율 보증이 유지됩니다.
  */
-import { chromium } from 'playwright';
+import { execSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
+import { join } from 'node:path';
 import { PLANT_FORMS, LEAF_TONES, FORM_EXT, FORM_FIT, POTS } from './parts-v2.mjs';
+
+/** playwright는 이 저장소의 의존성이 아니라 전역 설치본을 씁니다 */
+async function loadPlaywright() {
+  try {
+    return await import('playwright');
+  } catch {
+    const root = execSync('npm root -g', { encoding: 'utf8' }).trim();
+    return await import(pathToFileURL(join(root, 'playwright', 'index.mjs')).href);
+  }
+}
+const { chromium } = await loadPlaywright();
 
 const browser = await chromium.launch({
   executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
