@@ -27,7 +27,7 @@
 
 import { POTS, PROPS, STATES, LEAF_TONES, POT_COLORS, drawPot, potFront, potRimY, mix, shade }
   from './parts-v2.mjs';
-import { blade, place, stalk, rng, seedOf, toneAt } from './parts-v3.mjs';
+import { blade, place, stalk, rng, seedOf, toneAt, makeAxis, nodesOn } from './parts-v3.mjs';
 
 export { POTS, PROPS, STATES, LEAF_TONES, POT_COLORS };
 export const VERSION = 1;
@@ -113,7 +113,7 @@ function monsteraLeaf({ len, wid, face, cut, fill, under, vein, fold = 0, phase 
 function paddleLeaf({ len, wid, face, tears, fill, under, vein }) {
   const N = 30;
   const mid = t => [wid * .1 * t * t, -len * t];
-  const prof = t => Math.sin(Math.PI * Math.pow(t, .42)) * .98;
+  const prof = t => Math.sin(Math.PI * Math.pow(t, .72)) * .96;
   const L = [], R = [];
   for (let i = 0; i <= N; i++) {
     const t = i / N, [x, y] = mid(t);
@@ -129,13 +129,13 @@ function paddleLeaf({ len, wid, face, tears, fill, under, vein }) {
   // 찢김 — 가장자리에서 잎맥까지 60~85% 들어온 가는 틈
   let rip = '';
   for (let i = 0; i < tears; i++) {
-    const t = .25 + (i + .5) * (.6 / tears);
+    const t = .24 + (i + .5) * (.42 / tears);
     const [x, y] = mid(t);
     const hw = wid * .5 * prof(t) * face;
     const side = i % 2 ? 1 : -1;
-    const depth = .62 + (i % 3) * .1;
+    const depth = .42 + (i % 3) * .09;
     rip += `<path d="M${n1(x + side * hw)},${n1(y)} L${n1(x + side * hw * (1 - depth))},${n1(y - len * .03)}"
-      stroke="${vein}" stroke-width="${n1(wid * .05)}" opacity=".3" stroke-linecap="round"/>`;
+      stroke="${vein}" stroke-width="${n1(wid * .028)}" opacity=".26" stroke-linecap="round"/>`;
   }
   const [tx, ty] = mid(1);
   return `<path d="${body}" fill="${fill}"/>${rip}
@@ -190,30 +190,41 @@ export const SPECIES = {
     name: '몬스테라', latin: 'Monstera deliciosa', form: 'broadleaf',
     draw(w, stage, tone) {
       const k = w / 46, r = rng(seedOf('monstera' + stage));
-      // [각도, 잎자루, 크기, 갈라짐, 뒤쪽] — 어린잎(통잎)부터 적고 앞에서부터 잘라 씁니다.
-      // 그래서 새싹은 통잎만, 자랄수록 갈라진 큰 잎이 더해집니다.
-      const plan = [
-        [-2, 15, .50, 0, 0], [4, 12, .40, 0, 0],
-        [-10, 24, .70, .32, 0], [9, 23, .72, .28, 0],
-        [-25, 31, .88, .62, 0], [22, 30, .90, .66, 0],
-        [-46, 36, 1.00, .80, 1], [42, 35, .96, .76, 1],
-      ].slice(0, [2, 4, 6, 8][stage - 1]);
-      let stems = '', leaves = [];
-      for (const [ang, sl, sz, cut, back] of plan) {
-        const a = rad(ang), px = Math.sin(a) * sl, py = -Math.cos(a) * sl;
-        stems += stalk(px, py, tone, 2.6 * sz);
-        const face = .5 + .5 * Math.pow(Math.abs(Math.cos(a * .8)), .7);
-        leaves.push({ ang, px, py, sz, cut, back, face,
-          jl: .92 + r() * .16, fold: r() < .25 ? .22 : 0, phase: r() * .5 });
-      }
-      leaves.sort((x, y) => y.back - x.back);
+      // 몬스테라는 타고 오르는 식물이라 굵은 대가 서고, 잎이 마디마다 좌우로 납니다.
+      const H = [16, 30, 44, 56][stage - 1];
+      const ax = makeAxis({ h: H, lean: 5, bow: -3, base: 6.5, tip: 4 });
+      const cane = mix(tone.base, '#b9a878', .5);
+      const nodes = nodesOn(ax, { count: [2, 3, 5, 6][stage - 1], from: .1, to: .95, r });
+
+      const leaves = nodes.map(nd => {
+        // 아래(묵은) 잎일수록 크고, 깊게 갈라지고, 더 옆으로 눕습니다
+        const sz = .55 + nd.age * .55;
+        const cut = Math.max(0, nd.age * 1.15 - .18);
+        const ang = nd.side * (30 + nd.age * 40) + (r() - .5) * 10;
+        const petiole = 16 + nd.age * 12;
+        const a = rad(ang);
+        return {
+          ang, cut, sz, node: nd,
+          px: nd.x + Math.sin(a) * petiole, py: nd.y - Math.cos(a) * petiole,
+          face: .5 + .5 * Math.pow(Math.abs(Math.cos(a * .8)), .7),
+          depth: nd.side > 0 ? .35 : 0, jl: .92 + r() * .16, phase: r() * .5,
+        };
+      }).sort((x, y) => y.node.age - x.node.age);   // 아래 잎부터 그려 위 잎이 앞에 옵니다
+
+      const stems = leaves.map(L =>
+        `<path d="M${n1(L.node.x)},${n1(L.node.y)} Q${n1((L.node.x + L.px) / 2)},${n1(L.node.y - 4)} ${n1(L.px)},${n1(L.py)}"
+          stroke="${mix(tone.vein, tone.base, .42)}" stroke-width="${n1(2.6 * L.sz)}"
+          fill="none" stroke-linecap="round"/>`).join('');
+
       const body = leaves.map(L => {
-        const fill = toneAt(tone, L.ang, L.back * .5);
+        const fill = toneAt(tone, L.ang, L.depth);
         return `<g transform="translate(${n1(L.px)},${n1(L.py)}) rotate(${n1(L.ang)})">
-          ${monsteraLeaf({ len: 52 * L.sz * L.jl, wid: 36 * L.sz, face: L.face, cut: L.cut,
-            fill, under: mix(fill, tone.shadow, .55), vein: tone.vein, fold: L.fold, phase: L.phase })}</g>`;
+          ${monsteraLeaf({ len: 44 * L.sz * L.jl, wid: 32 * L.sz, face: L.face, cut: L.cut,
+            fill, under: mix(fill, tone.shadow, .55), vein: tone.vein,
+            fold: r() < .22 ? .2 : 0, phase: L.phase })}</g>`;
       }).join('');
-      return `<g transform="scale(${n1(k)})">${stems}${body}</g>`;
+
+      return `<g transform="scale(${n1(k)})">${ax.draw(cane, { lit: mix(cane, tone.hi, .45) })}${stems}${body}</g>`;
     }
   },
 
@@ -222,27 +233,36 @@ export const SPECIES = {
     name: '여인초', latin: 'Strelitzia nicolai', form: 'broadleaf',
     draw(w, stage, tone) {
       const k = w / 46, r = rng(seedOf('strelitzia' + stage));
-      // 두 줄(distichous) — 좌우로만 벌어지고 앞뒤로는 벌어지지 않습니다
-      const plan = [
-        [-16, 27, .72, 0], [14, 26, .74, 0],
-        [-34, 35, .88, 0], [31, 34, .90, 0],
-        [-54, 40, 1.00, 1], [50, 39, .97, 1],
-        [-4, 17, .52, 0],
-      ].slice(0, [2, 4, 6, 7][stage - 1]);
-      let stems = '', leaves = [];
-      for (const [ang, sl, sz, back] of plan) {
-        const a = rad(ang), px = Math.sin(a) * sl, py = -Math.cos(a) * sl;
-        stems += stalk(px, py, tone, 2.4 * sz);
-        leaves.push({ ang, px, py, sz, back, face: .62 + .38 * Math.abs(Math.cos(a * .7)) });
+      // 짧은 줄기가 서고 그 꼭대기에서 잎자루가 좌우 두 줄로 벌어집니다.
+      // 아래 잎이 떨어진 자리가 줄기에 겹쳐 남습니다.
+      const H = [8, 16, 24, 30][stage - 1];
+      const ax = makeAxis({ h: H, lean: 2, base: 7, tip: 5.5 });
+      const trunk = mix(tone.base, '#c9c9a0', .45);
+      // 잎자루는 줄기 위쪽 60~100% 구간에서만 납니다 (관다발이 위에 몰림)
+      const nodes = nodesOn(ax, { count: [2, 4, 6, 7][stage - 1], from: .55, to: 1, r });
+
+      const leaves = nodes.map((nd, i) => {
+        const sz = .62 + nd.age * .5;
+        // 두 줄(distichous) — 좌우로만, 앞뒤로는 벌어지지 않습니다
+        const ang = nd.side * (20 + nd.age * 66) + (r() - .5) * 6;
+        const a = rad(ang), petiole = 22 + nd.age * 26;
+        return { ang, sz, nd, px: nd.x + Math.sin(a) * petiole, py: nd.y - Math.cos(a) * petiole,
+          face: .66 + .34 * Math.abs(Math.cos(a * .7)), depth: nd.side > 0 ? .38 : 0 };
+      }).sort((x, y) => y.nd.age - x.nd.age);
+
+      let stems = '', body = '';
+      for (const L of leaves) {
+        stems += `<path d="M${n1(L.nd.x)},${n1(L.nd.y)} Q${n1((L.nd.x + L.px) * .5)},${n1(L.nd.y - 5)} ${n1(L.px)},${n1(L.py)}"
+          stroke="${mix(tone.vein, tone.base, .4)}" stroke-width="${n1(2.8 * L.sz)}"
+          fill="none" stroke-linecap="round"/>`;
+        const fill = toneAt(tone, L.ang, L.depth);
+        body += `<g transform="translate(${n1(L.px)},${n1(L.py)}) rotate(${n1(L.ang)})">
+          ${paddleLeaf({ len: 52 * L.sz, wid: 22 * L.sz, face: L.face,
+            tears: 5 + Math.floor(r() * 3), fill, under: mix(fill, tone.shadow, .5),
+            vein: tone.vein })}</g>`;
       }
-      leaves.sort((x, y) => y.back - x.back);
-      const body = leaves.map(L => {
-        const fill = toneAt(tone, L.ang, L.back * .45);
-        return `<g transform="translate(${n1(L.px)},${n1(L.py)}) rotate(${n1(L.ang)})">
-          ${paddleLeaf({ len: 44 * L.sz, wid: 25 * L.sz, face: L.face,
-            tears: 5 + Math.floor(r() * 3), fill, under: mix(fill, tone.shadow, .5), vein: tone.vein })}</g>`;
-      }).join('');
-      return `<g transform="scale(${n1(k)})">${stems}${body}</g>`;
+      return `<g transform="scale(${n1(k)})">
+        ${ax.draw(trunk, { lit: mix(trunk, tone.hi, .4) })}${stems}${body}</g>`;
     }
   },
 
@@ -268,19 +288,24 @@ export const SPECIES = {
             rx="${n1(.9 * s)}" fill="${caneDim}"/>`;
         }
         o += culm;
-        // 잎 다발 — 줄기 위쪽 두 마디에서
-        const tuft = 4 + Math.floor(r() * 3);
-        for (let i = 0; i < tuft; i++) {
-          const ang = -58 + (i / Math.max(1, tuft - 1)) * 116 + (r() - .5) * 14;
-          const at = -H + (i % 2 ? 5 : 13) * s;
-          const a = rad(ang);
-          o += place({
-            kind: 'lanceolate', rot: ang, x, y: at,
-            len: (22 + r() * 8) * s, wid: (6.5 + r() * 2) * s,
-            bend: Math.sign(ang) * .45, sweep: .55 + r() * .4,
-            face: .55 + .45 * Math.abs(Math.cos(a * .8)),
-            fold: 0, depth: i % 3 === 0 ? .45 : 0,
-          }, tone);
+        // 잎은 위쪽 마디마다 — 마디 한 곳에서 2~3장이 좌우로 갈라져 납니다
+        const first = Math.max(1, Math.round(segs * .45));
+        for (let i = first; i < segs; i++) {
+          const ny = -H * (i / segs);
+          const up = (i - first) / Math.max(1, segs - first - 1 || 1);   // 0 아래마디 ~ 1 꼭대기
+          const per = 2 + (i % 2);
+          for (let j = 0; j < per; j++) {
+            const side = j % 2 ? 1 : -1;
+            const ang = side * (44 - up * 20) + (r() - .5) * 16;
+            const a = rad(ang);
+            o += place({
+              kind: 'lanceolate', rot: ang, x, y: ny,
+              len: (16 + up * 9 + r() * 5) * s, wid: (5 + r() * 1.6) * s,
+              bend: side * .5, sweep: .6 + r() * .4,
+              face: .55 + .45 * Math.abs(Math.cos(a * .8)),
+              fold: 0, depth: j === 2 ? .45 : 0,
+            }, tone);
+          }
         }
       }
       return `<g transform="scale(${n1(k)})">${o}</g>`;
@@ -377,28 +402,32 @@ export const SPECIES = {
     name: '디펜바키아', latin: 'Dieffenbachia seguine', form: 'patterned',
     draw(w, stage, tone) {
       const k = w / 46, r = rng(seedOf('dieffenbachia' + stage));
-      // 어린잎부터 — 앞에서부터 잘라 씁니다
-      const plan = [
-        [-8, 10, .55], [7, 9, .5],
-        [-26, 15, .78], [23, 14, .8],
-        [-44, 19, .94], [40, 18, .96],
-        [-60, 21, 1.0], [56, 20, .98],
-      ].slice(0, [2, 4, 6, 8][stage - 1]);
+      // 아래 잎이 떨어지며 마디 자국이 남은 대가 서고, 잎은 위쪽 마디에서 납니다
+      const H = [12, 24, 34, 42][stage - 1];
+      const ax = makeAxis({ h: H, lean: -4, base: 6, tip: 4.2 });
+      const cane = mix(tone.base, '#cfd6a8', .45);
+      const nodes = nodesOn(ax, { count: [2, 4, 6, 7][stage - 1], from: .22, to: 1, r });
       const mark = mix(tone.hi, '#f2f7e2', .55);
-      let stems = '', body = '';
-      const leaves = plan.map(([ang, sl, sz]) => {
-        const a = rad(ang);
-        return { ang, sz, x: Math.sin(a) * sl, y: -Math.cos(a) * sl,
+
+      const leaves = nodes.map(nd => {
+        const sz = .6 + nd.age * .5;
+        const ang = nd.side * (34 + nd.age * 34) + (r() - .5) * 10;
+        const a = rad(ang), petiole = 9 + nd.age * 7;
+        return { ang, sz, nd, px: nd.x + Math.sin(a) * petiole, py: nd.y - Math.cos(a) * petiole,
           face: .5 + .5 * Math.pow(Math.abs(Math.cos(a * .8)), .7),
-          depth: Math.abs(ang) > 50 ? .5 : 0, jl: .9 + r() * .2 };
-      }).sort((x, y) => y.depth - x.depth);
+          depth: nd.side > 0 ? .4 : 0, jl: .9 + r() * .2 };
+      }).sort((x, y) => y.nd.age - x.nd.age);
+
+      let stems = '', body = '';
       for (const L of leaves) {
-        stems += stalk(L.x, L.y, tone, 2.2 * L.sz);
-        const len = 46 * L.sz * L.jl, wid = 20 * L.sz;
-        body += place({ kind: 'ovate', rot: L.ang, x: L.x, y: L.y, len, wid,
-          bend: Math.sign(L.ang) * .3, sweep: .35, face: L.face,
+        stems += `<path d="M${n1(L.nd.x)},${n1(L.nd.y)} L${n1(L.px)},${n1(L.py)}"
+          stroke="${mix(tone.vein, tone.base, .42)}" stroke-width="${n1(2.2 * L.sz)}"
+          stroke-linecap="round" fill="none"/>`;
+        const len = 42 * L.sz * L.jl, wid = 18 * L.sz;
+        body += place({ kind: 'ovate', rot: L.ang, x: L.px, y: L.py, len, wid,
+          bend: Math.sign(L.ang) * .3, sweep: .3 + L.nd.age * .3, face: L.face,
           fold: r() < .2 ? .2 : 0, depth: L.depth }, tone);
-        // 가운데 크림색 무늬 — 잎맥에서 폭의 절반까지 번집니다
+        // 가운데 크림색 무늬 — 잎맥에서 폭의 절반까지 면으로 번집니다
         const pt = [];
         for (let i = 0; i <= 12; i++) {
           const t = .08 + i * .072;
@@ -408,10 +437,13 @@ export const SPECIES = {
           const t = .08 + i * .072;
           pt.push(`${n1(wid * .5 * Math.sin(Math.PI * Math.pow(t, .8)) * L.face * .52)},${n1(-len * t)}`);
         }
-        body += `<g transform="translate(${n1(L.x)},${n1(L.y)}) rotate(${n1(L.ang)})">
+        body += `<g transform="translate(${n1(L.px)},${n1(L.py)}) rotate(${n1(L.ang)})">
           <path d="M${pt.join(' ')}Z" fill="${mark}" opacity="${L.depth ? .3 : .5}"/></g>`;
       }
-      return `<g transform="scale(${n1(k)})">${stems}${body}</g>`;
+      const rings = nodes.filter(n => n.t < .5).map(n => n.t);
+      return `<g transform="scale(${n1(k)})">
+        ${ax.draw(cane, { lit: mix(cane, tone.hi, .4), rings, ringColor: mix(cane, tone.shadow, .45) })}
+        ${stems}${body}</g>`;
     }
   },
 
@@ -510,9 +542,9 @@ export const SPECIES = {
       const k = w / 46, r = rng(seedOf('lettuce' + stage));
       // 바깥 겹은 크고 눕고, 안쪽 겹은 작고 선다 — 실제 상추의 결구 순서
       const rings = [
-        { n: 8, len: 34, off: 15, depth: .5 },
-        { n: 7, len: 26, off: 9, depth: .25 },
-        { n: 5, len: 17, off: 4, depth: 0 },
+        { n: 6, len: 40, off: 14, depth: .5 },
+        { n: 5, len: 29, off: 8, depth: .25 },
+        { n: 4, len: 19, off: 3, depth: 0 },
       ].slice(0, [1, 2, 3, 3][stage - 1]);
       const grow = [.65, .82, .94, 1][stage - 1];
       let o = '';
@@ -522,10 +554,10 @@ export const SPECIES = {
           const len = ring.len * grow * (.86 + r() * .28);
           // 중심에서 밀어내야 겹쳐진 로제트로 보입니다
           o += `<g transform="rotate(${n1(a)}) translate(0,${n1(-ring.off * grow)}) scale(1,0.66)">
-            ${place({ kind: 'serrate', rot: 0, lit: a, x: 0, y: 0,
-              len, wid: len * 1.02,
-              bend: (r() - .5) * .4, sweep: .1, face: 1,
-              fold: r() < .35 ? .26 : 0, depth: ring.depth }, tone)}</g>`;
+            ${place({ kind: 'round', rot: 0, lit: a, x: 0, y: 0,
+              len, wid: len * .96,
+              bend: (r() - .5) * .3, sweep: .08, face: 1,
+              fold: 0, depth: ring.depth }, tone)}</g>`;
         }
       });
       return `<g transform="translate(0,-3) scale(${n1(k)})">${o}</g>`;
@@ -539,16 +571,16 @@ export const SPECIES = {
 
 /** `node src/sync-ext.mjs sp` 가 재서 갱신합니다 */
 export const FORM_EXT = {
-  monstera:   { w: 145.4, h: 79.7 },
-  strelitzia: { w: 144.3, h: 70.6 },
-  bamboo:     { w: 62,  h: 85.9 },
+  monstera:   { w: 135.1, h: 93.2 },
+  strelitzia: { w: 122.5, h: 83.3 },
+  bamboo:     { w: 53.6,  h: 73 },
   areca:      { w: 100.8, h: 61.8 },
   eucalyptus: { w: 53.6,  h: 67.3 },
-  dieffenbachia: { w: 113.6, h: 48.7 },
+  dieffenbachia: { w: 85.8, h: 73.2 },
   jade:          { w: 41.5, h: 64.6 },
   geranium:      { w: 78.3, h: 44.2 },
   daisy:         { w: 72, h: 38 },
-  lettuce:       { w: 75.4, h: 77.8 },
+  lettuce:       { w: 100.3, h: 88.8 },
 };
 export const FORM_FIT = {
   monstera:   { h: 3.4, w: 1.80 },

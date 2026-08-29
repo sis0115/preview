@@ -31,6 +31,7 @@ export { GRID, LEAF_TONES, POT_COLORS, POTS, PROPS, STATES, drawPot, potFront, p
 export const VERSION = 3;
 
 const n1 = v => Math.round(v * 100) / 100;
+const rad = d => d * Math.PI / 180;
 
 /* ------------------------------------------------------------------ */
 /* 난수 · 광원                                                          */
@@ -160,6 +161,77 @@ export const stalk = (x, y, tone, w = 2) =>
   `<path d="M0,2 Q${n1(x * .3)},${n1(y * .55)} ${n1(x)},${n1(y)}"
     stroke="${mix(tone.vein, tone.base, .38)}" stroke-width="${n1(w)}" fill="none" stroke-linecap="round"/>`;
 
+
+/* ------------------------------------------------------------------ */
+/* 대(줄기)와 마디 — 잎이 한 점이 아니라 여러 높이에서 납니다             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 식물의 골격은 두 가지뿐입니다.
+ *   근생(basal)  잎이 흙에서 바로 — 상추·다육·고사리·야자
+ *   유경(caulescent) 대가 서고 잎이 **대의 여러 높이에서 옆으로** — 몬스테라·디펜바키아·
+ *                    유칼립투스·제이드·대나무
+ *
+ * 지금까지는 전부 근생으로 그려서, 대가 있어야 할 종도 잎이 바닥에 꽂혀 있었습니다.
+ * makeAxis()가 대를 만들고, at(t)로 대 위의 높이 t(0 밑동 ~ 1 끝)의 좌표를 돌려줍니다.
+ * 잎은 그 좌표에서 옆으로 납니다.
+ *
+ * h    대 높이        lean 끝이 옆으로 기우는 정도
+ * bow  가운데가 휘는 정도   base/tip 밑동·끝 굵기
+ */
+export function makeAxis({ h, lean = 0, bow = 0, base = 4, tip = 2.2 }) {
+  const at = t => [lean * t * t + bow * Math.sin(Math.PI * t), -h * t];
+
+  /** 대 자체 — 밑동이 굵고 끝이 가는 다각형으로 그립니다 */
+  const draw = (color, opts = {}) => {
+    const N = 16, L = [], R = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N, [x, y] = at(t);
+      const [x2, y2] = at(Math.min(1, t + 1e-3));
+      const dx = x2 - x, dy = y2 - y, m = Math.hypot(dx, dy) || 1;
+      const hw = (base + (tip - base) * t) / 2;
+      L.push([x - dy / m * hw, y + dx / m * hw]);
+      R.push([x + dy / m * hw, y - dx / m * hw]);
+    }
+    const pts = a => a.map(([x, y]) => `${n1(x)},${n1(y)}`).join(' ');
+    let o = `<path d="M${pts(L)} ${pts(R.slice().reverse())}Z" fill="${color}"/>`;
+    // 빛 받는 쪽 한 줄
+    if (opts.lit) o += `<path d="M${pts(L)} ${pts(L.map(([x, y], i) => {
+      const [ax, ay] = at(i / N); return [ax + (x - ax) * .4, ay + (y - ay) * .4];
+    }).reverse())}Z" fill="${opts.lit}" opacity=".75"/>`;
+    // 마디 자국 — 잎이 떨어진 자리 (디펜바키아·대나무)
+    if (opts.rings) for (const t of opts.rings) {
+      const [x, y] = at(t), hw = (base + (tip - base) * t) / 2;
+      o += `<path d="M${n1(x - hw)},${n1(y)} Q${n1(x)},${n1(y + hw * .5)} ${n1(x + hw)},${n1(y)}"
+        stroke="${opts.ringColor || color}" stroke-width="${n1(hw * .38)}" fill="none"
+        opacity=".55" stroke-linecap="round"/>`;
+    }
+    return o;
+  };
+
+  return { at, draw, h };
+}
+
+/**
+ * 대 위에 붙는 잎 자리들 — 마디가 위로 갈수록 촘촘해지고, 잎은 좌우로 번갈아 납니다.
+ * 아래(묵은) 잎일수록 크고 처지고 더 옆으로 눕습니다.
+ */
+export function nodesOn(axis, { count, from = .18, to = .96, alternate = true, r }) {
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    const u = count === 1 ? .5 : i / (count - 1);
+    // 위로 갈수록 마디 간격이 좁아집니다
+    const t = from + (to - from) * Math.pow(u, .82);
+    const [x, y] = axis.at(t);
+    out.push({
+      t, x, y,
+      side: alternate ? (i % 2 ? 1 : -1) : (r && r() < .5 ? 1 : -1),
+      age: 1 - t,                       // 1 = 가장 묵은 잎(아래), 0 = 새잎(위)
+    });
+  }
+  return out;
+}
+
 /* ------------------------------------------------------------------ */
 /* 계층 — 대 / 중 / 소                                                  */
 /* ------------------------------------------------------------------ */
@@ -250,17 +322,36 @@ export const PLANT_FORMS = {
   /* 대엽형 — 고무나무·몬스테라. 잎자루 끝에 한 장씩, 사이로 배경이 보입니다 */
   broadleaf: {
     name: '대엽형', species: ['몬스테라', '필로덴드론', '알로카시아', '고무나무'], leaf: 'ovate',
-    plan: {
-      big:   [[-58], [52], [-27], [31]],
-      mid:   [[-40], [36], [-14], [18]],
-      small: [[-9], [8], [0]],
-    },
-    base: { kind: 'ovate', len: 42, wid: 21, stalk: 27, rise: 2, bend: .5, bendVar: .5,
-            sweepK: 1, faceMin: .46, foldRate: .3 },
     draw(w, stage, tone) {
-      const k = w / 46;
-      const leaves = grow(this.plan, stage, 'broadleaf' + stage, this.base);
-      return `<g transform="scale(${n1(k)})">${render(leaves, tone)}</g>`;
+      const r = rng(seedOf('broadleaf' + stage)), k = w / 46;
+      // 대엽형은 대가 서고 잎이 마디마다 좌우로 나는 유경형입니다.
+      // (잎이 흙 한 점에서 방사하는 근생형은 로제트형·양치형 쪽입니다)
+      const H = [14, 26, 38, 48][stage - 1];
+      const ax = makeAxis({ h: H, lean: 4, bow: -2, base: 5.5, tip: 3.4 });
+      const cane = mix(tone.base, '#b8ad7e', .48);
+      const nodes = nodesOn(ax, { count: [2, 4, 5, 6][stage - 1], from: .14, to: .98, r });
+
+      const leaves = nodes.map(nd => {
+        const sz = .6 + nd.age * .5;
+        const ang = nd.side * (30 + nd.age * 34) + (r() - .5) * 10;
+        const a = rad(ang), petiole = 12 + nd.age * 10;
+        return { ang, sz, nd,
+          x: nd.x + Math.sin(a) * petiole, y: nd.y - Math.cos(a) * petiole,
+          face: .48 + .52 * Math.pow(Math.abs(Math.cos(a * .8)), .7),
+          depth: nd.side > 0 ? .4 : 0 };
+      }).sort((x, y) => y.nd.age - x.nd.age);
+
+      let o = ax.draw(cane, { lit: mix(cane, tone.hi, .42) });
+      for (const L of leaves)
+        o += `<path d="M${n1(L.nd.x)},${n1(L.nd.y)} L${n1(L.x)},${n1(L.y)}"
+          stroke="${mix(tone.vein, tone.base, .4)}" stroke-width="${n1(2.4 * L.sz)}"
+          stroke-linecap="round" fill="none"/>`;
+      for (const L of leaves)
+        o += place({ kind: 'ovate', rot: L.ang, x: L.x, y: L.y,
+          len: 36 * L.sz * (.9 + r() * .2), wid: 22 * L.sz * (.9 + r() * .2),
+          bend: Math.sign(L.ang) * .35, sweep: .25 + L.nd.age * .4, face: L.face,
+          fold: r() < .25 ? .22 : 0, depth: L.depth }, tone);
+      return `<g transform="scale(${n1(k)})">${o}</g>`;
     }
   },
 
@@ -313,34 +404,46 @@ export const PLANT_FORMS = {
   /* 무늬엽형 — 칼라데아. 잎맥을 따라 크림색 무늬가 갈라집니다 */
   patterned: {
     name: '무늬엽형', species: ['칼라데아', '마란타', '스킨답서스'], leaf: 'ovate',
-    plan: {
-      big:   [[-52], [48], [-24], [28]],
-      mid:   [[-38], [34], [-12]],
-      small: [[-8], [8], [0]],
-    },
-    base: { kind: 'ovate', len: 38, wid: 19, stalk: 16, rise: 2, bend: .42, bendVar: .5,
-            sweepK: .8, faceMin: .48, foldRate: .34 },
     draw(w, stage, tone) {
-      const k = w / 46;
-      const leaves = grow(this.plan, stage, 'patterned' + stage, this.base);
+      const r = rng(seedOf('patterned' + stage)), k = w / 46;
+      const H = [10, 20, 30, 38][stage - 1];
+      const ax = makeAxis({ h: H, lean: -3, base: 5, tip: 3.2 });
+      const cane = mix(tone.base, '#c6cf9c', .45);
+      const nodes = nodesOn(ax, { count: [2, 4, 6, 7][stage - 1], from: .18, to: 1, r });
       const mark = tone.mark || '#dfeccb';
-      // 잎맥을 따라 갈라지는 무늬 — 잎마다 갈래 수가 다릅니다
-      const stripes = L => {
-        const s = [];
-        // 잎맥을 따라 흐르는 밝은 띠 한 줄 — 칼라데아의 중앙 무늬
+
+      const leaves = nodes.map(nd => {
+        const sz = .62 + nd.age * .46;
+        const ang = nd.side * (32 + nd.age * 32) + (r() - .5) * 10;
+        const a = rad(ang), petiole = 10 + nd.age * 8;
+        return { ang, sz, nd, x: nd.x + Math.sin(a) * petiole, y: nd.y - Math.cos(a) * petiole,
+          face: .5 + .5 * Math.pow(Math.abs(Math.cos(a * .8)), .7),
+          depth: nd.side > 0 ? .4 : 0 };
+      }).sort((x, y) => y.nd.age - x.nd.age);
+
+      let o = ax.draw(cane, { lit: mix(cane, tone.hi, .4) });
+      for (const L of leaves)
+        o += `<path d="M${n1(L.nd.x)},${n1(L.nd.y)} L${n1(L.x)},${n1(L.y)}"
+          stroke="${mix(tone.vein, tone.base, .4)}" stroke-width="${n1(2.1 * L.sz)}"
+          stroke-linecap="round" fill="none"/>`;
+      for (const L of leaves) {
+        const len = 34 * L.sz, wid = 17 * L.sz;
+        o += place({ kind: 'ovate', rot: L.ang, x: L.x, y: L.y, len, wid,
+          bend: Math.sign(L.ang) * .3, sweep: .25, face: L.face, fold: 0, depth: L.depth }, tone);
+        // 잎맥을 따라 흐르는 밝은 띠
         const pt = [];
         for (let i = 0; i <= 10; i++) {
-          const t = .1 + i * .08;
-          pt.push(`${n1(-L.wid * .5 * PROFILE.ovate(t) * L.face * .42)},${n1(-L.len * t)}`);
+          const u = .1 + i * .08;
+          pt.push(`${n1(-wid * .5 * PROFILE.ovate(u) * L.face * .42)},${n1(-len * u)}`);
         }
         for (let i = 10; i >= 0; i--) {
-          const t = .1 + i * .08;
-          pt.push(`${n1(L.wid * .5 * PROFILE.ovate(t) * L.face * .42)},${n1(-L.len * t)}`);
+          const u = .1 + i * .08;
+          pt.push(`${n1(wid * .5 * PROFILE.ovate(u) * L.face * .42)},${n1(-len * u)}`);
         }
-        s.push(`<path d="M${pt.join(' ')}Z" fill="${mark}" opacity=".42"/>`);
-        return `<g transform="translate(${n1(L.x)},${n1(L.y)}) rotate(${n1(L.rot)})">${s.join('')}</g>`;
-      };
-      return `<g transform="scale(${n1(k)})">${render(leaves, tone)}${leaves.map(stripes).join('')}</g>`;
+        o += `<g transform="translate(${n1(L.x)},${n1(L.y)}) rotate(${n1(L.ang)})">
+          <path d="M${pt.join(' ')}Z" fill="${mark}" opacity="${L.depth ? .28 : .45}"/></g>`;
+      }
+      return `<g transform="scale(${n1(k)})">${o}</g>`;
     }
   },
 
@@ -550,10 +653,10 @@ export const PLANT_FORMS = {
 
 /** `node src/measure.mjs v3` 가 재서 갱신합니다 */
 export const FORM_EXT = {
-  broadleaf: { w: 114.1, h: 67.5 },
+  broadleaf: { w: 90.4, h: 76.3 },
   upright:   { w: 40.4,  h: 70.3 },
   rosette:   { w: 56,  h: 37.3 },
-  patterned: { w: 85.5,  h: 53.6 },
+  patterned: { w: 82.1,  h: 64.5 },
   vine:      { w: 95.1,  h: 94.8 },
   palm:      { w: 103, h: 76.3 },
   cactus:    { w: 40,  h: 62 },
