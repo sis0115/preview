@@ -191,9 +191,9 @@ export const SPECIES = {
     draw(w, stage, tone) {
       const k = w / 46, r = rng(seedOf('monstera' + stage));
       // 몬스테라는 타고 오르는 식물이라 굵은 대가 서고, 잎이 마디마다 좌우로 납니다.
-      const H = [16, 30, 44, 56][stage - 1];
-      const ax = makeAxis({ h: H, lean: 5, bow: -3, base: 6.5, tip: 4 });
-      const cane = mix(tone.base, '#b9a878', .5);
+      const H = [18, 36, 54, 70][stage - 1];
+      const ax = makeAxis({ h: H, lean: 5, bow: -3, base: 8.5, tip: 5 });
+      const cane = mix(tone.base, '#9db35e', .32);   // 몬스테라 줄기는 초록이다
       const nodes = nodesOn(ax, { count: [2, 3, 5, 6][stage - 1], from: .1, to: .95, r });
 
       const leaves = nodes.map(nd => {
@@ -235,9 +235,9 @@ export const SPECIES = {
       const k = w / 46, r = rng(seedOf('strelitzia' + stage));
       // 짧은 줄기가 서고 그 꼭대기에서 잎자루가 좌우 두 줄로 벌어집니다.
       // 아래 잎이 떨어진 자리가 줄기에 겹쳐 남습니다.
-      const H = [8, 16, 24, 30][stage - 1];
-      const ax = makeAxis({ h: H, lean: 2, base: 7, tip: 5.5 });
-      const trunk = mix(tone.base, '#c9c9a0', .45);
+      const H = [10, 22, 34, 44][stage - 1];
+      const ax = makeAxis({ h: H, lean: 2, base: 9, tip: 7 });
+      const trunk = mix(tone.base, '#b8c479', .3);
       // 잎자루는 줄기 위쪽 60~100% 구간에서만 납니다 (관다발이 위에 몰림)
       const nodes = nodesOn(ax, { count: [2, 4, 6, 7][stage - 1], from: .55, to: 1, r });
 
@@ -317,8 +317,8 @@ export const SPECIES = {
     name: '아레카야자', latin: 'Dypsis lutescens', form: 'palm',
     draw(w, stage, tone) {
       const k = w / 46, r = rng(seedOf('areca' + stage));
-      const fronds = [[-20, .78, 1], [17, .8, 1], [0, .92, 0], [-40, .95, 0],
-                      [36, .97, 0], [-56, 1, 1], [52, 1.03, 1]]
+      const fronds = [[-14, .78, 1], [12, .8, 1], [0, .95, 0], [-26, .95, 0],
+                      [23, .97, 0], [-38, 1, 1], [34, 1.03, 1]]
         .slice(0, [2, 4, 6, 7][stage - 1]);
       const cane = mix(tone.base, '#d9c47a', .45);
       const ribs = [], pinnae = [];
@@ -328,10 +328,10 @@ export const SPECIES = {
         canes += `<rect x="${n1(x - 1.9)}" y="${n1(-h)}" width="3.8" height="${n1(h + 3)}" rx="1.9" fill="${cane}"/>`;
       }
       for (const [ang, lenK, back] of fronds) {
-        const H = 60 * lenK * (.92 + r() * .16);
+        const H = 76 * lenK * (.92 + r() * .16);
         const bow = Math.sign(ang || 1) * 16;
         // 활처럼 — 올라갔다가 바깥·아래로 휩니다
-        const rib = t => [bow * t * t, -H * t + H * .30 * t * t * t];
+        const rib = t => [bow * t * t, -H * t + H * .18 * t * t * t];
         const pairs = 13;
         let pin = '';
         for (let j = 1; j <= pairs; j++) {
@@ -404,8 +404,8 @@ export const SPECIES = {
       const k = w / 46, r = rng(seedOf('dieffenbachia' + stage));
       // 아래 잎이 떨어지며 마디 자국이 남은 대가 서고, 잎은 위쪽 마디에서 납니다
       const H = [12, 24, 34, 42][stage - 1];
-      const ax = makeAxis({ h: H, lean: -4, base: 6, tip: 4.2 });
-      const cane = mix(tone.base, '#cfd6a8', .45);
+      const ax = makeAxis({ h: H, lean: -4, base: 8, tip: 5.4 });
+      const cane = mix(tone.base, '#c2cf86', .3);
       const nodes = nodesOn(ax, { count: [2, 4, 6, 7][stage - 1], from: .22, to: 1, r });
       const mark = mix(tone.hi, '#f2f7e2', .55);
 
@@ -571,34 +571,35 @@ export const SPECIES = {
 
 /** `node src/sync-ext.mjs sp` 가 재서 갱신합니다 */
 export const FORM_EXT = {
-  monstera:   { w: 135.1, h: 93.2 },
-  strelitzia: { w: 122.5, h: 83.3 },
-  bamboo:     { w: 53.6,  h: 73 },
-  areca:      { w: 100.8, h: 61.8 },
-  eucalyptus: { w: 53.6,  h: 67.3 },
-  dieffenbachia: { w: 85.8, h: 73.2 },
-  jade:          { w: 41.5, h: 64.6 },
-  geranium:      { w: 78.3, h: 44.2 },
-  daisy:         { w: 72, h: 38 },
-  lettuce:       { w: 100.3, h: 88.8 },
+  monstera:   { w: 135.1, h: 106.6, top: 106 },
+  strelitzia: { w: 122.5, h: 96.9, top: 96.9 },
+  bamboo:     { w: 53.6, h: 73, top: 70 },
+  areca:      { w: 111.5, h: 76.8, top: 65.4 },
+  eucalyptus: { w: 53.6, h: 67.3, top: 64.3 },
+  dieffenbachia: { w: 85.8, h: 73.2, top: 73.2 },
+  jade:          { w: 41.5, h: 64.6, top: 61.6 },
+  geranium:      { w: 78.3, h: 44.2, top: 44.1 },
+  daisy:         { w: 72, h: 38, top: 41.6 },
+  lettuce:       { w: 100.3, h: 88.8, top: 49.8 },
 };
 export const FORM_FIT = {
   monstera:   { h: 3.4, w: 1.80 },
   strelitzia: { h: 3.6, w: 1.75 },
   bamboo:     { h: 4.0, w: 1.30 },
   areca:      { h: 3.4, w: 1.80 },
-  eucalyptus: { h: 3.8, w: 1.55 },
-  dieffenbachia: { h: 3.2, w: 1.75 },
-  jade:          { h: 3.6, w: 1.45 },
+  eucalyptus: { h: 5.34, w: 1.55 },
+  dieffenbachia: { h: 5.91, w: 1.75 },
+  jade:          { h: 5.89, w: 1.45 },
   geranium:      { h: 3.0, w: 1.70 },
   daisy:         { h: 3.0, w: 1.70 },
-  lettuce:       { h: 2.0, w: 1.55 },
+  lettuce:       { h: 2.4, w: 1.15 },
 };
 export function fitScale(id, w, potId) {
   const ext = FORM_EXT[id], fit = FORM_FIT[id];
   if (!ext || !fit) return 1;
   const { rx, h } = (POTS[potId] || POTS.basic).p;
-  return Math.min(fit.h * (w * h) / ext.h, fit.w * (w * rx * 2) / ext.w);
+  // fit.h는 화분 위로 솟은 높이(ext.top)의 목표치입니다
+  return Math.min(fit.h * (w * h) / (ext.top || ext.h), fit.w * (w * rx * 2) / ext.w);
 }
 
 /* ------------------------------------------------------------------ */

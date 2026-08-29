@@ -328,7 +328,7 @@ export const PLANT_FORMS = {
       // (잎이 흙 한 점에서 방사하는 근생형은 로제트형·양치형 쪽입니다)
       const H = [14, 26, 38, 48][stage - 1];
       const ax = makeAxis({ h: H, lean: 4, bow: -2, base: 5.5, tip: 3.4 });
-      const cane = mix(tone.base, '#b8ad7e', .48);
+      const cane = mix(tone.base, '#a3b566', .32);
       const nodes = nodesOn(ax, { count: [2, 4, 5, 6][stage - 1], from: .14, to: .98, r });
 
       const leaves = nodes.map(nd => {
@@ -364,7 +364,7 @@ export const PLANT_FORMS = {
       small: [[-6], [6]],
     },
     base: { kind: 'strap', len: 64, wid: 15, stalk: 3, rise: 0, bend: .16, bendVar: .3,
-            sweepK: .35, faceMin: .58, foldRate: .18, edge: '#cdbc63' },
+            sweepK: .35, faceMin: .58, foldRate: .18 },
     draw(w, stage, tone) {
       const k = w / 46;
       const leaves = grow(this.plan, stage, 'upright' + stage, this.base);
@@ -374,7 +374,7 @@ export const PLANT_FORMS = {
         for (let i = 1; i <= 5; i++) {
           const t = i / 6, hw = L.wid * .5 * PROFILE.strap(t) * L.face * .82;
           b.push(`<path d="M${n1(-hw)},${n1(-L.len * t)} Q0,${n1(-L.len * t + 2.2)} ${n1(hw)},${n1(-L.len * t)}"
-            stroke="${mix(tone.hi, '#e8e2a8', .45)}" stroke-width="2" opacity=".38" fill="none"/>`);
+            stroke="${mix(tone.shadow, tone.base, .5)}" stroke-width="2.2" opacity=".3" fill="none"/>`);
         }
         return `<g transform="translate(${n1(L.x)},${n1(L.y)}) rotate(${n1(L.rot)})">${b.join('')}</g>`;
       };
@@ -408,7 +408,7 @@ export const PLANT_FORMS = {
       const r = rng(seedOf('patterned' + stage)), k = w / 46;
       const H = [10, 20, 30, 38][stage - 1];
       const ax = makeAxis({ h: H, lean: -3, base: 5, tip: 3.2 });
-      const cane = mix(tone.base, '#c6cf9c', .45);
+      const cane = mix(tone.base, '#bccb84', .3);
       const nodes = nodesOn(ax, { count: [2, 4, 6, 7][stage - 1], from: .18, to: 1, r });
       const mark = tone.mark || '#dfeccb';
 
@@ -608,8 +608,8 @@ export const PLANT_FORMS = {
     name: '꽃나무', species: ['제라늄', '수국', '동백'], leaf: 'ovate', petal: '#e8899e',
     draw(w, stage, tone) {
       const k = w / 46, r = rng(seedOf('flower' + stage));
-      const clumps = [[-30, -20, 1], [28, -22, .95], [0, -34, 1.05], [-16, -38, .8], [18, -37, .82],
-                      [-38, -8, .7], [36, -10, .68]].slice(0, [2, 4, 6, 7][stage - 1]);
+      const clumps = [[-16, -16, .9], [14, -20, .92], [0, -34, 1.05], [-13, -46, .85], [15, -44, .86],
+                      [-22, -28, .8], [21, -30, .78]].slice(0, [2, 4, 6, 7][stage - 1]);
       let o = '';
       // 잔가지
       for (const [cx, cy] of clumps) o += stalk(cx, cy, tone, 1.8);
@@ -653,23 +653,23 @@ export const PLANT_FORMS = {
 
 /** `node src/measure.mjs v3` 가 재서 갱신합니다 */
 export const FORM_EXT = {
-  broadleaf: { w: 90.4, h: 76.3 },
-  upright:   { w: 40.4,  h: 70.3 },
-  rosette:   { w: 56,  h: 37.3 },
-  patterned: { w: 82.1,  h: 64.5 },
-  vine:      { w: 95.1,  h: 94.8 },
-  palm:      { w: 103, h: 76.3 },
-  cactus:    { w: 40,  h: 62 },
-  fern:      { w: 66.3, h: 42.6 },
-  flower:    { w: 107.3,  h: 65.9 },
+  broadleaf: { w: 90.4, h: 76.3, top: 76 },
+  upright:   { w: 40.4, h: 70.3, top: 68.3 },
+  rosette:   { w: 56, h: 37.3, top: 22 },
+  patterned: { w: 82.1, h: 64.5, top: 64.5 },
+  vine:      { w: 95.1, h: 94.8, top: 43 },
+  palm:      { w: 103, h: 76.3, top: 66.9 },
+  cactus:    { w: 40, h: 62, top: 58 },
+  fern:      { w: 66.3, h: 42.6, top: 32.7 },
+  flower:    { w: 81.1, h: 73.3, top: 68 },
 };
 
 export const FORM_FIT = {
-  broadleaf: { h: 3.2, w: 1.75 },
-  upright:   { h: 3.0, w: 1.15 },
+  broadleaf: { h: 6.4, w: 1.75 },
+  upright:   { h: 6, w: 1.15 },
   rosette:   { h: 1.6, w: 1.05 },
-  patterned: { h: 2.6, w: 1.55 },
-  vine:      { h: 4.4, w: 1.85 },  // 크라운 + 늘어짐이 한 bbox에 들어갑니다
+  patterned: { h: 5.2, w: 1.55 },
+  vine:      { h: 3.2, w: 1.30 },  // 크라운 + 늘어짐이 한 bbox에 들어갑니다
   palm:      { h: 3.0, w: 1.80 },
   cactus:    { h: 3.4, w: 0.95 },
   fern:      { h: 2.6, w: 1.80 },

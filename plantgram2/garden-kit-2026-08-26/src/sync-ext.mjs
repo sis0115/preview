@@ -29,17 +29,23 @@ for (const [id, def] of Object.entries(PLANT_FORMS)) {
     document.body.appendChild(d);
     const b = d.querySelector('g').getBBox();
     d.remove();
-    return { w: +b.width.toFixed(1), h: +b.height.toFixed(1) };
+    return { w: +b.width.toFixed(1), h: +b.height.toFixed(1), top: +(-b.y).toFixed(1) };
   }, inner);
 }
 await browser.close();
 
 let src = readFileSync(file, 'utf8');
-for (const [id, { w, h }] of Object.entries(m)) {
-  const re = new RegExp(`(\\n  ${id}:\\s*\\{ w: )[\\d.]+(,\\s*h: )[\\d.]+( \\},)`);
-  if (!re.test(src)) { console.error(`${id} 항목을 표에서 못 찾았습니다`); process.exit(1); }
-  src = src.replace(re, `$1${w}$2${h}$3`);
+// FORM_EXT 블록만 떼어 그 안에서만 치환합니다 (PLANT_FORMS에 같은 이름이 또 있습니다)
+const open = src.indexOf('export const FORM_EXT = {');
+if (open < 0) { console.error('FORM_EXT 블록을 못 찾았습니다'); process.exit(1); }
+const close = src.indexOf('\n};', open);
+let block = src.slice(open, close);
+for (const [id, { w, h, top }] of Object.entries(m)) {
+  const re = new RegExp(`(\\n\\s+${id}:\\s*)\\{[^}]*\\},`);
+  if (!re.test(block)) { console.error(`${id} 항목을 표에서 못 찾았습니다`); process.exit(1); }
+  block = block.replace(re, `$1{ w: ${w}, h: ${h}, top: ${top} },`);
 }
+src = src.slice(0, open) + block + src.slice(close);
 writeFileSync(file, src);
 console.log(`${name}.mjs의 FORM_EXT를 갱신했습니다:`);
-for (const [id, v] of Object.entries(m)) console.log(`  ${id.padEnd(11)} ${v.w}×${v.h}`);
+for (const [id, v] of Object.entries(m)) console.log(`  ${id.padEnd(13)} ${v.w}×${v.h}  화분 위 ${v.top}`);
