@@ -1,0 +1,31 @@
+Match the attached sheet exactly — the same rendering, the same leaf detail, the same green palette, the same light direction from the upper left, and the same front-facing camera. These plants must look like they came from that same sheet.
+
+A sprite sheet of 3 plant species at 4 growth stages each, on a 4-wide by 3-tall grid. Each ROW is one species. Left to right within a row: stage 1 seedling, stage 2 young, stage 3 mature, stage 4 full grown.
+
+Row 1 — monstera deliciosa:
+  1. one small whole heart-shaped leaf, no splits, on a very short stem
+  2. three leaves with shallow notches beginning at the edges
+  3. five leaves with deep edge splits and one hole beside the midrib, on a thickening stem
+  4. seven large leaves on a thick tall stem, deeply split with rows of holes on both sides of the midrib
+
+Row 2 — bird of paradise (strelitzia nicolai):
+  1. two small rolled leaf spears just opening
+  2. three paddle leaves on short stalks
+  3. five big paddle leaves fanning out in one plane on long stalks
+  4. seven very large paddle leaves with a few natural splits along the edges, fanning in two ranks on tall stalks
+
+Row 3 — lucky bamboo:
+  1. one short segmented cane with a small leaf tuft at the top
+  2. two canes of different heights with leaves at the upper nodes
+  3. four canes with leaf tufts at several different node heights
+  4. six thick canes of staggered heights with full leaf tufts along the upper nodes
+
+Every plant is drawn WITHOUT any pot or container, cut off cleanly at the soil line. No pot, no soil, no roots, no saucer, no ground.
+
+Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. Stage 1 is about a quarter the height of stage 4. Across all three rows the stage 4 plants are about the same height as each other, matching the plants in the attached sheet.
+
+Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every plant. No plant touches or overlaps another.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane. Every pixel must be either fully opaque plant or fully transparent — no faint semi-transparent tint anywhere. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.

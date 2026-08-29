@@ -1,0 +1,31 @@
+Match the attached sheet exactly — the same rendering, the same leaf detail, the same green palette, the same light direction from the upper left, and the same front-facing camera. These plants must look like they came from that same sheet.
+
+A sprite sheet of 3 plant species at 4 growth stages each, on a 4-wide by 3-tall grid. Each ROW is one species. Left to right within a row: stage 1 seedling, stage 2 young, stage 3 mature, stage 4 full grown.
+
+Row 1 — jade plant (crassula ovata):
+  1. a short woody stem with two pairs of thick round leaves
+  2. a branching stem with six thick leaves
+  3. a small thick brown trunk with three branches and many round leaves
+  4. a stout thick brown trunk with many branches, densely covered in thick glossy round leaves
+
+Row 2 — fiddle leaf fig:
+  1. one small violin-shaped leaf on a short stem
+  2. three leaves alternating up a thin trunk at different heights
+  3. six large violin-shaped leaves with strong pale veins on an upright woody trunk
+  4. nine very large leaves up a tall woody trunk, attached at different heights and facing different directions
+
+Row 3 — snake plant (sansevieria):
+  1. two short stiff upright blades
+  2. four blades of different heights
+  3. seven tall blades with clear horizontal banding and yellow edges
+  4. a dense fan of eleven tall sword blades, banded, with bright yellow margins
+
+Every plant is drawn WITHOUT any pot or container, cut off cleanly at the soil line. No pot, no soil, no roots, no saucer, no ground.
+
+Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. Stage 1 is about a quarter the height of stage 4. Across all three rows the stage 4 plants are about the same height as each other, matching the plants in the attached sheet.
+
+Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every plant. No plant touches or overlaps another.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane. Every pixel must be either fully opaque plant or fully transparent — no faint semi-transparent tint anywhere. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.

@@ -1,0 +1,32 @@
+Match the attached sheet exactly — the same rendering, the same leaf detail, the same green palette, the same light direction from the upper left, and the same front-facing camera. These plants must look like they came from that same sheet.
+
+A sprite sheet of 3 plant species at 4 growth stages each, on a 4-wide by 3-tall grid. Each ROW is one species. Left to right within a row: stage 1 seedling, stage 2 young, stage 3 mature, stage 4 full grown.
+
+Row 1 — areca palm:
+  1. one short arching frond of narrow leaflets
+  2. three fronds from a small clump
+  3. six fronds rising from several canes, arching outward
+  4. a full clump of many canes with ten or more long arching feathery fronds
+
+Row 2 — silver dollar eucalyptus:
+  1. a single thin brown stem with three pairs of small round blue-green leaves
+  2. two stems with round leaves in opposite pairs up their length
+  3. four branching stems, denser
+  4. a tall many-branched spray of round blue-green leaves in opposite pairs
+  Keep this species clearly bluer and paler than every other plant on the sheet.
+
+Row 3 — dieffenbachia:
+  1. one small lance-shaped leaf with a faint cream marking down the centre
+  2. three leaves, the cream marking clearer
+  3. six broad leaves with strong cream variegation spreading from the midrib
+  4. nine large broad leaves, heavily variegated cream and green, spreading in a full rosette
+
+Every plant is drawn WITHOUT any pot or container, cut off cleanly at the soil line. No pot, no soil, no roots, no saucer, no ground.
+
+Within a row the plant grows visibly from left to right — more leaves, taller, and the leaf shape matures. Stage 1 is about a quarter the height of stage 4. Across all three rows the stage 4 plants are about the same height as each other, matching the plants in the attached sheet.
+
+Layout: an evenly spaced 4 by 3 grid with at least 60 pixels of empty space around every plant. No plant touches or overlaps another.
+
+Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane. Every pixel must be either fully opaque plant or fully transparent — no faint semi-transparent tint anywhere. No text, no labels, no numbers, no watermark.
+
+Output: 1536x1024 PNG with transparency.
