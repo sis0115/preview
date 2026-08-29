@@ -42,7 +42,26 @@ def slice_sheet(path, outdir, alpha_min=60, min_px=900, pad=6, gap=3):
                         seen[ny, nx] = True; q.append((ny, nx))
             if n >= min_px: boxes.append((x0, y0, x1, y1))
     # 위→아래, 왼→오른 순서로 정렬 (행 단위)
-    boxes.sort(key=lambda b: (b[1] // 60, b[0]))
+    #
+    # 행은 밑선(y1)으로 나눕니다. 위쪽(y0)으로 나누면 같은 줄에 있어도
+    # 키 큰 성체가 윗줄로 올라가 성장 단계가 뒤집힙니다 — 실제로 겪었습니다.
+    # 밑선은 한 줄 안에서 거의 같으므로 안전합니다.
+    if boxes:
+        base = sorted(b[3] for b in boxes)
+        rows, cur = [], [base[0]]
+        for v in base[1:]:
+            if v - cur[-1] > 80:
+                rows.append(cur)
+                cur = [v]
+            else:
+                cur.append(v)
+        rows.append(cur)
+        centers = [sum(r) / len(r) for r in rows]
+
+        def row_of(b):
+            return min(range(len(centers)), key=lambda i: abs(centers[i] - b[3]))
+
+        boxes.sort(key=lambda b: (row_of(b), b[0]))
     os.makedirs(outdir, exist_ok=True)
     meta = []
     for i, (x0, y0, x1, y1) in enumerate(boxes):
