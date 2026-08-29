@@ -1,0 +1,22 @@
+Match the attached sheet exactly — the same isometric 2:1 camera angle, the same soft cel shading, the same clean vector rendering, the same terracotta and green palette, and the same light coming from the upper left. This must look like the room those plants live in.
+
+A single wide illustration of the INSIDE of a small glass greenhouse, drawn as one complete picture — not as separate parts, not as a grid of items.
+
+What is in it:
+- a white-painted steel frame with large glass panels on the back wall and both side walls
+- a pitched glass roof with visible rafters, the sky beyond it pale and bright
+- a potting bench along the left wall with a few clay pots and hand tools on it
+- a wooden shelf unit against the right wall holding small potted seedlings
+- watering cans, a coiled hose and stacked terracotta pots resting against the walls
+- a few climbing vines along the frame near the roof
+- warm daylight falling in from the upper left, with soft light pooling on the floor
+
+IMPORTANT — the floor must be EMPTY. The centre of the image is a bare, flat, open floor with nothing standing on it. Every object sits against the walls, around the edges. The player's plants get placed on that empty floor in the app, so anything in the middle would collide with them.
+
+The floor is a flat plane seen at the same isometric angle, drawn plain and quiet so plants placed on it stand out — no strong pattern, no bright color.
+
+Keep the whole scene lower in contrast and slightly desaturated compared with the plants in the attached sheet. This is a backdrop; the plants are the subject.
+
+No people, no animals. No text, no labels, no numbers, no watermark. No UI, no frame, no border.
+
+Output: 1536x1024 PNG.

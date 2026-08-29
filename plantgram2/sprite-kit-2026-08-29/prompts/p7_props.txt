@@ -20,6 +20,6 @@ Scale reference: the standard terracotta pot in the attached sheet is 78 units w
 
 Layout: an evenly spaced grid with at least 60 pixels of empty space around every item. Nothing touches or overlaps — shrink an item rather than let two cells touch. Every item drawn at the same camera angle and in the same scale relationship.
 
-Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Keep contact shadows soft light gray, never black. No text, no labels, no numbers, no watermark.
+Background: fully transparent PNG with alpha. No background color, no gradient, no green haze, no blur, no vignette, no ground plane, no table. Every pixel must be either fully opaque or fully transparent — no faint semi-transparent tint anywhere. Draw the contact shadow beneath each item as a soft DARK shadow — a dark grey-brown at low opacity, fading out at its edge. Never a light grey or white shadow: these sprites sit on dark soil in the app, and a light shadow shows up as a white smear. No text, no labels, no numbers, no watermark.
 
 Output: 1536x1024 PNG with transparency.
