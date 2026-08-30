@@ -88,9 +88,28 @@ def find_soil(im, slots):
 
     if len(slots) == 1:
         return [summarize(pts)]
-    mid = sum(q[0] for q in pts) / len(pts)
-    halves = [[q for q in pts if q[0] < mid], [q for q in pts if q[0] >= mid]]
-    return [summarize(g or pts) for g in halves]
+
+    # 여러 자리는 흙을 가로로 고르게 나눕니다.
+    #
+    # x 중앙값으로 반을 가르면 등각 상자에서 좌우가 고르지 않게 갈립니다
+    # (한쪽이 91, 다른 쪽이 126 으로 나왔습니다). 흙의 가로 범위를 자리
+    # 수만큼 등분하고, 각 구간의 흙 픽셀만으로 자리를 잡습니다.
+    n = len(slots)
+    xs_all = [q[0] for q in pts]
+    lo, hi = min(xs_all), max(xs_all)
+    span = (hi - lo) / n
+    out = []
+    for k in range(n):
+        a, b = lo + k * span, lo + (k + 1) * span
+        band = [q for q in pts if a <= q[0] <= b] or pts
+        ys = [q[1] for q in band]
+        out.append({
+            "x": round(a + span / 2),
+            "y": round(sum(ys) / len(ys)),
+            # 자리 폭은 등분한 구간. 여기에 맞춰 식물을 줄입니다.
+            "w": round(span * .92),
+        })
+    return out
 
 
 def make_shadow(width, path):
@@ -168,7 +187,7 @@ def main(sheet_path, out="assets", ref="sheets/kit_ref.json"):
     ref = next((v for k, v in cat["pots"].items() if not k.startswith("bed")),
                next(iter(cat["pots"].values())))
     cat["grid"]["unitScale"] = round(
-        st["tileW"] * 0.62 / ref["slots"][0]["w"], 4)
+        st["tileW"] * 0.34 / ref["slots"][0]["w"], 4)
     print(f"  한 배율 {cat['grid']['unitScale']}  "
           f"(타일 {st['tileW']} · 표준 화분 흙 {ref['slots'][0]['w']})")
 

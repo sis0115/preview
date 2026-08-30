@@ -38,6 +38,13 @@ class PotAsset {
 
   String get path => 'assets/pots/$id.png';
 
+  /// 자리 하나에 심는 식물의 크기 배율.
+  ///
+  /// 긴 화단의 한 자리는 둥근 화분의 흙보다 좁습니다. 같은 크기로 얹으면
+  /// 식물이 화단 밖으로 걸칩니다. 자리 폭에 맞춰 줄입니다.
+  double scaleFor(Slot slot, double referenceSoilWidth) =>
+      slot.width / referenceSoilWidth;
+
   /// 칸 한가운데에 놓을 기준점. 심는 자리들의 한가운데입니다.
   Offset get anchor {
     var x = 0.0, y = 0.0;
@@ -116,6 +123,15 @@ class Catalog {
   final Map<String, PlantAsset> plants;
   final GridSpec grid;
   final ui.Image stage;
+
+  /// 기준이 되는 흙 폭. 자리마다 식물 크기를 맞출 때 씁니다.
+  /// 둥근 화분(자리가 하나인 것) 중 첫 번째를 기준으로 삼습니다.
+  double get referenceSoilWidth {
+    for (final p in pots.values) {
+      if (p.slots.length == 1) return p.slots.first.width;
+    }
+    return pots.values.first.slots.first.width;
+  }
 
   static double _d(Map m, String k) => (m[k] as num).toDouble();
 
