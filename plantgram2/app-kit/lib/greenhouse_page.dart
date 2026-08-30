@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'catalog.dart';
@@ -24,21 +25,28 @@ class GreenhousePage extends StatefulWidget {
 
 class _GreenhousePageState extends State<GreenhousePage> {
   late final IsoGrid grid = IsoGrid(widget.catalog.grid);
-  late final Garden garden = Garden(grid);
+  late final Garden garden = Garden(grid, widget.catalog);
   final view = TransformationController();
 
-  bool showGrid = false;
+  /// 바닥 격자는 늘 보입니다. 이 값은 진하게 볼지 여부입니다.
+  bool strongGrid = false;
   String? saved;
   double _base = 1;
   bool _fitted = false;
+
+  /// 끌고 있는 동안: 손가락을 따라가는 기준점과, 놓이려는 칸.
+  Offset? _dragAt;
+  Cell? _dropAt;
+  bool _dropOk = true;
 
   @override
   void initState() {
     super.initState();
     garden
-      ..add('monstera', 'pot_terracotta', at: const Cell(1, 1))
+      ..add('monstera', 'pot_terracotta', at: const Cell(0, 2))
       ..add('strelitzia', 'pot_white', at: const Cell(3, 1))
-      ..add('bamboo', 'bed_wood', at: const Cell(2, 3))
+      // 화단은 (2,3) 과 (2,2) 두 칸을 씁니다.
+      ..add('bamboo', 'bed_wood', at: const Cell(2, 2))
       ..select(null);
   }
 
@@ -103,113 +111,202 @@ class _GreenhousePageState extends State<GreenhousePage> {
   }
 
   Widget _header() => Padding(
-    padding: const EdgeInsets.fromLTRB(18, 12, 18, 8),
-    child: Row(
-      children: [
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('우리집 온실',
+        padding: const EdgeInsets.fromLTRB(18, 12, 18, 8),
+        child: Row(
+          children: [
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('우리집 온실',
+                      style: TextStyle(
+                          fontSize: 23,
+                          fontWeight: FontWeight.w800,
+                          color: _ink)),
+                  SizedBox(height: 2),
+                  Text('식물을 눌러 고르고, 끌어서 칸에 옮기세요 · 화단은 두 칸',
+                      style: TextStyle(color: _mut, fontSize: 13)),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                  color: _card, borderRadius: BorderRadius.circular(18)),
+              child: const Text('Lv. 8  ·  6,394 GP',
                   style: TextStyle(
-                      fontSize: 23, fontWeight: FontWeight.w800, color: _ink)),
-              SizedBox(height: 2),
-              Text('식물을 눌러 고르고, 끌어서 칸에 옮기세요',
-                  style: TextStyle(color: _mut, fontSize: 13)),
-            ],
-          ),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12.5,
+                      color: Color(0xFF557C61))),
+            ),
+          ],
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-          decoration: BoxDecoration(
-              color: _card, borderRadius: BorderRadius.circular(18)),
-          child: const Text('Lv. 8  ·  6,394 GP',
-              style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12.5,
-                  color: Color(0xFF557C61))),
-        ),
-      ],
-    ),
-  );
+      );
 
   /// 온실 그림과 식물이 한 좌표계 안에 있습니다. 배경만 확대하면 식물이
   /// 따라오지 않으므로, 둘을 한 상자에 넣고 그 상자를 통째로 확대합니다.
   Widget _scene(GridSpec g) => LayoutBuilder(builder: (context, box) {
-    _fitOnce(box.biggest);
-    return InteractiveViewer(
-      transformationController: view,
-      // 자식을 뷰포트 크기로 누르지 않습니다. 눌리면 그림의 픽셀 좌표계가
-      // 찌그러져 식물이 엉뚱한 데로 갑니다.
-      constrained: false,
-      minScale: .3,
-      maxScale: 3,
-      boundaryMargin: const EdgeInsets.all(400),
-      child: SizedBox(
-        width: g.sceneW,
-        height: g.sceneH,
-        child: AnimatedBuilder(
-          animation: garden,
-          builder: (context, _) => Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: _StagePainter(widget.catalog.stage,
-                      showGrid ? grid : null, garden.occupied),
-                ),
+        _fitOnce(box.biggest);
+        return InteractiveViewer(
+          transformationController: view,
+          // 자식을 뷰포트 크기로 누르지 않습니다. 눌리면 그림의 픽셀 좌표계가
+          // 찌그러져 식물이 엉뚱한 데로 갑니다.
+          constrained: false,
+          minScale: .3,
+          maxScale: 3,
+          boundaryMargin: const EdgeInsets.all(400),
+          child: SizedBox(
+            width: g.sceneW,
+            height: g.sceneH,
+            child: AnimatedBuilder(
+              animation: garden,
+              builder: (context, _) => Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned.fill(
+                    child: CustomPaint(
+                      painter: _StagePainter(
+                        stage: widget.catalog.stage,
+                        floor: widget.catalog.floor,
+                        grid: grid,
+                        taken: garden.occupied,
+                        strong: strongGrid,
+                        mark: _markedCells(),
+                        markOk: _dropOk,
+                      ),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTapDown: (d) {
+                        final c = grid.cellAt(d.localPosition);
+                        garden.select(null);
+                        if (grid.contains(c)) _tapEmpty(c);
+                      },
+                    ),
+                  ),
+                  // 뒤에서 앞으로 — 칸 좌표 (i+j) 오름차순
+                  for (final p in garden.inDrawOrder) _sprite(p),
+                  // 고른 칸의 테두리는 식물 위에 한 겹 더 긋습니다. 화단처럼
+                  // 큰 화분은 제 몸으로 제 칸을 가리기 때문입니다.
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: _MarkPainter(grid, _markedCells(), _dropOk),
+                      ),
+                    ),
+                  ),
+                  Positioned(right: 12, top: 12, child: _zoomBar()),
+                ],
               ),
-              Positioned.fill(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTapDown: (d) {
-                    final c = grid.cellAt(d.localPosition);
-                    garden.select(null);
-                    if (grid.contains(c)) _tapEmpty(c);
-                  },
-                ),
-              ),
-              // 뒤에서 앞으로 — 칸 좌표 (i+j) 오름차순
-              for (final p in garden.inDrawOrder) _sprite(p),
-              Positioned(right: 12, top: 12, child: _zoomBar()),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
-  });
+        );
+      });
+
+  /// 지금 표시할 칸. 끌고 있으면 놓이려는 자리, 아니면 고른 식물의 자리.
+  List<Cell> _markedCells() {
+    final p = garden.selected;
+    if (p == null) return const [];
+    final at = _dropAt;
+    return at == null ? garden.cellsOf(p) : garden.cellsFor(at, p.potId);
+  }
+
+  /// 화분의 기준점이 놓이는 자리 — 덮는 칸들의 한가운데입니다.
+  /// 한 칸짜리는 칸 한가운데, 두 칸짜리 화단은 두 칸 사이 경계입니다.
+  Offset _anchorOf(Cell base, String potId) {
+    final cs = garden.cellsFor(base, potId);
+    var x = 0.0, y = 0.0;
+    for (final c in cs) {
+      final o = grid.center(c);
+      x += o.dx;
+      y += o.dy;
+    }
+    return Offset(x / cs.length, y / cs.length);
+  }
+
+  /// 기준점이 [at] 에 오려면 기준 칸이 어디여야 하는지. [_anchorOf] 의 역입니다.
+  Cell _baseCellAt(Offset at, String potId) {
+    final span = widget.catalog.pots[potId]!.span;
+    var di = 0.0, dj = 0.0;
+    for (final (a, b) in span) {
+      di += a;
+      dj += b;
+    }
+    final g = widget.catalog.grid;
+    return grid
+        .cellAt(at - g.u * (di / span.length) - g.v * (dj / span.length));
+  }
 
   Widget _sprite(PlacedPlant p) {
-    final at = grid.center(p.cell);
-    final layout =
-        SpriteLayout.of(widget.catalog, p.plantId, p.potId, p.scale);
+    final at = _anchorOf(p.cell, p.potId);
+    final layout = SpriteLayout.of(widget.catalog, p.plantId, p.potId, p.scale);
+    final pot = widget.catalog.pots[p.potId]!;
+    final ps = layout.potScale;
+    // 손이 닿는 곳은 화분까지입니다. 잎은 옆 칸 위까지 뻗으므로, 잎이
+    // 덮은 자리를 눌러도 그 밑의 화분이 잡혀야 합니다.
+    final grip = Rect.fromLTWH(
+      layout.anchor.dx - pot.foot.dx * ps,
+      layout.anchor.dy - pot.foot.dy * ps,
+      pot.size.width * ps,
+      pot.size.height * ps,
+    );
     return Positioned(
       left: at.dx - layout.anchor.dx,
       top: at.dy - layout.anchor.dy,
       width: layout.size.width,
       height: layout.size.height,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => garden.select(p.id),
-        onScaleStart: (_) => garden.select(p.id),
-        onScaleUpdate: (d) {
-          if (d.pointerCount == 1) {
-            // 확대 중이면 손가락 이동을 배율로 나눠 그림 좌표로 되돌립니다.
-            garden.moveTo(
-                p,
-                grid.cellAt(
-                    grid.center(p.cell) + d.focalPointDelta * _sceneScale));
-          } else if (d.scale != 1) {
-            garden.resize(p, d.scale);
-          }
-        },
-        child: PlantSprite(
-          catalog: widget.catalog,
-          plantId: p.plantId,
-          potId: p.potId,
-          layout: layout,
-          selected: garden.selectedId == p.id,
-        ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          IgnorePointer(
+            child: PlantSprite(
+              catalog: widget.catalog,
+              plantId: p.plantId,
+              potId: p.potId,
+              layout: layout,
+            ),
+          ),
+          Positioned.fromRect(
+            rect: grip,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => garden.select(p.id),
+              onScaleStart: (_) {
+                garden.select(p.id);
+                setState(() {
+                  _dragAt = _anchorOf(p.cell, p.potId);
+                  _dropAt = p.cell;
+                  _dropOk = true;
+                });
+              },
+              onScaleUpdate: (d) {
+                if (d.pointerCount == 1) {
+                  // 손가락 이동을 확대율로 나눠 그림 좌표로 되돌립니다. 칸이 아니라
+                  // 기준점을 들고 다녀야 반 칸 미만의 움직임이 버려지지 않습니다.
+                  final now = (_dragAt ?? _anchorOf(p.cell, p.potId)) +
+                      d.focalPointDelta * _sceneScale;
+                  final base = _baseCellAt(now, p.potId);
+                  final ok = garden.fits(base, p.potId, ignore: p.id);
+                  setState(() {
+                    _dragAt = now;
+                    _dropAt = base;
+                    _dropOk = ok;
+                  });
+                  if (ok) garden.moveTo(p, base);
+                } else if (d.scale != 1) {
+                  garden.resize(p, d.scale);
+                }
+              },
+              onScaleEnd: (_) => setState(() {
+                _dragAt = null;
+                _dropAt = null;
+                _dropOk = true;
+              }),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -286,19 +383,19 @@ class _GreenhousePageState extends State<GreenhousePage> {
       );
 
   Widget _zoomBar() => Container(
-    decoration: BoxDecoration(
-        color: _card.withValues(alpha: .92),
-        borderRadius: BorderRadius.circular(18)),
-    child: Column(
-      children: [
-        _icon(Icons.add, () => _zoom(1.2)),
-        const Divider(height: 1),
-        _icon(Icons.remove, () => _zoom(1 / 1.2)),
-        const Divider(height: 1),
-        _icon(Icons.fit_screen, () => setState(() => _fitted = false)),
-      ],
-    ),
-  );
+        decoration: BoxDecoration(
+            color: _card.withValues(alpha: .92),
+            borderRadius: BorderRadius.circular(18)),
+        child: Column(
+          children: [
+            _icon(Icons.add, () => _zoom(1.2)),
+            const Divider(height: 1),
+            _icon(Icons.remove, () => _zoom(1 / 1.2)),
+            const Divider(height: 1),
+            _icon(Icons.fit_screen, () => setState(() => _fitted = false)),
+          ],
+        ),
+      );
 
   Widget _icon(IconData i, VoidCallback f) => IconButton(
       onPressed: f,
@@ -308,134 +405,212 @@ class _GreenhousePageState extends State<GreenhousePage> {
 
   /// 고른 식물에 따라 바뀌는 아래 판.
   Widget _panel() => AnimatedBuilder(
-    animation: garden,
-    builder: (context, _) {
-      final p = garden.selected;
-      return Container(
-        height: 72,
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-        child: p == null
-            ? const Center(
-                child: Text('빈 칸을 누르면 심고, 식물을 누르면 고릅니다',
-                    style: TextStyle(color: _mut, fontSize: 13)))
-            : Row(
-                children: [
-                  Text(plantNames[p.plantId] ?? p.plantId,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w800, color: _ink)),
-                  const SizedBox(width: 8),
-                  Text(potNames[p.potId] ?? p.potId,
-                      style: const TextStyle(color: _mut, fontSize: 12.5)),
-                  const Spacer(),
-                  for (final k in widget.catalog.pots.keys)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 6),
-                      child: GestureDetector(
-                        onTap: () => garden.repot(p, k),
-                        child: Container(
-                          width: 46,
-                          height: 46,
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: _card,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                                color: p.potId == k
-                                    ? _leaf
-                                    : const Color(0xFFE2E2DD),
-                                width: p.potId == k ? 2 : 1),
+        animation: garden,
+        builder: (context, _) {
+          final p = garden.selected;
+          return Container(
+            height: 72,
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+            child: p == null
+                ? const Center(
+                    child: Text('빈 칸을 누르면 심고, 식물을 누르면 고릅니다',
+                        style: TextStyle(color: _mut, fontSize: 13)))
+                : Row(
+                    children: [
+                      Text(plantNames[p.plantId] ?? p.plantId,
+                          style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: _ink)),
+                      const SizedBox(width: 8),
+                      Text(potNames[p.potId] ?? p.potId,
+                          style: const TextStyle(color: _mut, fontSize: 12.5)),
+                      const Spacer(),
+                      for (final k in widget.catalog.pots.keys)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6),
+                          child: GestureDetector(
+                            onTap: () {
+                              if (garden.repot(p, k)) return;
+                              final n = widget.catalog.pots[k]!.span.length;
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text(
+                                      '${potNames[k] ?? k}은(는) $n칸이 필요합니다 — 빈 자리가 없습니다'),
+                                  duration: const Duration(seconds: 2)));
+                            },
+                            child: Container(
+                              width: 46,
+                              height: 46,
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: _card,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: p.potId == k
+                                        ? _leaf
+                                        : const Color(0xFFE2E2DD),
+                                    width: p.potId == k ? 2 : 1),
+                              ),
+                              child: Image.asset(widget.catalog.pots[k]!.path),
+                            ),
                           ),
-                          child: Image.asset(widget.catalog.pots[k]!.path),
                         ),
-                      ),
-                    ),
-                  const SizedBox(width: 6),
-                  IconButton(
-                      onPressed: () => garden.remove(p),
-                      icon: const Icon(Icons.delete_outline, size: 20),
-                      color: _mut),
-                ],
-              ),
+                      const SizedBox(width: 6),
+                      IconButton(
+                          onPressed: () => garden.remove(p),
+                          icon: const Icon(Icons.delete_outline, size: 20),
+                          color: _mut),
+                    ],
+                  ),
+          );
+        },
       );
-    },
-  );
 
   Widget _tray() => Container(
-    padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-    child: Row(
-      children: [
-        _flat(showGrid ? '격자 끄기' : '격자 보기',
-            () => setState(() => showGrid = !showGrid)),
-        const SizedBox(width: 8),
-        _flat('저장', () {
-          saved = garden.encode();
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('온실을 저장했습니다'),
-              duration: Duration(seconds: 1)));
-        }),
-        const SizedBox(width: 8),
-        _flat('되돌리기', () {
-          if (saved != null) garden.decode(saved!);
-        }),
-      ],
-    ),
-  );
+        padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+        child: Row(
+          children: [
+            _flat(strongGrid ? '칸선 끄기' : '칸선 보기',
+                () => setState(() => strongGrid = !strongGrid)),
+            const SizedBox(width: 8),
+            _flat('저장', () {
+              saved = garden.encode();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('온실을 저장했습니다'), duration: Duration(seconds: 1)));
+            }),
+            const SizedBox(width: 8),
+            _flat('되돌리기', () {
+              if (saved != null) garden.decode(saved!);
+            }),
+          ],
+        ),
+      );
 
   Widget _flat(String label, VoidCallback onTap) => Expanded(
-    child: Material(
-      color: _card,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Container(
-          height: 44,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
+        child: Material(
+          color: _card,
+          borderRadius: BorderRadius.circular(14),
+          child: InkWell(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFFE2E2DD)),
+            onTap: onTap,
+            child: Container(
+              height: 44,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFE2E2DD)),
+              ),
+              child: Text(label,
+                  style: const TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: _ink)),
+            ),
           ),
-          child: Text(label,
-              style: const TextStyle(
-                  fontSize: 13.5, fontWeight: FontWeight.w700, color: _ink)),
         ),
-      ),
-    ),
-  );
+      );
 }
 
-/// 온실 그림과, 켜면 격자를 그립니다.
+/// 온실 그림과 그 위의 바닥을 그립니다.
+///
+/// 격자는 바닥 그림에 이미 깔려 있습니다 - 그래서 늘 보이고, 언제나
+/// 논리 격자와 정확히 맞습니다. 여기서 더 그리는 것은 지금 노리는 칸과,
+/// 자리를 맞출 때 켜는 진한 칸선뿐입니다.
 class _StagePainter extends CustomPainter {
-  _StagePainter(this.stage, this.grid, this.taken);
+  _StagePainter({
+    required this.stage,
+    required this.floor,
+    required this.grid,
+    required this.taken,
+    required this.strong,
+    required this.mark,
+    required this.markOk,
+  });
 
   final ui.Image stage;
-  final IsoGrid? grid;
+  final ui.Image floor;
+  final IsoGrid grid;
   final Set<Cell> taken;
+
+  /// 칸선을 또렷하게 볼지. 자리를 맞출 때 켭니다.
+  final bool strong;
+
+  /// 지금 노리는 칸들. 화단이면 두 칸이 한 덩어리로 칠해집니다.
+  final List<Cell> mark;
+
+  /// 그 자리에 놓을 수 있는지. 안 되면 붉게 표시합니다.
+  final bool markOk;
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawImageRect(
-      stage,
-      Rect.fromLTWH(0, 0, stage.width.toDouble(), stage.height.toDouble()),
-      Offset.zero & size,
-      Paint()..filterQuality = FilterQuality.medium,
-    );
-    final g = grid;
-    if (g == null) return;
-    final line = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.6
-      ..color = const Color(0x88FF7A2F);
-    final free = Paint()..color = const Color(0x1FFF7A2F);
-    for (final c in g.cells) {
-      final path = g.diamond(c);
-      if (!taken.contains(c)) canvas.drawPath(path, free);
-      canvas.drawPath(path, line);
+    final paint = Paint()..filterQuality = FilterQuality.medium;
+    for (final img in [stage, floor]) {
+      canvas.drawImageRect(
+        img,
+        Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+        Offset.zero & size,
+        paint,
+      );
     }
+
+    if (strong) {
+      final line = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.4
+        ..color = const Color(0xFF566052).withValues(alpha: .45);
+      final free = Paint()
+        ..color = const Color(0xFF566052).withValues(alpha: .07);
+      for (final c in grid.cells) {
+        final path = grid.diamond(c);
+        if (!taken.contains(c)) canvas.drawPath(path, free);
+        canvas.drawPath(path, line);
+      }
+    }
+
+    if (mark.isEmpty) return;
+    // 두 칸을 마름모 둘로 그리면 사이에 이음선이 남습니다. 합쳐서 한 덩어리로.
+    final area = grid.union(mark);
+    final tint = markOk ? const Color(0xFF4E8C5E) : const Color(0xFFB4503F);
+    canvas.drawPath(area, Paint()..color = tint.withValues(alpha: .24));
+    canvas.drawPath(
+      area,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.4
+        ..color = tint.withValues(alpha: .85),
+    );
   }
 
   @override
-  bool shouldRepaint(_StagePainter old) =>
-      old.grid != grid || old.taken.length != taken.length;
+  bool shouldRepaint(_StagePainter o) =>
+      o.strong != strong ||
+      o.markOk != markOk ||
+      !setEquals(o.taken, taken) ||
+      !listEquals(o.mark, mark);
+}
+
+/// 고른 칸(또는 놓으려는 칸)의 테두리만 그립니다. 식물 위에 얹습니다.
+class _MarkPainter extends CustomPainter {
+  _MarkPainter(this.grid, this.mark, this.ok);
+
+  final IsoGrid grid;
+  final List<Cell> mark;
+  final bool ok;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (mark.isEmpty) return;
+    canvas.drawPath(
+      grid.union(mark),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.4
+        ..color = (ok ? const Color(0xFF3E7A4E) : const Color(0xFFB4503F))
+            .withValues(alpha: .9),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_MarkPainter o) => o.ok != ok || !listEquals(o.mark, mark);
 }

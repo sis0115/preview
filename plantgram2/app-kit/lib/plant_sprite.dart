@@ -13,61 +13,62 @@ class SpriteLayout {
   const SpriteLayout({
     required this.size,
     required this.anchor,
-    required this.scale,
-    required this.footDrop,
+    required this.base,
+    required this.potScale,
   });
 
   final Size size;
 
-  /// 상자 안에서 기준점(화분의 심는 자리 한가운데)이 있는 곳.
+  /// 상자 안에서 기준점(화분이 바닥에 닿는 자리)이 있는 곳.
+  ///
+  /// 이 점이 화분이 덮는 칸들의 한가운데에 놓입니다. 화단이면 두 칸의
+  /// 한가운데, 곧 두 칸 사이 경계입니다.
   final Offset anchor;
-  final double scale;
 
-  /// 심는 자리에서 화분 바닥까지. 그림자를 여기에 깝니다.
-  final double footDrop;
+  /// 시트에서 무대로 옮기는 배율. 식물 크기의 기준입니다.
+  final double base;
 
-  static SpriteLayout of(Catalog cat, String plantId, String potId,
-      double userScale) {
+  /// 화분 그림에 쓰는 배율. 화단은 두 칸을 채우느라 [base] 보다 큽니다.
+  final double potScale;
+
+  static SpriteLayout of(
+      Catalog cat, String plantId, String potId, double userScale) {
     // 시트의 조각은 무대보다 크게 그려져 있습니다. 그 차이를 메운 뒤
     // 사용자가 키운 만큼을 곱합니다.
-    final s = cat.grid.unit * userScale;
+    final g = cat.grid;
+    final base = g.unit * userScale;
     final pot = cat.pots[potId]!;
     final plant = cat.plants[plantId]!;
-    final pa = pot.anchor;
-    final footDrop = (pot.bottom - pa.dy) * s;
+    // 화분 그림은 제 칸 수에 맞춰 한 번 더 늘어납니다.
+    final ps = base * pot.spriteScale(g);
+    final foot = pot.foot;
     final refSoil = cat.referenceSoilWidth;
 
     var l = 0.0, r = 0.0, t = 0.0, b = 0.0;
-    void extend(Offset origin, Size sz, Offset anchor, double dy) {
-      final o = (origin - anchor) * s + Offset(0, dy);
-      l = math.max(l, -o.dx);
-      t = math.max(t, -o.dy);
-      r = math.max(r, o.dx + sz.width * s);
-      b = math.max(b, o.dy + sz.height * s);
+    void extend(Offset origin, Size sz, double s) {
+      l = math.max(l, -origin.dx);
+      t = math.max(t, -origin.dy);
+      r = math.max(r, origin.dx + sz.width * s);
+      b = math.max(b, origin.dy + sz.height * s);
     }
 
-    // 화분 — 기준점이 원점에 오도록
-    extend(Offset.zero, pot.size, pa, 0);
-    // 그림자 — 화분 바닥에
-    extend(Offset.zero, pot.shadow.size, pot.shadow.anchor, footDrop);
+    // 화분 — 닿는 자리가 원점에 오도록
+    extend(-foot * ps, pot.size, ps);
+    // 그림자 — 닿는 자리에 그대로
+    extend(-pot.shadow.anchor * ps, pot.shadow.size, ps);
     // 식물 — 심는 자리마다 하나씩.
-    // 밑동이 심는 자리에 오게 하려면 원점을 (자리 - 화분기준점) 으로 둡니다.
+    // 밑동이 심는 자리에 오게 하려면 원점을 (자리 - 닿는자리) 으로 둡니다.
     // 여기에 밑동을 한 번 더 더하면 그만큼 아래로 밀립니다.
     for (final slot in pot.slots) {
-      // 자리 폭에 맞춰 줄인 크기로 잽니다.
-      final ps = s * pot.scaleFor(slot, refSoil);
-      final o = (slot.offset - pa) * s - plant.stem * ps;
-      l = math.max(l, -o.dx);
-      t = math.max(t, -o.dy);
-      r = math.max(r, o.dx + plant.size.width * ps);
-      b = math.max(b, o.dy + plant.size.height * ps);
+      final ls = base * pot.plantScale(slot, refSoil, g);
+      extend((slot.offset - foot) * ps - plant.stem * ls, plant.size, ls);
     }
 
     return SpriteLayout(
       size: Size(l + r, t + b),
       anchor: Offset(l, t),
-      scale: s,
-      footDrop: footDrop,
+      base: base,
+      potScale: ps,
     );
   }
 }
@@ -80,48 +81,35 @@ class PlantSprite extends StatelessWidget {
     required this.plantId,
     required this.potId,
     required this.layout,
-    this.selected = false,
   });
 
   final Catalog catalog;
   final String plantId;
   final String potId;
   final SpriteLayout layout;
-  final bool selected;
 
   @override
   Widget build(BuildContext context) {
     final pot = catalog.pots[potId]!;
     final plant = catalog.plants[plantId]!;
-    final pa = pot.anchor;
-    final s = layout.scale;
+    final foot = pot.foot;
+    final ps = layout.potScale;
 
-    Widget layer(String path, Size sz, Offset anchor, Offset at, double dy) {
-      final o = (at - anchor) * s + Offset(0, dy);
-      return Positioned(
-        left: layout.anchor.dx + o.dx,
-        top: layout.anchor.dy + o.dy,
-        width: sz.width * s,
-        height: sz.height * s,
-        child: Image.asset(path,
-            fit: BoxFit.fill, filterQuality: FilterQuality.medium),
-      );
-    }
+    Widget at(String path, Size sz, Offset origin, double s) => Positioned(
+          left: layout.anchor.dx + origin.dx,
+          top: layout.anchor.dy + origin.dy,
+          width: sz.width * s,
+          height: sz.height * s,
+          child: Image.asset(path,
+              fit: BoxFit.fill, filterQuality: FilterQuality.medium),
+        );
 
     final refSoil = catalog.referenceSoilWidth;
 
-    /// 자리 하나에 식물 한 그루. 자리가 좁으면 그만큼 작게 심습니다.
-    Widget plantAt(PlantAsset q, Slot slot, Offset pa, double base) {
-      final ps = base * pot.scaleFor(slot, refSoil);
-      final o = (slot.offset - pa) * base - q.stem * ps;
-      return Positioned(
-        left: layout.anchor.dx + o.dx,
-        top: layout.anchor.dy + o.dy,
-        width: q.size.width * ps,
-        height: q.size.height * ps,
-        child: Image.asset(q.path,
-            fit: BoxFit.fill, filterQuality: FilterQuality.medium),
-      );
+    Widget plantAt(Slot slot) {
+      final ls = layout.base * pot.plantScale(slot, refSoil, catalog.grid);
+      return at(plant.path, plant.size,
+          (slot.offset - foot) * ps - plant.stem * ls, ls);
     }
 
     // 뒤쪽 자리부터 심어야 앞 그루가 뒤 그루를 가립니다.
@@ -132,21 +120,9 @@ class PlantSprite extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          layer(pot.shadow.path, pot.shadow.size, pot.shadow.anchor,
-              Offset.zero, layout.footDrop),
-          layer(pot.path, pot.size, pa, Offset.zero, 0),
-          for (final slot in slots) plantAt(plant, slot, pa, s),
-          if (selected)
-            Positioned.fill(
-              child: IgnorePointer(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFF5D9D6E), width: 2),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              ),
-            ),
+          at(pot.shadow.path, pot.shadow.size, -pot.shadow.anchor * ps, ps),
+          at(pot.path, pot.size, -foot * ps, ps),
+          for (final slot in slots) plantAt(slot),
         ],
       ),
     );

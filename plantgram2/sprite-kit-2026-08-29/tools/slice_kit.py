@@ -1,12 +1,13 @@
 """받은 예제 한 벌을 잘라 Flutter 앱이 쓸 에셋으로 내보냅니다.
 
-기준점을 찾지 않습니다. 우리가 그려 보낸 자리가 kit_ref.json 에 있으므로
-그대로 씁니다. 그림자는 요청하지 않고 여기서 그립니다 - 화분마다 폭을
-맞출 수 있고 부드러운 타원이라 코드가 더 정확합니다.
+기준점은 그림에서 잽니다. kit_ref.json 의 표시는 "여기에 그려 달라"는
+요청일 뿐 실제로 그려진 자리가 아니라서, 흙은 색으로 줄기는 밑동 폭으로
+찾고 표시는 못 찾았을 때의 대비로만 씁니다. 그림자는 요청하지 않고 여기서
+그립니다 - 화분마다 폭을 맞출 수 있고 부드러운 타원이라 코드가 더 정확합니다.
 
     python3 tools/slice_kit.py sheets/kit.png ../app-kit/assets
 """
-import json, os, sys
+import json, math, os, sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 from scipy import ndimage
@@ -112,6 +113,77 @@ def find_soil(im, slots):
     return out
 
 
+def find_foot(im, alpha_min=110):
+    """화분이 바닥에 닿는 자리. 칸 한가운데에 놓을 점입니다.
+
+    지금까지는 흙 높이를 칸 한가운데에 놓았습니다. 흙은 화분 위쪽이라,
+    키가 큰 화단일수록 다리가 제 칸보다 한참 앞으로 나갔습니다.
+
+    바닥 실루엣에서 아래로 튀어나온 곳을 찾습니다. 다리가 달린 화단이면
+    양 끝 다리가 밑면의 마주 보는 두 꼭짓점이므로 그 한가운데가 답입니다.
+    둥근 화분은 튀어나온 곳이 하나뿐이라, 등각에서 바닥 자국의 높이가
+    폭의 절반이라는 것으로 한가운데를 잡습니다.
+    """
+    a = np.asarray(im.getchannel("A")) > alpha_min
+    h, w = a.shape
+    low = np.full(w, -1)
+    for x in range(w):
+        ys = np.nonzero(a[:, x])[0]
+        if len(ys):
+            low[x] = ys.max()
+
+    feet = []
+    for x in range(w):
+        if low[x] < 0:
+            continue
+        if low[x] == low[max(0, x - 12):x + 13].max():
+            if not feet or x - feet[-1][0] > 18:
+                feet.append((x, int(low[x])))
+            elif low[x] > feet[-1][1]:
+                feet[-1] = (x, int(low[x]))
+
+    # 다리로 보려면 양 끝이 충분히 떨어져 있어야 합니다. 둥근 화분의
+    # 평평한 밑동도 돌출 두 곳으로 잡히지만 몇 픽셀 차이뿐입니다.
+    if len(feet) >= 2 and abs(feet[-1][0] - feet[0][0]) > w * .35:
+        (x0, y0), (x1, y1) = feet[0], feet[-1]
+        return {"x": round((x0 + x1) / 2), "y": round((y0 + y1) / 2),
+                "w": abs(x1 - x0)}
+
+    bottom = int(low.max())
+    # 밑동 타원의 허리 - 아랫부분에서 가장 넓은 줄입니다.
+    width, x = 0, w / 2
+    for y in range(int(h * .75), h):
+        xs = np.nonzero(a[y])[0]
+        if len(xs) == 0:
+            continue
+        span = int(xs.max()) - int(xs.min()) + 1
+        if span > width:
+            width, x = span, (int(xs.min()) + int(xs.max())) / 2
+    # 바닥 자국은 폭의 절반 높이. 그 절반 위가 한가운데입니다.
+    return {"x": round(x), "y": round(bottom - width / 4), "w": int(width)}
+
+
+def find_span(slots, st):
+    """이 화분이 덮는 칸. 심는 자리가 놓인 방향을 격자의 축과 대 봅니다.
+
+    자리가 하나면 한 칸입니다. 둘이면 두 칸이고, 어느 쪽으로 뻗는지는
+    자리 사이 방향에 가장 가까운 축으로 정합니다. 앞뒤·좌우를 손으로
+    정하지 않으므로, 화단을 다시 그려 방향이 뒤집혀도 따라옵니다."""
+    if len(slots) < 2:
+        return [[0, 0]]
+    dx = slots[-1]["x"] - slots[0]["x"]
+    dy = slots[-1]["y"] - slots[0]["y"]
+    n = math.hypot(dx, dy)
+    best, score = [0, 1], -2.0
+    for si, sj in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        ax = st["uX"] * si + st["vX"] * sj
+        ay = st["uY"] * si + st["vY"] * sj
+        c = (dx * ax + dy * ay) / (n * math.hypot(ax, ay))
+        if c > score:
+            score, best = c, [si, sj]
+    return [[best[0] * k, best[1] * k] for k in range(len(slots))]
+
+
 def find_stem(im, mark):
     """줄기가 흙에 닿는 자리를 그림에서 찾습니다.
 
@@ -180,11 +252,15 @@ def main(sheet_path, out="assets", ref="sheets/kit_ref.json"):
         if p["kind"] == "pot":
             # 심는 자리를 오려낸 그림 안의 좌표로 옮깁니다
             slots = find_soil(art, p["slots"])
+            foot = find_foot(art)
             art.save(f"{out}/pots/{p['id']}.png")
             cat["pots"][p["id"]] = {
                 "w": art.width, "h": art.height, "slots": slots,
-                "bottom": art.height,
-                "shadow": make_shadow(slots[0]["w"],
+                "span": find_span(slots, st),
+                "foot": {"x": foot["x"], "y": foot["y"]},
+                # 그림자는 밑동 폭에 맞춥니다. 긴 화단은 심는 자리 하나가
+                # 아니라 다리 사이 전체에 그늘이 집니다.
+                "shadow": make_shadow(foot["w"] * .92,
                                       f"{out}/shadows/{p['id']}.png"),
             }
         else:
@@ -201,15 +277,19 @@ def main(sheet_path, out="assets", ref="sheets/kit_ref.json"):
     # 조각은 아래 칸에 크게 그려져 있고 무대의 타일은 작습니다. 한 배율로
     # 묶습니다.
     #
-    # 0.34 는 눈으로 맞춘 값입니다. 온실 안에 이미 그려진 작업대 화분과
-    # 선반 화분에 견주어 정했습니다. 처음에 0.62 로 잡았더니 식물이 지붕을
-    # 뚫었습니다 - 타일이 크고 식물이 작은 것이 이 그림의 비율입니다.
+    # 63.5 는 눈으로 맞춘 값입니다. 온실 안에 이미 그려진 작업대 화분과
+    # 선반 화분에 견주어, 표준 화분이 무대에서 차지할 폭을 정했습니다.
+    # 처음에 0.62 로 잡았더니 식물이 지붕을 뚫었습니다.
+    #
+    # 예전에는 이 값을 타일 폭의 비율로 두었는데, 그러면 바닥을 몇 칸으로
+    # 나누느냐에 따라 식물 크기까지 흔들립니다. 칸 수는 우리가 정하는 것이고
+    # 화분 크기는 그림에 이미 정해져 있으므로, 그림 쪽에 붙여 둡니다.
+    POT_ON_STAGE = 63.5
     ref = next((v for k, v in cat["pots"].items() if not k.startswith("bed")),
                next(iter(cat["pots"].values())))
-    cat["grid"]["unitScale"] = round(
-        st["tileW"] * 0.34 / ref["slots"][0]["w"], 4)
+    cat["grid"]["unitScale"] = round(POT_ON_STAGE / ref["w"], 4)
     print(f"  한 배율 {cat['grid']['unitScale']}  "
-          f"(타일 {st['tileW']} · 표준 화분 흙 {ref['slots'][0]['w']})")
+          f"(표준 화분 폭 {ref['w']} → 무대에서 {POT_ON_STAGE}px)")
 
     json.dump(cat, open(f"{out}/catalog.json", "w"), indent=1, ensure_ascii=False)
     print(f"\n무대 {stage.width}x{stage.height} · 화분 {len(cat['pots'])} · "

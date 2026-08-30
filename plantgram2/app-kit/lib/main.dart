@@ -10,11 +10,11 @@ class KitApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: '우리집 온실',
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(useMaterial3: true, fontFamily: 'Pretendard'),
-    home: const _Boot(),
-  );
+        title: '우리집 온실',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(useMaterial3: true, fontFamily: 'Pretendard'),
+        home: const _Boot(),
+      );
 }
 
 /// 카탈로그를 읽고 나서 화면을 엽니다.
@@ -33,31 +33,32 @@ class _BootState extends State<_Boot> {
 
   @override
   Widget build(BuildContext context) => FutureBuilder<Catalog>(
-    future: _catalog,
-    builder: (context, snap) {
-      if (snap.hasError) {
-        return Scaffold(
-          backgroundColor: const Color(0xFFF5F5EF),
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(28),
-              child: Text('에셋을 불러오지 못했습니다.\n${snap.error}',
-                  textAlign: TextAlign.center),
-            ),
-          ),
-        );
-      }
-      if (!snap.hasData) {
-        return const Scaffold(
-          backgroundColor: Color(0xFFF5F5EF),
-          body: Center(
-            child: SizedBox(
-                width: 26, height: 26,
-                child: CircularProgressIndicator(strokeWidth: 2.4)),
-          ),
-        );
-      }
-      return GreenhousePage(catalog: snap.data!);
-    },
-  );
+        future: _catalog,
+        builder: (context, snap) {
+          if (snap.hasError) {
+            return Scaffold(
+              backgroundColor: const Color(0xFFF5F5EF),
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(28),
+                  child: Text('에셋을 불러오지 못했습니다.\n${snap.error}',
+                      textAlign: TextAlign.center),
+                ),
+              ),
+            );
+          }
+          if (!snap.hasData) {
+            return const Scaffold(
+              backgroundColor: Color(0xFFF5F5EF),
+              body: Center(
+                child: SizedBox(
+                    width: 26,
+                    height: 26,
+                    child: CircularProgressIndicator(strokeWidth: 2.4)),
+              ),
+            );
+          }
+          return GreenhousePage(catalog: snap.data!);
+        },
+      );
 }

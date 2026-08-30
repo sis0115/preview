@@ -24,7 +24,8 @@ class PotAsset {
     required this.id,
     required this.size,
     required this.slots,
-    required this.bottom,
+    required this.span,
+    required this.foot,
     required this.shadow,
   });
 
@@ -32,27 +33,45 @@ class PotAsset {
   final Size size;
   final List<Slot> slots;
 
-  /// 그림 안에서 화분 바닥의 y. 그림자를 여기에 깝니다.
-  final double bottom;
+  /// 이 화분이 덮는 칸들. 기준 칸에서 (i, j) 로 얼마나 떨어졌는지입니다.
+  ///
+  /// 둥근 화분은 한 칸, 긴 화단은 두 칸입니다. 심는 자리와 순서를 맞춰
+  /// 둡니다 — 첫 자리가 첫 칸에 심깁니다.
+  final List<(int, int)> span;
+
+  /// 그림 안에서 화분이 바닥에 닿는 자리. 이 점을 칸 한가운데에 놓습니다.
+  ///
+  /// 흙이 아니라 닿는 자리입니다. 흙을 칸에 맞추면 흙은 화분 위쪽이라
+  /// 키가 큰 화단일수록 다리가 제 칸보다 한참 앞으로 나갑니다.
+  final Offset foot;
+
   final ShadowAsset shadow;
 
   String get path => 'assets/pots/$id.png';
 
+  /// 화분 그림 자체의 배율.
+  ///
+  /// 시트에는 화단이 둥근 화분과 비슷한 크기로 그려져 있습니다. 그대로
+  /// 얹으면 두 칸짜리 화단이 한 칸도 못 채웁니다 — 재어 보니 0.59칸이었습니다.
+  /// 그림에 그려진 심는 자리 사이 거리를, 실제 칸 사이 거리에 맞춰 늘립니다.
+  /// 배율을 손으로 정하지 않고 격자에서 끌어내므로, 격자를 바꿔도 따라옵니다.
+  double spriteScale(GridSpec g) {
+    if (slots.length < 2 || span.length < 2) return 1;
+    final art = (slots.last.offset - slots.first.offset).distance * g.unit;
+    if (art == 0) return 1;
+    final (ai, aj) = span.first;
+    final (bi, bj) = span.last;
+    final step = g.u * (bi - ai).toDouble() + g.v * (bj - aj).toDouble();
+    return step.distance / art;
+  }
+
   /// 자리 하나에 심는 식물의 크기 배율.
   ///
-  /// 긴 화단의 한 자리는 둥근 화분의 흙보다 좁습니다. 같은 크기로 얹으면
-  /// 식물이 화단 밖으로 걸칩니다. 자리 폭에 맞춰 줄입니다.
-  double scaleFor(Slot slot, double referenceSoilWidth) =>
-      slot.width / referenceSoilWidth;
-
-  /// 칸 한가운데에 놓을 기준점. 심는 자리들의 한가운데입니다.
-  Offset get anchor {
-    var x = 0.0, y = 0.0;
-    for (final s in slots) {
-      x += s.x;
-      y += s.y;
-    }
-    return Offset(x / slots.length, y / slots.length);
+  /// 자리가 기준 흙보다 좁을 때만 줄입니다. 넓다고 키우지는 않습니다 —
+  /// 같은 종이 화분에서와 화단에서 다른 크기로 자라면 어색합니다.
+  double plantScale(Slot slot, double referenceSoilWidth, GridSpec g) {
+    final w = slot.width * spriteScale(g);
+    return w < referenceSoilWidth ? w / referenceSoilWidth : 1;
   }
 }
 
@@ -117,12 +136,20 @@ class GridSpec {
 }
 
 class Catalog {
-  const Catalog(this.pots, this.plants, this.grid, this.stage);
+  const Catalog(this.pots, this.plants, this.grid, this.stage, this.floor);
 
   final Map<String, PotAsset> pots;
   final Map<String, PlantAsset> plants;
   final GridSpec grid;
+
+  /// 온실 그림. 유리·벽·소품이 들어 있습니다.
   final ui.Image stage;
+
+  /// 그 위에 덮는 바닥. 우리 격자에 맞춰 다시 깐 타일입니다.
+  ///
+  /// 받은 그림의 칠해진 타일은 간격이 제각각이라 우리 격자와 겹치면 두
+  /// 겹으로 보였습니다. 바닥 픽셀에만 씌우므로 작업대 다리는 그대로입니다.
+  final ui.Image floor;
 
   /// 기준이 되는 흙 폭. 자리마다 식물 크기를 맞출 때 씁니다.
   /// 둥근 화분(자리가 하나인 것) 중 첫 번째를 기준으로 삼습니다.
@@ -146,10 +173,17 @@ class Catalog {
       pots[e.key] = PotAsset(
         id: e.key,
         size: Size(_d(v, 'w'), _d(v, 'h')),
-        bottom: _d(v, 'bottom'),
+        foot: Offset(_d(v['foot'] as Map, 'x'), _d(v['foot'] as Map, 'y')),
         slots: [
           for (final s in v['slots'] as List)
             Slot(_d(s as Map, 'x'), _d(s, 'y'), _d(s, 'w')),
+        ],
+        span: [
+          for (final s in (v['span'] as List? ??
+              const [
+                [0, 0]
+              ]))
+            ((s as List)[0] as int, s[1] as int),
         ],
         shadow: ShadowAsset(
           e.key,
@@ -170,8 +204,12 @@ class Catalog {
     }
 
     final g = m['grid'] as Map<String, dynamic>;
-    final data = await rootBundle.load('assets/greenhouse/stage.png');
-    final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+
+    Future<ui.Image> image(String path) async {
+      final data = await rootBundle.load(path);
+      final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+      return (await codec.getNextFrame()).image;
+    }
 
     return Catalog(
       pots,
@@ -187,7 +225,8 @@ class Catalog {
         sceneH: _d(g, 'sceneH'),
         unit: _d(g, 'unitScale'),
       ),
-      (await codec.getNextFrame()).image,
+      await image('assets/greenhouse/stage.png'),
+      await image('assets/greenhouse/floor.png'),
     );
   }
 }

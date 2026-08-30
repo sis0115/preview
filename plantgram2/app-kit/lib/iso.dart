@@ -34,8 +34,7 @@ class IsoGrid {
 
   int get size => spec.size;
 
-  Offset center(Cell c) =>
-      spec.top + spec.u * (c.i + .5) + spec.v * (c.j + .5);
+  Offset center(Cell c) => spec.top + spec.u * (c.i + .5) + spec.v * (c.j + .5);
 
   /// 화면 좌표가 떨어지는 칸. 2x2 연립방정식을 풉니다.
   Cell cellAt(Offset p) {
@@ -47,11 +46,9 @@ class IsoGrid {
     return Cell((a - .5).round(), (b - .5).round());
   }
 
-  bool contains(Cell c) =>
-      c.i >= 0 && c.j >= 0 && c.i < size && c.j < size;
+  bool contains(Cell c) => c.i >= 0 && c.j >= 0 && c.i < size && c.j < size;
 
-  Cell clamp(Cell c) =>
-      Cell(c.i.clamp(0, size - 1), c.j.clamp(0, size - 1));
+  Cell clamp(Cell c) => Cell(c.i.clamp(0, size - 1), c.j.clamp(0, size - 1));
 
   Path diamond(Cell c) {
     final o = spec.top + spec.u * c.i.toDouble() + spec.v * c.j.toDouble();
@@ -70,17 +67,13 @@ class IsoGrid {
     }
   }
 
-  Cell? nearestFree(Cell from, Set<Cell> taken) {
-    Cell? best;
-    var bestD = 1 << 30;
-    for (final c in cells) {
-      if (taken.contains(c)) continue;
-      final d = (c.i - from.i) * (c.i - from.i) + (c.j - from.j) * (c.j - from.j);
-      if (d < bestD) {
-        bestD = d;
-        best = c;
-      }
+  /// 칸 여럿을 하나로 묶은 테두리. 두 칸짜리 화단을 한 덩어리로 칠할 때
+  /// 씁니다. 마름모를 겹쳐 더하면 사이의 이음선이 사라집니다.
+  Path union(Iterable<Cell> cs) {
+    var path = Path();
+    for (final c in cs) {
+      path = Path.combine(PathOperation.union, path, diamond(c));
     }
-    return best;
+    return path;
   }
 }

@@ -4,7 +4,11 @@
 그림을 되돌려보내는 대신, 바닥 마름모의 네 꼭짓점을 재서 격자를 다시
 계산합니다. 기하만 맞으면 되는 문제라 다시 받을 이유가 없습니다.
 
-    python3 tools/fit_grid.py sheets/kit.png 5
+칸 수는 우리가 정하는 게 아니라 그림에 이미 칠해져 있습니다. 안내 이미지에
+4x4 로 그려 달라고 했으므로 4 입니다 - 5 로 나누면 우리 격자선이 칠해진
+타일 한가운데를 지나가 바닥이 두 겹으로 보입니다.
+
+    python3 tools/fit_grid.py sheets/kit.png 4
 """
 import json, sys
 import numpy as np
@@ -33,7 +37,7 @@ def corners(mask):
     }
 
 
-def main(path, n=5, stage_h=640, out="sheets/kit_ref.json"):
+def main(path, n=4, stage_h=640, out="sheets/kit_ref.json"):
     n = int(n)
     im = Image.open(path).convert("RGBA")
     stage = im.crop((0, 0, im.width, stage_h))
