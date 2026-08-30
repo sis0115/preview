@@ -38,16 +38,24 @@ def keyed(path):
     # 튑니다. 작은 중앙값 필터로 그 무늬만 지웁니다.
     soft = ndimage.median_filter(soft, 3)
 
-    solid = ndimage.binary_fill_holes(
-        ndimage.binary_closing(soft > .5, np.ones((5, 5))))
-    lab, k = ndimage.label(solid)
-    sz = ndimage.sum(solid, lab, range(1, k + 1))
+    # 두 가지 마스크가 필요합니다. 섞으면 안 됩니다.
+    #
+    #  · 묶는 마스크 - 조각 하나하나의 바깥 상자를 찾는 데 씁니다. 잎 사이가
+    #    끊겨 있으면 한 식물이 여러 덩어리로 쪼개지므로 넉넉히 메웁니다.
+    #  · 알파 - 실제로 보이는 부분입니다. 여기서 메우면 야자 잎 사이의 틈이
+    #    흰 종이처럼 막힙니다. 틈은 배경이지 물체가 아닙니다.
+    raw = soft > .5
+    group = ndimage.binary_fill_holes(
+        ndimage.binary_closing(raw, np.ones((13, 13))))
+    lab, k = ndimage.label(group)
+    sz = ndimage.sum(group, lab, range(1, k + 1))
     keep = np.isin(lab, [i + 1 for i in range(k) if sz[i] >= 400])
 
     # 0/1 로 자르면 잎 가장자리 픽셀이 불투명한 채로 남아 흰 테가 집니다.
     # 살짝 번지게 해서 가장자리에 중간값을 주고, 경계를 안쪽으로 당깁니다.
-    alpha = ndimage.gaussian_filter(keep.astype(float), .9)
+    alpha = ndimage.gaussian_filter(raw.astype(float), .9)
     alpha = np.clip((alpha - .38) / .44, 0, 1)
+    alpha = np.where(keep, alpha, 0)       # 묶인 조각 밖의 얼룩은 버립니다
 
     alpha = np.clip(alpha, 0, 1)
 
