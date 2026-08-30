@@ -37,23 +37,27 @@ TOP, BOT, GROUND = 104, 946, 884
 # 판 위에 나란히 놓인 것처럼 보입니다. (배경에서 잰 v 축)
 LEAN = (0.865, -0.501)
 
-# (id, 이름, 설명, 칸 폭, 자리들)
+# (id, 이름, 설명, 칸 폭, 자리들, 밑그림으로 깔 조각)
 #   자리 = (등급, 옆으로 벌린 거리, 바닥에서 올린 높이)
+#
+# 야자를 여기 끼워 넣은 이유: 지난 시트에서 못 쓴 조각이 야자 하나뿐인데
+# 열한 조각을 통째로 다시 받았다가 한 장을 통째로 버렸습니다(RULES 11.11).
+# 고칠 한 조각만, 축척 기준(긴 화단)과 함께 받습니다.
 ITEMS = [
     ("shelf_two", "선반 · 2층",
      "다리 넷에 판 두 장. 아래 판과 맨 위 판이\n각각 초록 십자를 지나가야 합니다.",
-     392, [("small", -58, 96), ("small", 58, 96),
-           ("medium", -70, 352), ("medium", 70, 352)]),
+     344, [("small", -58, 96), ("small", 58, 96),
+           ("medium", -70, 352), ("medium", 70, 352)], None),
     ("bench", "작업대",
      "상판 하나와 그 아래 낮은 판 하나.\n흙자루·모종삽을 곁들여도 좋습니다.",
-     392, [("sprout", -46, 72), ("sprout", 46, 72),
-           ("medium", -70, 268), ("medium", 70, 268)]),
-    ("stand", "받침대",
-     "굵은 화분 하나를 올리는\n낮고 튼튼한 받침.",
-     288, [("large", 0, 128)]),
+     344, [("sprout", -46, 72), ("sprout", 46, 72),
+           ("medium", -70, 268), ("medium", 70, 268)], None),
+    ("xlarge", "야자 · 갈래 사이만 넓게",
+     "지난번 그림 그대로, 갈래를 조금 굵게 하고\n사이를 넓혀 배경색이 보이게만 해 주세요.",
+     318, [], "xlarge"),
     ("bed_long", "긴 화단 · 지난번과 똑같이",
      "축척을 맞추는 기준입니다.\n지난 시트와 같은 크기·모양으로 그려 주세요.",
-     340, []),
+     330, [], "bed_long"),
 ]
 GRADE_NAME = {"sprout": "새싹", "small": "소형", "medium": "중형", "large": "대형"}
 PLANT_OF = {"sprout": "sprout", "small": "small", "medium": "medium",
@@ -99,13 +103,14 @@ def main(out="sheets/furniture_sheet.png"):
             font=font(13), fill=MUTE)
     dr.text((24, 66),
             "※ 안내선 · 글자 · 십자 · 막대 · 흐린 밑그림은 결과물에 그리지 마세요. "
-            "네 물건 모두 같은 각도 · 같은 축척 · 배경은 순수 마젠타 #FF00FF 단색.",
+            "네 칸 모두 같은 각도 · 같은 축척 · 배경은 순수 마젠타 #FF00FF 단색. "
+            "빛 번짐 · 글로우를 넣지 마세요.",
             font=font(13), fill=MUTE)
 
     spec = {"width": W, "height": H, "ground": GROUND, "items": []}
     gap = (W - sum(i[3] for i in ITEMS)) / (len(ITEMS) + 1)
     x = gap
-    for pid, name, note, cw, slots in ITEMS:
+    for pid, name, note, cw, slots, under in ITEMS:
         dr.rounded_rectangle([x, TOP, x + cw, BOT], 14, fill=CARD, outline=EDGE)
         cx = x + cw / 2
         dr.line([(x + 16, GROUND), (x + cw - 16, GROUND)], fill=BASE, width=1)
@@ -132,18 +137,25 @@ def main(out="sheets/furniture_sheet.png"):
             dr.text((sx + 15, sy - 9), f"{n} · {GRADE_NAME[grade]}",
                     font=font(14, True), fill=SLOT)
 
-        if pid == "bed_long":
-            # 화단은 다리가 밑면 한가운데보다 아래로 내려옵니다. 기준 조각은
-            # 크기를 보여 주는 것이 목적이므로 맨 아랫줄을 바닥에 맞춥니다.
-            b = piece["bed_long"]["art"]
-            ghost(im, b, (b.width / 2, b.height), cx, GROUND, .34)
+        if under:
+            # 다시 그릴 조각은 지난 그림을 깔아 보여 줍니다. 말로 적은 크기는
+            # 지켜지지 않았지만, 밑그림이 있던 칸은 0.99 로 맞았습니다.
+            u = piece[under]
+            if u["kind"] == "식물":
+                ghost(im, u["art"], u["anchor"][0], cx, GROUND, .34)
+            else:
+                # 화단은 다리가 밑면 한가운데보다 아래로 내려옵니다. 크기를
+                # 보여 주는 것이 목적이므로 맨 아랫줄을 바닥에 맞춥니다.
+                a = u["art"]
+                ghost(im, a, (a.width / 2, a.height), cx, GROUND, .34)
         cross(dr, cx, GROUND, MARK)
 
         dr.text((cx, TOP + 34), name, font=font(19, True), fill=INK, anchor="ms")
         dr.multiline_text((cx, TOP + 48), note, font=font(13), fill=MUTE,
                           anchor="ma", spacing=5, align="center")
-        dr.text((x + 18, BOT - 30),
-                f"식물 자리 {len(slots)}개" if slots else "자리 없음 · 기준 조각",
+        tag = (f"식물 자리 {len(slots)}개" if slots
+               else "흐린 밑그림과 같은 크기로")
+        dr.text((x + 18, BOT - 30), tag,
                 font=font(14, True), fill=SLOT if slots else MUTE)
 
         spec["items"].append({
