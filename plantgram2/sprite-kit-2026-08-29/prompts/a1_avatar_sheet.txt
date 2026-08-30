@@ -1,0 +1,69 @@
+Redraw the attached image, keeping every orange mark exactly where it is.
+
+The attached image is a placement guide. The orange marks are not decoration — they are the exact points where the pieces must meet when the app stacks them later. Nothing may move.
+
+THE TOP TWO ROWS — 12 EMPTY POTS.
+
+Each orange ellipse is the soil surface of one pot. Draw a pot whose soil surface sits exactly on that ellipse: same centre, same width, same flatness. Fill it with dark soil so the surface reads as a flat ellipse with nothing on it. The pot body extends downward from that ellipse. No plants, no leaves, no sprouts, nothing growing.
+
+Left to right, top row then second row:
+1. standard tapered terracotta pot with a raised rim
+2. low wide terracotta bowl
+3. tall terracotta cylinder
+4. round-bellied terracotta urn
+5. white glazed ceramic pot
+6. pale mint glazed ceramic pot
+7. dark charcoal glazed ceramic pot
+8. woven rattan basket, the weave clearly drawn
+9. grey concrete cylinder, matte
+10. long rectangular terracotta window box — TWO ellipses, two planting spots
+11. long wooden trough with short legs — TWO ellipses, two planting spots
+12. galvanised metal bucket with a handle
+
+The two cells with two ellipses are long planters. Draw one long box whose soil surface covers both ellipses, so two plants can be planted side by side in it.
+
+THE BOTTOM TWO ROWS — 12 PLANTS, NO POTS.
+
+Each cell has a horizontal orange line with a short tick at its centre. That line is the soil level and the tick is where the stems come out of the ground.
+
+Draw the plant so its stems all gather at that tick and meet the line there. Nothing below the line — no pot, no soil, no roots, no shadow. The plant grows upward from the tick.
+
+The two pale vertical lines mark how wide the plant may spread. The foliage must stay between them.
+
+Left to right, third row then fourth row:
+1. monstera — large leaves with deep edge splits
+2. bird of paradise — big paddle leaves fanning in one plane
+3. lucky bamboo — segmented canes with leaf tufts at the nodes
+4. areca palm — arching feathery fronds
+5. eucalyptus — small round blue-green leaves in opposite pairs
+6. dieffenbachia — broad leaves with a cream centre marking
+7. snake plant — stiff upright banded blades
+8. fiddle leaf fig — large violin-shaped leaves up a trunk
+9. zz plant — glossy stalks lined with paired leaflets
+10. pothos — heart-shaped leaves, some trailing down but never below the line
+11. boston fern — arching fronds of small toothed leaflets
+12. rubber plant — glossy oval leaves alternating up a stem
+
+WHY BOTH GROUPS ARE IN ONE PICTURE.
+
+Any plant from the bottom rows gets placed on the soil of any pot from the top rows. So they must share one camera angle, one light, one scale, one level of detail. Draw them as one set.
+
+STYLE.
+
+Flat vector. Solid fills, at most two tones per surface — a lit tone and a shade tone. No gradients, no photographic texture, no painterly brushwork, no glossy highlights.
+
+Pale and bright. Low saturation, high value. Fresh gentle greens, not deep or vivid.
+
+Simple shapes. A plant is six to nine clear leaf shapes, not forty. Every item reads at thumbnail size.
+
+Isometric, tilted so a circle on the ground appears exactly twice as wide as it is tall — the orange ellipses already show that angle. Every pot and every plant uses it.
+
+Light comes from the upper left.
+
+OUTPUT.
+
+Remove the orange marks and the thin grey cell borders from the final picture — they are guides only. Keep everything else exactly where they were.
+
+Fully transparent PNG with alpha. No background colour, no haze, no ground plane, no cast shadows. Every pixel is either fully opaque or fully transparent. No text, no labels, no numbers, no watermark.
+
+Output at 1536x1024, the same size as the attached image.

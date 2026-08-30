@@ -1,0 +1,249 @@
+{
+ "cellW": 256,
+ "cellH": 256,
+ "cols": 6,
+ "rows": 4,
+ "iso": 2.0,
+ "pots": [
+  {
+   "id": "pot_terracotta",
+   "cell": 0,
+   "long": false,
+   "slots": [
+    {
+     "x": 128,
+     "y": 102,
+     "w": 120
+    }
+   ]
+  },
+  {
+   "id": "pot_bowl",
+   "cell": 1,
+   "long": false,
+   "slots": [
+    {
+     "x": 384,
+     "y": 102,
+     "w": 132
+    }
+   ]
+  },
+  {
+   "id": "pot_cylinder",
+   "cell": 2,
+   "long": false,
+   "slots": [
+    {
+     "x": 640,
+     "y": 102,
+     "w": 104
+    }
+   ]
+  },
+  {
+   "id": "pot_urn",
+   "cell": 3,
+   "long": false,
+   "slots": [
+    {
+     "x": 896,
+     "y": 102,
+     "w": 112
+    }
+   ]
+  },
+  {
+   "id": "pot_white",
+   "cell": 4,
+   "long": false,
+   "slots": [
+    {
+     "x": 1152,
+     "y": 102,
+     "w": 120
+    }
+   ]
+  },
+  {
+   "id": "pot_mint",
+   "cell": 5,
+   "long": false,
+   "slots": [
+    {
+     "x": 1408,
+     "y": 102,
+     "w": 120
+    }
+   ]
+  },
+  {
+   "id": "pot_charcoal",
+   "cell": 6,
+   "long": false,
+   "slots": [
+    {
+     "x": 128,
+     "y": 358,
+     "w": 120
+    }
+   ]
+  },
+  {
+   "id": "pot_rattan",
+   "cell": 7,
+   "long": false,
+   "slots": [
+    {
+     "x": 384,
+     "y": 358,
+     "w": 126
+    }
+   ]
+  },
+  {
+   "id": "pot_concrete",
+   "cell": 8,
+   "long": false,
+   "slots": [
+    {
+     "x": 640,
+     "y": 358,
+     "w": 116
+    }
+   ]
+  },
+  {
+   "id": "bed_window",
+   "cell": 9,
+   "long": true,
+   "slots": [
+    {
+     "x": 840,
+     "y": 358,
+     "w": 92
+    },
+    {
+     "x": 952,
+     "y": 358,
+     "w": 92
+    }
+   ]
+  },
+  {
+   "id": "bed_wood",
+   "cell": 10,
+   "long": true,
+   "slots": [
+    {
+     "x": 1096,
+     "y": 358,
+     "w": 92
+    },
+    {
+     "x": 1208,
+     "y": 358,
+     "w": 92
+    }
+   ]
+  },
+  {
+   "id": "bucket_metal",
+   "cell": 11,
+   "long": false,
+   "slots": [
+    {
+     "x": 1408,
+     "y": 358,
+     "w": 100
+    }
+   ]
+  }
+ ],
+ "plants": [
+  {
+   "id": "monstera",
+   "cell": 12,
+   "x": 128,
+   "y": 732,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "strelitzia",
+   "cell": 13,
+   "x": 384,
+   "y": 732,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "bamboo",
+   "cell": 14,
+   "x": 640,
+   "y": 732,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "areca",
+   "cell": 15,
+   "x": 896,
+   "y": 732,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "eucalyptus",
+   "cell": 16,
+   "x": 1152,
+   "y": 732,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "dieffenbachia",
+   "cell": 17,
+   "x": 1408,
+   "y": 732,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "snake",
+   "cell": 18,
+   "x": 128,
+   "y": 988,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "fiddle",
+   "cell": 19,
+   "x": 384,
+   "y": 988,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "zz",
+   "cell": 20,
+   "x": 640,
+   "y": 988,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "pothos",
+   "cell": 21,
+   "x": 896,
+   "y": 988,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "fern",
+   "cell": 22,
+   "x": 1152,
+   "y": 988,
+   "maxHalfWidth": 96
+  },
+  {
+   "id": "rubber",
+   "cell": 23,
+   "x": 1408,
+   "y": 988,
+   "maxHalfWidth": 96
+  }
+ ]
+}
