@@ -1,0 +1,59 @@
+Redraw the attached image, keeping every mark and every line exactly where it is.
+
+The attached image is a placement guide, not a drawing. It has two areas, and the app cuts them apart afterwards — so nothing may move, resize or shift.
+
+═══ TOP AREA — the greenhouse (the upper 640 pixels) ═══
+
+The pale floor is a 4 by 4 grid of 16 diamond tiles. Every grid line stays at the exact same pixel position. Do not move, resize or re-space the floor. Do not change the number of tiles. Do not change the angle — a tile is exactly twice as wide as it is tall. Draw the grid lines as the seams between floor tiles so all 16 tiles still read clearly.
+
+The grey outline is the greenhouse frame. Build the finished greenhouse on exactly those lines: white painted metal posts and rails, pale blue-white glass filling the two back walls and the roof.
+
+THE FRONT STAYS OPEN. The guide has no front corner post and no front walls — that is deliberate. The player's plants go on the front tiles, and a post crossing in front of them would look like the plants are stuck behind a pole. Draw it as a cutaway: two back walls and the back half of the roof built in full, the front two sides open so you can see straight in.
+
+The green diamond is the lawn. Keep its shape and position. On the lawn, outside the tiles, add a few small shrubs and a short stone path so the ground is not a bare slab.
+
+Against the two back walls, and only there, add a potting bench, a small shelf of pots, a watering can and a coiled hose.
+
+THE 16 FLOOR TILES STAY COMPLETELY EMPTY. Nothing stands on them. The player's plants are placed there later.
+
+═══ BOTTOM AREA — six pieces to cut out (the lower 384 pixels) ═══
+
+Six cells, each 256 pixels wide. Each cell holds ONE object, centred on its marks. Do not let any object cross into a neighbouring cell.
+
+Cells 1–3 are EMPTY POTS. The orange ellipse is the soil surface: draw the pot so its soil sits exactly on that ellipse — same centre, same width, same flatness. Fill it with dark soil so the surface reads as a flat ellipse with nothing on it. The pot body extends downward from the ellipse. No plants, no leaves, nothing growing.
+  1. standard tapered terracotta pot with a raised rim
+  2. white glazed ceramic pot, same shape family
+  3. long wooden trough with short legs — it has TWO ellipses, two planting spots. Draw one long box whose soil covers both.
+
+Cells 4–6 are PLANTS WITH NO POT. The horizontal orange line is the soil level and the short tick is where the stems come out of the ground. Draw the plant so all its stems gather at that tick and meet the line there. Nothing below the line — no pot, no soil, no roots, no shadow. The two pale vertical lines mark how wide the plant may spread; the foliage stays between them.
+  4. monstera — large leaves with deep edge splits
+  5. bird of paradise — big paddle leaves fanning out in one plane
+  6. lucky bamboo — segmented canes with leaf tufts at the nodes
+
+═══ BACKGROUND ═══
+
+The top area is a finished picture, fully opaque, on a plain white background outside the lawn.
+
+The bottom area must be TRANSPARENT around each object — only the six objects are opaque there. No cell borders, no backdrop, no cast shadows behind them. They get cut out and stacked in the app, so anything else in those cells becomes a grey box around the plant.
+
+═══ STYLE — both areas, one set ═══
+
+A plant from the bottom gets placed on a pot from the bottom, standing on a tile from the top. All three must look like one world.
+
+Flat vector. Solid fills, at most two tones per surface — a lit tone and a shade tone. No gradients, no photographic texture, no painterly brushwork, no glossy highlights.
+
+Pale and bright. Low saturation, high value. Fresh gentle greens, not deep or vivid. The floor is a quiet near-white so plants placed on it stand out.
+
+Simple shapes. A plant is six to nine clear leaf shapes, not forty. Everything reads at thumbnail size.
+
+Isometric throughout, tilted so a circle on the ground appears exactly twice as wide as it is tall — the orange ellipses already show that angle.
+
+Light comes from the upper left, soft and even.
+
+═══ OUTPUT ═══
+
+Remove every orange mark and every thin grey cell border from the final picture — they are guides only. Keep everything else exactly where it was.
+
+No text, no labels, no numbers, no watermark, no border.
+
+Output a PNG with alpha at 1536x1024, the same size as the attached image.
