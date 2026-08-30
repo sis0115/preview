@@ -106063,14 +106063,15 @@ A.aEc.prototype={
 $1(a){return a.ay},
 $S:13}
 A.aEd.prototype={
-$2(a,b){var s,r,q,p,o=this,n=o.a
-if(n.d)s=0
-else s=o.b.gF3().length===0&&n.e==null?68:96
-r=Math.min((b.b-48)*254/390+200,b.d-s)
-q=o.b
-p=A.a([A.bE(n.agt(q,o.c),r,null)],t.p)
-if(!n.d)p.push(A.bE(n.asp(q),s,null))
-return A.ae(p,B.l,B.f,B.k,0,B.p)},
+$2(a,b){var s,r,q,p,o,n=this,m=null,l=n.a
+if(l.d)s=0
+else s=n.b.gF3().length===0&&l.e==null?68:96
+r=b.d-s
+q=Math.min((b.b-48)*254/390+250,r*0.74)
+p=n.b
+o=A.a([A.bE(m,(r-q)*0.35,m),A.bE(l.agt(p,n.c),q,m)],t.p)
+if(!l.d)o.push(A.bE(l.asp(p),s,m))
+return A.ae(o,B.l,B.f,B.k,0,B.p)},
 $S:241}
 A.aDE.prototype={
 $2(c4,c5){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,b0,b1,b2=null,b3=u.X,b4=c5.b,b5=b4/390,b6=c5.d,b7=b5*B.d.c_(b6/(254*b5),1,1.35),b8=390*b7,b9=254*b7,c0=(b4-b8)/2,c1=(b6-b9)/2,c2=new A.aDF(c0,b7,c1),c3=this.a
