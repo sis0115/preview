@@ -130,11 +130,11 @@ def scene(out="sheets/grade_scene.png"):
         # 다리 달린 것은 마름모 자국. 밑면 한가운데는 제 몸에 가려 안 보이므로
         # 자국을 밑면보다 조금 크게 잡아 다리 밖으로 비치게 합니다.
         boxy = pid is None or pid == "bed_long"
-        sh = (shadow(pot["art"].width * 1.06, iso, "diamond", ink=150, blur=.22)
+        sh = (shadow(pot["art"].width * 1.02, iso, "diamond", ink=112, blur=.36)
               if boxy else shadow(pot["art"].width * .8, iso))
         # 다리 달린 것은 밑면 한가운데가 제 몸에 가립니다. 자국을 다리 끝
         # 쪽으로 조금 내려 앞으로 비치게 합니다.
-        drop = (pot["art"].height - fy) * .45 if boxy else 0
+        drop = (pot["art"].height - fy) * .34 if boxy else 0
         stage.alpha_composite(sh, (round(at[0] - sh.width / 2),
                                    round(at[1] + drop - sh.height / 2)))
         stage.alpha_composite(pot["art"], (round(at[0] - fx), round(at[1] - fy)))

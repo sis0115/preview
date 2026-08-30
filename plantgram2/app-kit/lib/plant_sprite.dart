@@ -35,7 +35,6 @@ class SpriteLayout {
     final pot = cat.pots[potId]!;
     final plant = cat.plants[plantId]!;
     final foot = pot.foot;
-    final refSoil = cat.referenceSoilWidth;
 
     var l = 0.0, r = 0.0, t = 0.0, b = 0.0;
     void extend(Offset origin, Size sz, double k) {
@@ -47,14 +46,14 @@ class SpriteLayout {
 
     // 화분 — 닿는 자리가 원점에 오도록
     extend(-foot * s, pot.size, s);
-    // 그림자 — 닿는 자리에 그대로
-    extend(-pot.shadow.anchor * s, pot.shadow.size, s);
+    // 그림자 — 닿는 자리에. 다리 달린 것은 조금 내려서 앞으로 비치게.
+    extend(-pot.shadow.anchor * s + Offset(0, pot.shadow.drop * s),
+        pot.shadow.size, s);
     // 식물 — 심는 자리마다 하나씩.
     // 밑동이 심는 자리에 오게 하려면 원점을 (자리 - 닿는자리) 로 둡니다.
     // 여기에 밑동을 한 번 더 더하면 그만큼 아래로 밀립니다.
     for (final slot in pot.slots) {
-      final ls = s * pot.scaleFor(slot, refSoil);
-      extend((slot.offset - foot) * s - plant.stem * ls, plant.size, ls);
+      extend((slot.offset - foot) * s - plant.stem * s, plant.size, s);
     }
 
     return SpriteLayout(
@@ -96,13 +95,8 @@ class PlantSprite extends StatelessWidget {
               fit: BoxFit.fill, filterQuality: FilterQuality.medium),
         );
 
-    final refSoil = catalog.referenceSoilWidth;
-
-    Widget plantAt(Slot slot) {
-      final ls = ps * pot.scaleFor(slot, refSoil);
-      return at(plant.path, plant.size,
-          (slot.offset - foot) * ps - plant.stem * ls, ls);
-    }
+    Widget plantAt(Slot slot) => at(plant.path, plant.size,
+        (slot.offset - foot) * ps - plant.stem * ps, ps);
 
     // 뒤쪽 자리부터 심어야 앞 그루가 뒤 그루를 가립니다.
     final slots = [...pot.slots]..sort((a, b) => a.y.compareTo(b.y));
@@ -112,7 +106,8 @@ class PlantSprite extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          at(pot.shadow.path, pot.shadow.size, -pot.shadow.anchor * ps, ps),
+          at(pot.shadow.path, pot.shadow.size,
+              -pot.shadow.anchor * ps + Offset(0, pot.shadow.drop * ps), ps),
           at(pot.path, pot.size, -foot * ps, ps),
           for (final slot in slots) plantAt(slot),
         ],

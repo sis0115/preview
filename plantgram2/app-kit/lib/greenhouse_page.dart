@@ -43,10 +43,11 @@ class _GreenhousePageState extends State<GreenhousePage> {
   void initState() {
     super.initState();
     garden
-      ..add('monstera', 'pot_terracotta', at: const Cell(0, 2))
-      ..add('strelitzia', 'pot_white', at: const Cell(3, 1))
-      // 화단은 (2,3) 과 (2,2) 두 칸을 씁니다.
-      ..add('bamboo', 'bed_wood', at: const Cell(2, 2))
+      ..add('xlarge', 'pot_xlarge', at: const Cell(0, 2))
+      ..add('large', 'pot_large', at: const Cell(1, 4))
+      ..add('medium', 'pot_medium', at: const Cell(3, 4))
+      ..add('small', 'bed_long', at: const Cell(4, 2))
+      ..add('sprout', 'pot_sprout', at: const Cell(2, 2))
       ..select(null);
   }
 
@@ -124,7 +125,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
                           fontWeight: FontWeight.w800,
                           color: _ink)),
                   SizedBox(height: 2),
-                  Text('식물을 눌러 고르고, 끌어서 칸에 옮기세요 · 화단은 두 칸',
+                  Text('식물을 눌러 고르고, 끌어서 칸에 옮기세요',
                       style: TextStyle(color: _mut, fontSize: 13)),
                 ],
               ),
@@ -293,10 +294,10 @@ class _GreenhousePageState extends State<GreenhousePage> {
                   for (final k in widget.catalog.plants.keys)
                     Expanded(
                       child: _pick(
-                        label: plantNames[k] ?? k,
+                        label: widget.catalog.names[k] ?? k,
                         asset: widget.catalog.plants[k]!.path,
                         onTap: () {
-                          garden.add(k, 'pot_terracotta', at: c);
+                          garden.add(k, 'pot_medium', at: c);
                           Navigator.pop(context);
                         },
                       ),
@@ -377,13 +378,13 @@ class _GreenhousePageState extends State<GreenhousePage> {
                         style: TextStyle(color: _mut, fontSize: 13)))
                 : Row(
                     children: [
-                      Text(plantNames[p.plantId] ?? p.plantId,
+                      Text(widget.catalog.names[p.plantId] ?? p.plantId,
                           style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
                               color: _ink)),
                       const SizedBox(width: 8),
-                      Text(potNames[p.potId] ?? p.potId,
+                      Text(widget.catalog.names[p.potId] ?? p.potId,
                           style: const TextStyle(color: _mut, fontSize: 12.5)),
                       const Spacer(),
                       for (final k in widget.catalog.pots.keys)

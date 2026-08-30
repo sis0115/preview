@@ -1,107 +1,232 @@
 {
  "pots": {
-  "pot_terracotta": {
-   "w": 155,
-   "h": 171,
+  "pot_sprout": {
+   "w": 70,
+   "h": 78,
+   "foot": {
+    "x": 34,
+    "y": 64
+   },
    "slots": [
     {
-     "x": 77,
-     "y": 49,
-     "w": 113
+     "x": 35,
+     "y": 24
     }
    ],
-   "foot": {
-    "x": 77,
-    "y": 140
-   },
    "shadow": {
-    "w": 193,
-    "h": 119,
-    "anchorX": 96,
-    "anchorY": 59
+    "w": 90,
+    "h": 66,
+    "anchorX": 45,
+    "anchorY": 33,
+    "drop": 0
    }
   },
-  "pot_white": {
-   "w": 150,
-   "h": 171,
+  "pot_small": {
+   "w": 98,
+   "h": 109,
+   "foot": {
+    "x": 48,
+    "y": 91
+   },
    "slots": [
     {
-     "x": 72,
-     "y": 49,
-     "w": 113
+     "x": 46,
+     "y": 34
     }
    ],
-   "foot": {
-    "x": 71,
-    "y": 140
-   },
    "shadow": {
-    "w": 193,
-    "h": 119,
-    "anchorX": 96,
-    "anchorY": 59
+    "w": 124,
+    "h": 91,
+    "anchorX": 62,
+    "anchorY": 45,
+    "drop": 0
    }
   },
-  "bed_wood": {
-   "w": 232,
-   "h": 194,
+  "pot_medium": {
+   "w": 130,
+   "h": 146,
+   "foot": {
+    "x": 64,
+    "y": 121
+   },
    "slots": [
     {
-     "x": 54,
-     "y": 81,
-     "w": 100
+     "x": 64,
+     "y": 47
+    }
+   ],
+   "shadow": {
+    "w": 166,
+    "h": 122,
+    "anchorX": 83,
+    "anchorY": 61,
+    "drop": 0
+   }
+  },
+  "pot_large": {
+   "w": 163,
+   "h": 179,
+   "foot": {
+    "x": 80,
+    "y": 149
+   },
+   "slots": [
+    {
+     "x": 80,
+     "y": 55
+    }
+   ],
+   "shadow": {
+    "w": 208,
+    "h": 153,
+    "anchorX": 104,
+    "anchorY": 76,
+    "drop": 0
+   }
+  },
+  "pot_xlarge": {
+   "w": 228,
+   "h": 233,
+   "foot": {
+    "x": 112,
+    "y": 190
+   },
+   "slots": [
+    {
+     "x": 111,
+     "y": 71
+    }
+   ],
+   "shadow": {
+    "w": 292,
+    "h": 215,
+    "anchorX": 146,
+    "anchorY": 107,
+    "drop": 0
+   }
+  },
+  "bed_long": {
+   "w": 301,
+   "h": 255,
+   "foot": {
+    "x": 147,
+    "y": 182
+   },
+   "slots": [
+    {
+     "x": 99,
+     "y": 123
     },
     {
-     "x": 164,
-     "y": 46,
-     "w": 100
+     "x": 207,
+     "y": 59
     }
    ],
-   "foot": {
-    "x": 106,
-    "y": 156
-   },
    "shadow": {
-    "w": 341,
-    "h": 210,
-    "anchorX": 170,
-    "anchorY": 105
+    "w": 491,
+    "h": 362,
+    "anchorX": 245,
+    "anchorY": 181,
+    "drop": 25
+   }
+  },
+  "shelf": {
+   "w": 277,
+   "h": 352,
+   "foot": {
+    "x": 138,
+    "y": 282
+   },
+   "slots": [],
+   "shadow": {
+    "w": 453,
+    "h": 334,
+    "anchorX": 226,
+    "anchorY": 167,
+    "drop": 24
+   }
+  },
+  "planter_big": {
+   "w": 334,
+   "h": 326,
+   "foot": {
+    "x": 164,
+    "y": 254
+   },
+   "slots": [
+    {
+     "x": 167,
+     "y": 109
+    }
+   ],
+   "shadow": {
+    "w": 545,
+    "h": 401,
+    "anchorX": 272,
+    "anchorY": 200,
+    "drop": 24
    }
   }
  },
  "plants": {
-  "monstera": {
-   "w": 254,
-   "h": 282,
-   "stemX": 140,
-   "stemY": 277
+  "sprout": {
+   "w": 58,
+   "h": 48,
+   "stemX": 29,
+   "stemY": 47
   },
-  "strelitzia": {
-   "w": 241,
-   "h": 299,
-   "stemX": 130,
-   "stemY": 294
+  "small": {
+   "w": 111,
+   "h": 112,
+   "stemX": 57,
+   "stemY": 111
   },
-  "bamboo": {
-   "w": 224,
+  "medium": {
+   "w": 183,
+   "h": 164,
+   "stemX": 92,
+   "stemY": 163
+  },
+  "large": {
+   "w": 221,
+   "h": 259,
+   "stemX": 110,
+   "stemY": 258
+  },
+  "xlarge": {
+   "w": 286,
    "h": 315,
-   "stemX": 118,
-   "stemY": 310
+   "stemX": 141,
+   "stemY": 314
   }
  },
  "grid": {
-  "iso": 1.968,
-  "n": 4,
-  "tileW": 170.2,
-  "tileH": 79.8,
-  "topX": 793,
-  "topY": 250,
-  "uX": 78.25,
-  "uY": 40.5,
-  "vX": -92.0,
-  "vY": 39.25,
+  "n": 5,
+  "tileW": 156.8,
+  "tileH": 90.7,
+  "topX": 770.6,
+  "topY": 403.2,
+  "uX": 78.08,
+  "uY": 45.1,
+  "vX": -78.72,
+  "vY": 45.61,
   "sceneW": 1536,
-  "sceneH": 640,
-  "unitScale": 0.4097
+  "sceneH": 1024,
+  "unitScale": 0.6969
+ },
+ "names": {
+  "pot_sprout": "새싹 화분",
+  "pot_small": "소형 화분",
+  "pot_medium": "중형 화분",
+  "pot_large": "대형 화분",
+  "pot_xlarge": "특대형 화분",
+  "bed_long": "긴 화단",
+  "shelf": "선반",
+  "planter_big": "석재 화분",
+  "sprout": "새싹",
+  "small": "소형",
+  "medium": "중형",
+  "large": "대형",
+  "xlarge": "특대형"
  }
 }

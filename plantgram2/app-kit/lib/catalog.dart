@@ -8,13 +8,10 @@ import 'package:flutter/services.dart';
 /// 긴 화단은 자리가 둘입니다. 등각이라 앞쪽 자리가 뒤쪽보다 아래에
 /// 있으므로, 좌표를 각각 들고 있어야 두 그루가 나란히 앉습니다.
 class Slot {
-  const Slot(this.x, this.y, this.width);
+  const Slot(this.x, this.y);
 
   final double x;
   final double y;
-
-  /// 흙의 폭. 그림자를 여기에 맞춥니다.
-  final double width;
 
   Offset get offset => Offset(x, y);
 }
@@ -42,12 +39,11 @@ class PotAsset {
 
   String get path => 'assets/pots/$id.png';
 
-  /// 자리 하나에 심는 식물의 크기 배율.
+  /// 식물 크기는 조각에 이미 들어 있습니다.
   ///
-  /// 긴 화단의 한 자리는 둥근 화분의 흙보다 좁습니다. 같은 크기로 얹으면
-  /// 식물이 화단 밖으로 걸칩니다. 자리 폭에 맞춰 줄입니다.
-  double scaleFor(Slot slot, double referenceSoilWidth) =>
-      slot.width / referenceSoilWidth;
+  /// 예전에는 자리 폭에 맞춰 코드가 줄였습니다. 이제는 등급별로 알맞은
+  /// 크기의 식물을 따로 받으므로 코드가 크기를 건드리지 않습니다 —
+  /// 등급이 안 맞으면 줄이는 게 아니라 놓을 수 없다고 알려 줍니다.
 }
 
 class PlantAsset {
@@ -63,11 +59,17 @@ class PlantAsset {
 }
 
 class ShadowAsset {
-  const ShadowAsset(this.id, this.size, this.anchor);
+  const ShadowAsset(this.id, this.size, this.anchor, this.drop);
 
   final String id;
   final Size size;
   final Offset anchor;
+
+  /// 닿는 자리에서 아래로 얼마나 내려 깔지.
+  ///
+  /// 다리 달린 선반·화단은 밑면 한가운데가 제 몸에 가려 그림자가 보이지
+  /// 않습니다. 다리 끝 쪽으로 조금 내려야 앞으로 비칩니다.
+  final double drop;
 
   String get path => 'assets/shadows/$id.png';
 }
@@ -111,11 +113,14 @@ class GridSpec {
 }
 
 class Catalog {
-  const Catalog(this.pots, this.plants, this.grid, this.stage);
+  const Catalog(this.pots, this.plants, this.grid, this.stage, this.names);
 
   final Map<String, PotAsset> pots;
   final Map<String, PlantAsset> plants;
   final GridSpec grid;
+
+  /// 조각 이름. 시트를 갈아 끼워도 코드를 고치지 않도록 카탈로그에 둡니다.
+  final Map<String, String> names;
 
   /// 온실 그림. 바닥·유리·벽·소품이 모두 들어 있습니다.
   ///
@@ -123,15 +128,6 @@ class Catalog {
   /// 쓰고 바닥만 우리가 그리니 각이 서로 어긋나 뒤틀려 보였습니다.
   /// 그림은 그림대로 씁니다.
   final ui.Image stage;
-
-  /// 기준이 되는 흙 폭. 자리마다 식물 크기를 맞출 때 씁니다.
-  /// 둥근 화분(자리가 하나인 것) 중 첫 번째를 기준으로 삼습니다.
-  double get referenceSoilWidth {
-    for (final p in pots.values) {
-      if (p.slots.length == 1) return p.slots.first.width;
-    }
-    return pots.values.first.slots.first.width;
-  }
 
   static double _d(Map m, String k) => (m[k] as num).toDouble();
 
@@ -149,12 +145,13 @@ class Catalog {
         foot: Offset(_d(v['foot'] as Map, 'x'), _d(v['foot'] as Map, 'y')),
         slots: [
           for (final s in v['slots'] as List)
-            Slot(_d(s as Map, 'x'), _d(s, 'y'), _d(s, 'w')),
+            Slot(_d(s as Map, 'x'), _d(s, 'y')),
         ],
         shadow: ShadowAsset(
           e.key,
           Size(_d(sh, 'w'), _d(sh, 'h')),
           Offset(_d(sh, 'anchorX'), _d(sh, 'anchorY')),
+          _d(sh, 'drop'),
         ),
       );
     }
@@ -192,18 +189,10 @@ class Catalog {
         unit: _d(g, 'unitScale'),
       ),
       await image('assets/greenhouse/stage.png'),
+      {
+        for (final e in (m['names'] as Map<String, dynamic>).entries)
+          e.key: e.value as String,
+      },
     );
   }
 }
-
-const plantNames = {
-  'monstera': '몬스테라',
-  'strelitzia': '극락조',
-  'bamboo': '행운목',
-};
-
-const potNames = {
-  'pot_terracotta': '테라코타',
-  'pot_white': '흰 도자기',
-  'bed_wood': '나무 화단',
-};
