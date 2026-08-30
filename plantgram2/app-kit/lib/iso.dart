@@ -66,14 +66,4 @@ class IsoGrid {
       }
     }
   }
-
-  /// 칸 여럿을 하나로 묶은 테두리. 두 칸짜리 화단을 한 덩어리로 칠할 때
-  /// 씁니다. 마름모를 겹쳐 더하면 사이의 이음선이 사라집니다.
-  Path union(Iterable<Cell> cs) {
-    var path = Path();
-    for (final c in cs) {
-      path = Path.combine(PathOperation.union, path, diamond(c));
-    }
-    return path;
-  }
 }

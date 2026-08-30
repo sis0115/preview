@@ -163,27 +163,6 @@ def find_foot(im, alpha_min=110):
     return {"x": round(x), "y": round(bottom - width / 4), "w": int(width)}
 
 
-def find_span(slots, st):
-    """이 화분이 덮는 칸. 심는 자리가 놓인 방향을 격자의 축과 대 봅니다.
-
-    자리가 하나면 한 칸입니다. 둘이면 두 칸이고, 어느 쪽으로 뻗는지는
-    자리 사이 방향에 가장 가까운 축으로 정합니다. 앞뒤·좌우를 손으로
-    정하지 않으므로, 화단을 다시 그려 방향이 뒤집혀도 따라옵니다."""
-    if len(slots) < 2:
-        return [[0, 0]]
-    dx = slots[-1]["x"] - slots[0]["x"]
-    dy = slots[-1]["y"] - slots[0]["y"]
-    n = math.hypot(dx, dy)
-    best, score = [0, 1], -2.0
-    for si, sj in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-        ax = st["uX"] * si + st["vX"] * sj
-        ay = st["uY"] * si + st["vY"] * sj
-        c = (dx * ax + dy * ay) / (n * math.hypot(ax, ay))
-        if c > score:
-            score, best = c, [si, sj]
-    return [[best[0] * k, best[1] * k] for k in range(len(slots))]
-
-
 def find_stem(im, mark):
     """줄기가 흙에 닿는 자리를 그림에서 찾습니다.
 
@@ -256,7 +235,6 @@ def main(sheet_path, out="assets", ref="sheets/kit_ref.json"):
             art.save(f"{out}/pots/{p['id']}.png")
             cat["pots"][p["id"]] = {
                 "w": art.width, "h": art.height, "slots": slots,
-                "span": find_span(slots, st),
                 "foot": {"x": foot["x"], "y": foot["y"]},
                 # 그림자는 밑동 폭에 맞춥니다. 긴 화단은 심는 자리 하나가
                 # 아니라 다리 사이 전체에 그늘이 집니다.

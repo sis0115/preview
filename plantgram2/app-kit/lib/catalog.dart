@@ -24,7 +24,6 @@ class PotAsset {
     required this.id,
     required this.size,
     required this.slots,
-    required this.span,
     required this.foot,
     required this.shadow,
   });
@@ -32,12 +31,6 @@ class PotAsset {
   final String id;
   final Size size;
   final List<Slot> slots;
-
-  /// 이 화분이 덮는 칸들. 기준 칸에서 (i, j) 로 얼마나 떨어졌는지입니다.
-  ///
-  /// 둥근 화분은 한 칸, 긴 화단은 두 칸입니다. 심는 자리와 순서를 맞춰
-  /// 둡니다 — 첫 자리가 첫 칸에 심깁니다.
-  final List<(int, int)> span;
 
   /// 그림 안에서 화분이 바닥에 닿는 자리. 이 점을 칸 한가운데에 놓습니다.
   ///
@@ -49,30 +42,12 @@ class PotAsset {
 
   String get path => 'assets/pots/$id.png';
 
-  /// 화분 그림 자체의 배율.
-  ///
-  /// 시트에는 화단이 둥근 화분과 비슷한 크기로 그려져 있습니다. 그대로
-  /// 얹으면 두 칸짜리 화단이 한 칸도 못 채웁니다 — 재어 보니 0.59칸이었습니다.
-  /// 그림에 그려진 심는 자리 사이 거리를, 실제 칸 사이 거리에 맞춰 늘립니다.
-  /// 배율을 손으로 정하지 않고 격자에서 끌어내므로, 격자를 바꿔도 따라옵니다.
-  double spriteScale(GridSpec g) {
-    if (slots.length < 2 || span.length < 2) return 1;
-    final art = (slots.last.offset - slots.first.offset).distance * g.unit;
-    if (art == 0) return 1;
-    final (ai, aj) = span.first;
-    final (bi, bj) = span.last;
-    final step = g.u * (bi - ai).toDouble() + g.v * (bj - aj).toDouble();
-    return step.distance / art;
-  }
-
   /// 자리 하나에 심는 식물의 크기 배율.
   ///
-  /// 자리가 기준 흙보다 좁을 때만 줄입니다. 넓다고 키우지는 않습니다 —
-  /// 같은 종이 화분에서와 화단에서 다른 크기로 자라면 어색합니다.
-  double plantScale(Slot slot, double referenceSoilWidth, GridSpec g) {
-    final w = slot.width * spriteScale(g);
-    return w < referenceSoilWidth ? w / referenceSoilWidth : 1;
-  }
+  /// 긴 화단의 한 자리는 둥근 화분의 흙보다 좁습니다. 같은 크기로 얹으면
+  /// 식물이 화단 밖으로 걸칩니다. 자리 폭에 맞춰 줄입니다.
+  double scaleFor(Slot slot, double referenceSoilWidth) =>
+      slot.width / referenceSoilWidth;
 }
 
 class PlantAsset {
@@ -136,20 +111,18 @@ class GridSpec {
 }
 
 class Catalog {
-  const Catalog(this.pots, this.plants, this.grid, this.stage, this.floor);
+  const Catalog(this.pots, this.plants, this.grid, this.stage);
 
   final Map<String, PotAsset> pots;
   final Map<String, PlantAsset> plants;
   final GridSpec grid;
 
-  /// 온실 그림. 유리·벽·소품이 들어 있습니다.
-  final ui.Image stage;
-
-  /// 그 위에 덮는 바닥. 우리 격자에 맞춰 다시 깐 타일입니다.
+  /// 온실 그림. 바닥·유리·벽·소품이 모두 들어 있습니다.
   ///
-  /// 받은 그림의 칠해진 타일은 간격이 제각각이라 우리 격자와 겹치면 두
-  /// 겹으로 보였습니다. 바닥 픽셀에만 씌우므로 작업대 다리는 그대로입니다.
-  final ui.Image floor;
+  /// 바닥만 우리 격자대로 다시 깔아 본 적이 있는데, 벽과 소품은 그림 것을
+  /// 쓰고 바닥만 우리가 그리니 각이 서로 어긋나 뒤틀려 보였습니다.
+  /// 그림은 그림대로 씁니다.
+  final ui.Image stage;
 
   /// 기준이 되는 흙 폭. 자리마다 식물 크기를 맞출 때 씁니다.
   /// 둥근 화분(자리가 하나인 것) 중 첫 번째를 기준으로 삼습니다.
@@ -177,13 +150,6 @@ class Catalog {
         slots: [
           for (final s in v['slots'] as List)
             Slot(_d(s as Map, 'x'), _d(s, 'y'), _d(s, 'w')),
-        ],
-        span: [
-          for (final s in (v['span'] as List? ??
-              const [
-                [0, 0]
-              ]))
-            ((s as List)[0] as int, s[1] as int),
         ],
         shadow: ShadowAsset(
           e.key,
@@ -226,7 +192,6 @@ class Catalog {
         unit: _d(g, 'unitScale'),
       ),
       await image('assets/greenhouse/stage.png'),
-      await image('assets/greenhouse/floor.png'),
     );
   }
 }

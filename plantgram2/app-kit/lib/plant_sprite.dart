@@ -13,8 +13,7 @@ class SpriteLayout {
   const SpriteLayout({
     required this.size,
     required this.anchor,
-    required this.base,
-    required this.potScale,
+    required this.scale,
   });
 
   final Size size;
@@ -25,50 +24,43 @@ class SpriteLayout {
   /// 한가운데, 곧 두 칸 사이 경계입니다.
   final Offset anchor;
 
-  /// 시트에서 무대로 옮기는 배율. 식물 크기의 기준입니다.
-  final double base;
-
-  /// 화분 그림에 쓰는 배율. 화단은 두 칸을 채우느라 [base] 보다 큽니다.
-  final double potScale;
+  /// 시트에서 무대로 옮기는 배율.
+  final double scale;
 
   static SpriteLayout of(
       Catalog cat, String plantId, String potId, double userScale) {
     // 시트의 조각은 무대보다 크게 그려져 있습니다. 그 차이를 메운 뒤
     // 사용자가 키운 만큼을 곱합니다.
-    final g = cat.grid;
-    final base = g.unit * userScale;
+    final s = cat.grid.unit * userScale;
     final pot = cat.pots[potId]!;
     final plant = cat.plants[plantId]!;
-    // 화분 그림은 제 칸 수에 맞춰 한 번 더 늘어납니다.
-    final ps = base * pot.spriteScale(g);
     final foot = pot.foot;
     final refSoil = cat.referenceSoilWidth;
 
     var l = 0.0, r = 0.0, t = 0.0, b = 0.0;
-    void extend(Offset origin, Size sz, double s) {
+    void extend(Offset origin, Size sz, double k) {
       l = math.max(l, -origin.dx);
       t = math.max(t, -origin.dy);
-      r = math.max(r, origin.dx + sz.width * s);
-      b = math.max(b, origin.dy + sz.height * s);
+      r = math.max(r, origin.dx + sz.width * k);
+      b = math.max(b, origin.dy + sz.height * k);
     }
 
     // 화분 — 닿는 자리가 원점에 오도록
-    extend(-foot * ps, pot.size, ps);
+    extend(-foot * s, pot.size, s);
     // 그림자 — 닿는 자리에 그대로
-    extend(-pot.shadow.anchor * ps, pot.shadow.size, ps);
+    extend(-pot.shadow.anchor * s, pot.shadow.size, s);
     // 식물 — 심는 자리마다 하나씩.
-    // 밑동이 심는 자리에 오게 하려면 원점을 (자리 - 닿는자리) 으로 둡니다.
+    // 밑동이 심는 자리에 오게 하려면 원점을 (자리 - 닿는자리) 로 둡니다.
     // 여기에 밑동을 한 번 더 더하면 그만큼 아래로 밀립니다.
     for (final slot in pot.slots) {
-      final ls = base * pot.plantScale(slot, refSoil, g);
-      extend((slot.offset - foot) * ps - plant.stem * ls, plant.size, ls);
+      final ls = s * pot.scaleFor(slot, refSoil);
+      extend((slot.offset - foot) * s - plant.stem * ls, plant.size, ls);
     }
 
     return SpriteLayout(
       size: Size(l + r, t + b),
       anchor: Offset(l, t),
-      base: base,
-      potScale: ps,
+      scale: s,
     );
   }
 }
@@ -93,7 +85,7 @@ class PlantSprite extends StatelessWidget {
     final pot = catalog.pots[potId]!;
     final plant = catalog.plants[plantId]!;
     final foot = pot.foot;
-    final ps = layout.potScale;
+    final ps = layout.scale;
 
     Widget at(String path, Size sz, Offset origin, double s) => Positioned(
           left: layout.anchor.dx + origin.dx,
@@ -107,7 +99,7 @@ class PlantSprite extends StatelessWidget {
     final refSoil = catalog.referenceSoilWidth;
 
     Widget plantAt(Slot slot) {
-      final ls = layout.base * pot.plantScale(slot, refSoil, catalog.grid);
+      final ls = ps * pot.scaleFor(slot, refSoil);
       return at(plant.path, plant.size,
           (slot.offset - foot) * ps - plant.stem * ls, ls);
     }
