@@ -1,23 +1,27 @@
-"""돌아온 그림이 안내선을 지켰는지 검사합니다. 재지 않고, 확인만 합니다.
+"""돌아온 그림에서 조합에 쓸 점을 찾을 수 있는지 봅니다.
 
-합격 기준은 **크기** 하나입니다. 시트 위 어디에 그렸는지는 정보가 아닙니다 -
-물체가 통째로 옮겨졌을 뿐이면 바깥 상자에서 그만큼 되돌려 읽으면 되고,
-흙 높이와 줄기 밑동은 물체에 붙어 함께 옮겨집니다.
+크기는 보지 않습니다. 한 장 안에서 그린 것끼리는 저절로 맞고, 무대에 얹을
+때는 시트 전체를 한 배율로 줄이면 됩니다.
 
-되돌려 읽는 것과 알아내는 것은 다릅니다. 색으로 흙을 찾거나 실루엣에서
-다리를 찾는 것은 알아내는 것이고 매번 틀렸습니다. 여기서는 안내선이 정한
-기하를 그대로 쓰고, 평행이동 두 값만 바깥 상자에서 구합니다.
+보는 것은 하나입니다 - **조합에 쓸 점을 그림에서 찾을 수 있는가.**
 
-크기가 어긋나면 되돌릴 수 없으므로 다시 받습니다.
+    화분 : 흙(심는 자리)과 바닥에 닿는 자리
+    식물 : 줄기 밑동
 
-    python3 tools/verify_spec.py sheets/spec_02_art.png sheets/spec_02.json
+십자와 얼마나 떨어졌는지는 참고로만 적습니다. 물체가 통째로 옮겨졌을 뿐이면
+점도 함께 옮겨졌을 테니 문제가 아닙니다. 문제는 점을 못 찾는 경우입니다 -
+잎이 밑동보다 아래로 내려가 있거나, 흙이 안 보이거나.
+
+    python3 tools/verify_spec.py sheets/spec_04_art.png sheets/spec_04.json
 """
-import json, sys
+import colorsys
+import json
+import sys
+
 import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage
 
-TOL = 14          # px. 이만큼까지는 봐 줍니다
 KEY = (255, 0, 255)
 
 
@@ -27,13 +31,10 @@ def alpha_of(im):
     if a.min() < 200:
         return a > 110
     rgb = np.asarray(im.convert("RGB")).astype(int)
-    d = np.abs(rgb - np.array(KEY)).sum(2)
-    return d > 120
+    return np.abs(rgb - np.array(KEY)).sum(2) > 120
 
 
 def blobs(mask, least=3000):
-    """물체 하나하나의 바깥 상자. 칸으로 자르지 않습니다 -
-    칸 경계를 넘었는지도 봐야 하기 때문입니다."""
     lab, k = ndimage.label(ndimage.binary_closing(mask, np.ones((9, 9))))
     out = []
     for c in range(1, k + 1):
@@ -45,65 +46,122 @@ def blobs(mask, least=3000):
     return out
 
 
-def expected(it, spec):
-    """안내선이 정한 가로 한가운데 · 너비 · 바닥.
+def stem_of(mask, box):
+    """줄기 밑동. 맨 아랫부분 몇 줄의 불투명한 폭 한가운데입니다.
 
-    화분과 가구는 밑면이 타일을 덮으므로 마름모의 아래 꼭짓점이 바닥입니다.
-    식물은 줄기만 닿으므로 십자(기준점)가 바닥입니다 - 둘을 같은 자로 재면
-    식물이 늘 40px 떠 있는 것처럼 나옵니다.
+    잎이 밑동보다 아래로 내려가면 이 값이 잎 쪽으로 끌려갑니다. 그래서
+    "밑동이 그림에서 가장 아래에 오게" 그려 달라고 합니다.
     """
-    hh = spec["tileH"] / 2
-    xs = [x for x, _ in it["tiles"]]
-    ys = [y for _, y in it["tiles"]]
-    bottom = it["ground"][1] if it["kind"] == "식물" else max(ys) + hh
-    width = it.get("allowW", (max(xs) - min(xs)) + spec["tileW"])
-    return it["ground"][0], width, bottom
+    x0, y0, x1, y1 = box
+    sub = mask[y0:y1 + 1, x0:x1 + 1]
+    ys, xs = np.nonzero(sub)
+    rows = max(8, round((y1 - y0) * .04))
+    sel = xs[ys > ys.max() - rows]
+    return (x0 + (int(sel.min()) + int(sel.max())) / 2, y0 + int(ys.max()))
 
 
-def main(art, spec_path="sheets/spec_02.json", out=None):
+def soil_of(im, mask, box):
+    """흙. 갈색(붉은 계열, 어둡고 채도 있는 색)만 골라 무게중심을 냅니다."""
+    x0, y0, x1, y1 = box
+    rgb = np.asarray(im.convert("RGB")).astype(float)[y0:y1 + 1, x0:x1 + 1] / 255
+    sub = mask[y0:y1 + 1, x0:x1 + 1]
+    h, w, _ = rgb.shape
+    flat = rgb.reshape(-1, 3)
+    hsv = np.array([colorsys.rgb_to_hsv(*p) for p in flat])
+    hue, sat, val = (hsv[:, i].reshape(h, w) for i in range(3))
+    soil = sub & ((hue < .13) | (hue > .92)) & (sat > .18) & (val < .62)
+    if soil.sum() < 200:
+        return None
+    ys, xs = np.nonzero(soil)
+    return (x0 + xs.mean(), y0 + ys.mean(), int(soil.sum()))
+
+
+def foot_of(mask, box):
+    """바닥에 닿는 자리. 실루엣에서 아래로 튀어나온 곳을 찾습니다."""
+    x0, y0, x1, y1 = box
+    sub = mask[y0:y1 + 1, x0:x1 + 1]
+    h, w = sub.shape
+    low = np.full(w, -1)
+    for x in range(w):
+        ys = np.nonzero(sub[:, x])[0]
+        if len(ys):
+            low[x] = ys.max()
+    feet = []
+    for x in range(w):
+        if low[x] < 0:
+            continue
+        if low[x] == low[max(0, x - 12):x + 13].max():
+            if not feet or x - feet[-1][0] > 18:
+                feet.append((x, int(low[x])))
+            elif low[x] > feet[-1][1]:
+                feet[-1] = (x, int(low[x]))
+    if len(feet) >= 2 and abs(feet[-1][0] - feet[0][0]) > w * .35:
+        (ax, ay), (bx, by) = feet[0], feet[-1]
+        return (x0 + (ax + bx) / 2, y0 + (ay + by) / 2)
+    bottom = int(low.max())
+    width, cx = 0, w / 2
+    for y in range(int(h * .75), h):
+        xs = np.nonzero(sub[y])[0]
+        if len(xs) == 0:
+            continue
+        span = int(xs.max()) - int(xs.min()) + 1
+        if span > width:
+            width, cx = span, (int(xs.min()) + int(xs.max())) / 2
+    return (x0 + cx, y0 + bottom - width / 4)
+
+
+def main(art, spec_path="sheets/spec_04.json", out=None):
     out = out or spec_path.replace(".json", "_check.png")
     spec = json.load(open(spec_path))
     im = Image.open(art).convert("RGBA")
     if im.size != (spec["width"], spec["height"]):
-        print(f"크기가 다릅니다: {im.size} ≠ "
-              f"({spec['width']}, {spec['height']}) — 다시 받아야 합니다")
+        print(f"크기가 다릅니다: {im.size} — 다시 받아야 합니다")
         return 1
 
     mask = alpha_of(im)
     got = blobs(mask)
     if len(got) != len(spec["items"]):
         print(f"물체가 {len(got)}개입니다 (있어야 할 수 {len(spec['items'])}) — "
-              "겹쳤거나 빠졌습니다")
+              "겹쳤거나 빠졌습니다\n")
 
-    guide = Image.open(spec_path.replace(".json", ".png")).convert("RGB")
-    chk = Image.alpha_composite(guide.convert("RGBA"), im).convert("RGB")
+    guide = Image.open(spec_path.replace(".json", ".png")).convert("RGBA")
+    chk = Image.alpha_composite(guide, im).convert("RGB")
     dr = ImageDraw.Draw(chk)
     bad = 0
 
-    print(f"{'칸':2} {'이름':12} {'너비':>6} {'맞을너비':>8} {'배':>5}   판정"
-          f"        되돌릴 이동")
+    print(f"{'칸':2} {'이름':12} {'찾은 점':>18}  {'십자에서':>10}   판정")
     for it, g in zip(spec["items"], got):
-        exc, exw, exb = expected(it, spec)
-        w = g[2] - g[0]
-        dc = (g[0] + g[2]) / 2 - exc
-        db = g[3] - exb
-        # 합격은 크기로만 봅니다. 자리는 되돌려 읽을 수 있습니다.
-        ok = abs(w / exw - 1) <= .12
+        cx, cy = it["ground"]
+        if it["kind"] == "식물":
+            px, py = stem_of(mask, g)
+            # 밑동이 그림에서 가장 아래에 있는지. 잎이 더 내려가면 끌려갑니다.
+            centred = abs(px - (g[0] + g[2]) / 2) < (g[2] - g[0]) * .30
+            ok, why = centred, "" if centred else "밑동이 한쪽으로 치우침"
+            what = "줄기 밑동"
+        else:
+            s = soil_of(im, mask, g)
+            px, py = foot_of(mask, g)
+            ok = s is not None
+            why = "" if ok else "흙이 안 보임"
+            what = "닿는 자리"
+            if s:
+                dr.ellipse([s[0] - 7, s[1] - 7, s[0] + 7, s[1] + 7],
+                           outline=(60, 110, 220), width=3)
         bad += 0 if ok else 1
         color = (40, 150, 80) if ok else (205, 70, 45)
-        dr.rectangle([exc - exw / 2, exb - 7, exc + exw / 2, exb],
-                     outline=color, width=3)
-        dr.rectangle(g, outline=(30, 80, 200), width=2)
-        print(f"{it['cell'] + 1:2} {it['id']:12} {w:6} {exw:8.0f} {w / exw:5.2f}"
-              + ("   통과   " if ok else "   너무 큼 " if w > exw else "   너무 작음")
-              + f"  {dc:+6.0f} {db:+6.0f}")
+        dr.line([(px - 14, py), (px + 14, py)], fill=color, width=3)
+        dr.line([(px, py - 14), (px, py + 14)], fill=color, width=3)
+        print(f"{it['cell'] + 1:2} {it['id']:12} {what:>12}"
+              f" {px - cx:+5.0f} {py - cy:+5.0f}"
+              + ("        찾음" if ok else f"     {why}"))
 
     chk.save(out)
-    print(f"\n{out} — 초록/빨강 = 안내선이 정한 좌·우·아래, 파랑 = 실제로 그려진 범위")
-    print("합격은 너비 ±12% 하나로 봅니다. 키와 시트 위 자리는 보지 않습니다.")
-    print(f"{len(spec['items']) - bad}/{len(spec['items'])} 통과")
+    print(f"\n{out} — 초록/빨강 십자 = 찾은 닿는 점, 파란 동그라미 = 찾은 흙")
+    print("크기는 보지 않습니다. 십자에서 떨어진 값은 참고입니다 — "
+          "물체가 통째로 옮겨진 것이면 점도 함께 옮겨집니다.")
+    print(f"{len(spec['items']) - bad}/{len(spec['items'])} 에서 점을 찾았습니다")
     if bad:
-        print("\n크기가 어긋난 칸이 있습니다. 크기는 되돌릴 수 없으니 다시 받으세요.")
+        print("\n점을 못 찾은 칸이 있습니다. 그 칸만 다시 그려 달라고 하세요.")
     return 1 if bad else 0
 
 
