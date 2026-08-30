@@ -17,12 +17,20 @@ import json, sys
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1536, 1024
-HEAD = 64
-COLS, ROWS = 4, 2
-CW, CH = W // COLS, (H - HEAD) // ROWS      # 384 x 480
+HEAD = 68
+ROWS = 2
+CH = (H - HEAD) // ROWS                     # 478
+GY = 384                                    # 칸 안에서 바닥 한가운데
 
 TW, TH = 160, 80                            # 표준 타일. 정확히 2 : 1
-GX, GY = CW // 2, 390                       # 칸 안에서 바닥 한가운데
+
+# 칸 너비는 밑면보다 조금만 큽니다.
+#
+# 첫 시험지는 칸이 384px 인데 마름모가 160px 이었습니다. 칸의 42% 밖에 안 되는
+# 빈 상자를 주니 "보기 좋게 채운" 크기로 그려 왔고, 전부 1.09~2.26배 커졌습니다.
+# 채울 여백을 없앱니다.
+PAD = 34                                    # 한계선 좌우로 남기는 여백
+SPREAD = 80                                 # 식물의 잎이 밑면 밖으로 나가도 되는 폭
 
 BG = (242, 241, 236)
 CARD = (252, 252, 250)
@@ -64,6 +72,27 @@ ITEMS = [
          foot=[(0, 0), (1, 0), (0, -1), (1, -1)], fits="2x2",
          note="야자처럼 큰 나무"),
 ]
+
+
+def foot_width(foot):
+    """밑면 마름모 덩어리의 가로 너비."""
+    return round(TW * {1: 1.0, 2: 1.5, 4: 2.0}[len(foot)])
+
+
+def allowed(it):
+    """물체가 차지해도 되는 가로 너비.
+
+    화분과 가구는 밑면 그대로입니다. 식물은 잎이 화분보다 넓게 퍼지는 것이
+    자연스러우므로 반 칸을 더 줍니다 - 첫 시험지에서 잎까지 한 칸에 가두려
+    했던 것은 무리한 요구였습니다.
+    """
+    w = foot_width(it["foot"])
+    return w + SPREAD if it["kind"] == "식물" else w
+
+
+def cell_width(it):
+    """칸은 허용 너비보다 조금만 큽니다. 채울 여백을 남기지 않습니다."""
+    return allowed(it) + PAD * 2
 
 
 def font(size, bold=False):
@@ -121,29 +150,31 @@ def cross(dr, x, y, r=9, color=MARK, width=3):
     dr.line([(x, y - r), (x, y + r)], fill=color, width=width)
 
 
-def foot_centers(foot):
+def foot_centers(foot, cw):
     """밑면 타일들의 한가운데. 덩어리 전체가 바닥 기준점에 오도록 옮깁니다."""
     u, v = (TW / 2, TH / 2), (-TW / 2, TH / 2)
     pts = [(u[0] * i + v[0] * j, u[1] * i + v[1] * j) for i, j in foot]
-    ox = sum(p[0] for p in pts) / len(pts)
-    oy = sum(p[1] for p in pts) / len(pts)
-    return [(GX + p[0] - ox, GY + p[1] - oy) for p in pts]
+    mx = sum(p[0] for p in pts) / len(pts)
+    my = sum(p[1] for p in pts) / len(pts)
+    return [(cw / 2 + p[0] - mx, GY + p[1] - my) for p in pts]
 
 
-def draw_cell(dr, ox, oy, n, it):
-    dr.rounded_rectangle([ox + 6, oy + 6, ox + CW - 6, oy + CH - 6], 14,
+def draw_cell(dr, im, ox, oy, cw, n, it):
+    dr.rounded_rectangle([ox + 6, oy + 6, ox + cw - 6, oy + CH - 6], 14,
                          fill=CARD, outline=EDGE)
 
     dr.text((ox + 18, oy + 16), f"{n}. {it['name']}", font=font(19, True), fill=INK)
     spread = {1: "1칸", 2: "2칸", 4: "4칸(2×2)"}[len(it["foot"])]
-    what = "퍼지는 범위" if it["kind"] == "식물" else "밑면"
-    tail = " · 키는 자유" if it["kind"] == "식물" else ""
-    dr.text((ox + 18, oy + 41), f"{it['kind']} · {what} {spread}{tail}",
-            font=font(14), fill=MUTE)
-    dr.text((ox + 18, oy + 61), it["note"], font=font(13), fill=MUTE)
+    if it["kind"] == "식물":
+        line = (f"식물 · 줄기 자리 {spread} · "
+                f"잎은 {allowed(it) / TW:g}칸까지 · 키는 자유")
+    else:
+        line = f"{it['kind']} · 밑면 {spread}"
+    dr.text((ox + 18, oy + 40), line, font=font(13), fill=MUTE)
+    dr.text((ox + 18, oy + 58), it["note"], font=font(12), fill=MUTE)
 
-    cs = [(ox + x, oy + y) for x, y in foot_centers(it["foot"])]
-    gx, gy = ox + GX, oy + GY
+    cs = [(ox + x, oy + y) for x, y in foot_centers(it["foot"], cw)]
+    gx, gy = ox + cw / 2, oy + GY
     base = hull([p for c in cs for p in diamond(*c)])
 
     # 밑판 — 여기에 놓입니다
@@ -152,14 +183,15 @@ def draw_cell(dr, ox, oy, n, it):
         dr.polygon(diamond(*c), outline=TILE_E)
         dr.ellipse([c[0] - 2, c[1] - 2, c[0] + 2, c[1] + 2], fill=TILE_E)
 
-    # 밑면의 좌우 끝을 위로 세워 둡니다. 잎이 넘지 말아야 할 선입니다.
-    lx = min(base, key=lambda p: p[0])
-    rx = max(base, key=lambda p: p[0])
-    for px, py in (lx, rx):
-        y = py
-        while y > oy + 96:
-            dr.line([(px, y), (px, y - 7)], fill=(240, 194, 160), width=1)
+    # 좌우 한계선. 이 밖으로 나가면 안 됩니다.
+    half = allowed(it) / 2
+    for px in (gx - half, gx + half):
+        y = gy + TH / 2
+        while y > oy + 112:
+            dr.line([(px, y), (px, y - 7)], fill=(238, 176, 132), width=2)
             y -= 13
+    dr.text((gx, oy + 100), "← 좌우 한계 →", font=font(12, True),
+            fill=(214, 140, 90), anchor="ms")
 
     if it["kind"] == "식물":
         cross(dr, gx, gy)
@@ -184,55 +216,85 @@ def draw_cell(dr, ox, oy, n, it):
                     cross(dr, c[0], c[1] - h, r=8)
 
 
-def main(out="sheets/spec_01.png"):
-    im = Image.new("RGB", (W, H), BG)
+def ghost(im, cell, cw, ox, oy, it):
+    """1번 칸에 크기 보기를 흐리게 깝니다.
+
+    말로 "마름모 안에 들어오게"라고 해도 첫 시험지는 전부 1.09~2.26배 크게
+    왔습니다. 정답 크기를 눈으로 보여 주는 편이 훨씬 잘 먹습니다.
+    """
+    try:
+        art = Image.open("../app-kit/assets/pots/pot_terracotta.png").convert("RGBA")
+    except FileNotFoundError:
+        return
+    k = TW / art.width                       # 물체 전체가 밑면 너비 안에
+    art = art.resize((round(art.width * k), round(art.height * k)), Image.LANCZOS)
+    cs = foot_centers(it["foot"], cw)
+    bottom = max(y for _, y in cs) + TH / 2
+    art.putalpha(art.getchannel("A").point(lambda v: round(v * .32)))
+    im.paste(art, (round(ox + cw / 2 - art.width / 2),
+                   round(oy + bottom - art.height)), art)
+
+
+def main(out="sheets/spec_02.png"):
+    im = Image.new("RGBA", (W, H), BG + (255,))
     dr = ImageDraw.Draw(im)
 
-    dr.text((24, 14), "규격 시험지 — 안내선 위에 그려 주세요",
-            font=font(22, True), fill=INK)
-    dr.text((24, 42),
+    dr.text((24, 12), "규격 시험지 2 — 칸을 넘지 않는 크기로",
+            font=font(21, True), fill=INK)
+    dr.text((24, 40),
             f"타일 {TW}×{TH} (정확히 2:1)    "
-            "초록 마름모 = 밑면이 덮을 자리(좌우로 넘지 않기) · "
+            "초록 마름모 = 바닥에 닿는 자리 · 주황 점선 = 좌우 한계 · "
             "갈색 면 = 흙 윗면 / 선반 판 · 주황 십자 = 식물이 놓일 점 · "
             "키는 자유        ※ 안내선과 글자는 결과물에 그리지 마세요",
-            font=font(14), fill=MUTE)
+            font=font(13), fill=MUTE)
 
     spec = {"width": W, "height": H, "tileW": TW, "tileH": TH, "items": []}
 
-    for n, it in enumerate(ITEMS):
-        ox = (n % COLS) * CW
-        oy = HEAD + (n // COLS) * CH
-        draw_cell(dr, ox, oy, n + 1, it)
+    rows = [ITEMS[:4], ITEMS[4:]]
+    for r, row in enumerate(rows):
+        widths = [cell_width(it) for it in row]
+        ox = (W - sum(widths)) / 2
+        oy = HEAD + r * CH
+        for it, cw in zip(row, widths):
+            n = ITEMS.index(it)
+            draw_cell(dr, im, round(ox), oy, cw, n + 1, it)
+            if n == 0:
+                ghost(im, dr, cw, round(ox), oy, it)
+                dr.text((ox + cw / 2, oy + GY + 62), "← 이 크기로",
+                        font=font(13, True), fill=MARK, anchor="ms")
 
-        cs = [(ox + x, oy + y) for x, y in foot_centers(it["foot"])]
-        rec = {"id": it["id"], "kind": it["kind"], "cell": n,
-               "box": [ox, oy, ox + CW, oy + CH],
-               "ground": [ox + GX, oy + GY],
-               "foot": it["foot"],
-               "tiles": [[round(x), round(y)] for x, y in cs]}
-        if it["kind"] == "식물":
-            rec["fits"] = it["fits"]
-        elif "shelves" in it:
-            rec["slots"] = [
-                {"kind": "1x1", "x": round(cx), "y": round(cy - h)}
-                for h, _ in it["shelves"] for cx, cy in cs]
-        else:
-            rec["soil"] = it["soil"]
-            rec["slots"] = []
-            for kind, cell in it["slots"]:
-                if cell is None:
-                    rec["slots"].append(
-                        {"kind": kind, "x": ox + GX, "y": ox * 0 + oy + GY - it["soil"]})
-                else:
-                    i = it["foot"].index(cell)
-                    rec["slots"].append({"kind": kind, "x": round(cs[i][0]),
-                                         "y": round(cs[i][1] - it["soil"])})
-        spec["items"].append(rec)
+            cs = [(ox + x, oy + y) for x, y in foot_centers(it["foot"], cw)]
+            rec = {"id": it["id"], "kind": it["kind"], "cell": n,
+                   "box": [round(ox), oy, round(ox + cw), oy + CH],
+                   "ground": [round(ox + cw / 2), oy + GY],
+                   "foot": it["foot"], "allowW": allowed(it),
+                   "tiles": [[round(x), round(y)] for x, y in cs]}
+            if it["kind"] == "식물":
+                rec["fits"] = it["fits"]
+            elif "shelves" in it:
+                rec["slots"] = [
+                    {"kind": "1x1", "x": round(cx), "y": round(cy - h)}
+                    for h, _ in it["shelves"] for cx, cy in cs]
+            else:
+                rec["soil"] = it["soil"]
+                rec["slots"] = []
+                for kind, cell in it["slots"]:
+                    if cell is None:
+                        rec["slots"].append({"kind": kind, "x": round(ox + cw / 2),
+                                             "y": oy + GY - it["soil"]})
+                    else:
+                        i = it["foot"].index(cell)
+                        rec["slots"].append({"kind": kind, "x": round(cs[i][0]),
+                                             "y": round(cs[i][1] - it["soil"])})
+            spec["items"].append(rec)
+            ox += cw
 
-    im.save(out)
+    im.convert("RGB").save(out)
     json.dump(spec, open(out.replace(".png", ".json"), "w"),
               indent=1, ensure_ascii=False)
-    print(f"{out} · {len(ITEMS)}칸 · 타일 {TW}x{TH} · 키 제한 없음")
+    for it in ITEMS:
+        print(f"  {it['id']:12} 허용 너비 {allowed(it):3}px · 칸 {cell_width(it):3}px")
+    print(f"{out} · {len(ITEMS)}칸 · 타일 {TW}x{TH}")
 
 
 if __name__ == "__main__":

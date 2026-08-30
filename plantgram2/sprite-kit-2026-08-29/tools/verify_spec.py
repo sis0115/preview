@@ -3,7 +3,7 @@
 어긋난 그림을 코드로 흡수하지 않습니다. 통과하지 못하면 다시 받습니다 -
 지금까지 흡수해 온 것이 뒤틀림과 잘림의 뿌리였습니다.
 
-    python3 tools/verify_spec.py sheets/spec_01_art.png
+    python3 tools/verify_spec.py sheets/spec_02_art.png sheets/spec_02.json
 """
 import json, sys
 import numpy as np
@@ -45,14 +45,16 @@ def expected(it, spec):
     식물은 줄기만 닿으므로 십자(기준점)가 바닥입니다 - 둘을 같은 자로 재면
     식물이 늘 40px 떠 있는 것처럼 나옵니다.
     """
-    hw, hh = spec["tileW"] / 2, spec["tileH"] / 2
+    hh = spec["tileH"] / 2
     xs = [x for x, _ in it["tiles"]]
     ys = [y for _, y in it["tiles"]]
     bottom = it["ground"][1] if it["kind"] == "식물" else max(ys) + hh
-    return (min(xs) + max(xs)) / 2, (max(xs) - min(xs)) + 2 * hw, bottom
+    width = it.get("allowW", (max(xs) - min(xs)) + spec["tileW"])
+    return it["ground"][0], width, bottom
 
 
-def main(art, spec_path="sheets/spec_01.json", out="sheets/spec_01_check.png"):
+def main(art, spec_path="sheets/spec_02.json", out=None):
+    out = out or spec_path.replace(".json", "_check.png")
     spec = json.load(open(spec_path))
     im = Image.open(art).convert("RGBA")
     if im.size != (spec["width"], spec["height"]):
