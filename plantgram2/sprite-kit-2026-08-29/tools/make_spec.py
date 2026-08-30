@@ -30,7 +30,6 @@ TW, TH = 160, 80                            # 표준 타일. 정확히 2 : 1
 # 빈 상자를 주니 "보기 좋게 채운" 크기로 그려 왔고, 전부 1.09~2.26배 커졌습니다.
 # 채울 여백을 없앱니다.
 PAD = 34                                    # 한계선 좌우로 남기는 여백
-SPREAD = 80                                 # 식물의 잎이 밑면 밖으로 나가도 되는 폭
 
 BG = (242, 241, 236)
 CARD = (252, 252, 250)
@@ -46,39 +45,42 @@ FONT = "../app-kit/assets/fonts/{}.otf"
 
 # 슬롯 등급: 식물 한 그루가 들어가는 자리의 크기입니다.
 #   "1x1" 한 칸짜리 · "2x1" 두 칸짜리 · "2x2" 네 칸짜리
+# width 는 이 물건이 실제로 얼마나 넓은지입니다. 칸(밑면)은 그 결과일 뿐,
+# 채워야 할 목표가 아닙니다 - 작은 것을 늘려서 칸을 채우면 다른 물건이 아니라
+# 뭉개진 같은 물건이 됩니다.
+#
+# hint 는 크기 보기입니다. 자연스러운 배율(0.5~1.15배)로 보여 줄 수 있는
+# 그림이 있을 때만 씁니다. 특대형은 늘린 그림 대신 치수선으로만 알려 줍니다.
 ITEMS = [
     dict(id="pot_round", kind="화분", name="둥근 화분",
-         foot=[(0, 0)], soil=55, slots=[("1x1", (0, 0))],
-         ghost="pots/pot_terracotta",
-         note="테라코타. 밑면이 타일을 꽉 채우게"),
+         foot=[(0, 0)], width=160, soil=55, slots=[("1x1", (0, 0))],
+         hint="pots/pot_terracotta",
+         note="테라코타. 흔한 크기"),
     dict(id="bed_long", kind="화분", name="긴 화단",
-         foot=[(0, 0), (0, -1)], soil=58,
+         foot=[(0, 0), (0, -1)], width=240, soil=58,
          slots=[("1x1", (0, 0)), ("1x1", (0, -1))],
-         ghost="pots/bed_wood",
-         note="나무. 같은 식물을 두 그루 심는 자리"),
+         hint="pots/bed_wood",
+         note="나무. 길어서 두 칸. 같은 식물을 두 그루"),
     dict(id="planter_big", kind="화분", name="큰 화분",
-         foot=[(0, 0), (1, 0), (0, -1), (1, -1)], soil=72,
-         slots=[("2x2", None)],
-         ghost=None,
-         note="시멘트. 큰 나무 한 그루"),
+         foot=[(0, 0), (1, 0), (0, -1), (1, -1)], width=320, soil=72,
+         slots=[("2x2", None)], hint=None,
+         note="특대형 석재 화분. 원래 커서 네 칸"),
     dict(id="shelf", kind="가구", name="선반",
-         foot=[(0, 0), (0, -1)],
-         shelves=[(62, "아래 판"), (152, "위 판")],
-         ghost=None,
+         foot=[(0, 0), (0, -1)], width=240,
+         shelves=[(62, "아래 판"), (152, "위 판")], hint="box",
          note="층마다 작은 화분 두 개"),
     dict(id="plant_s", kind="식물", name="작은 식물",
-         foot=[(0, 0)], fits="1x1", ghost="plants/strelitzia",
-         note="선반에 올릴 작은 것"),
+         foot=[(0, 0)], width=120, fits="1x1", hint="plants/strelitzia",
+         note="선반에 올라갈 만큼 작은 것"),
     dict(id="plant_m", kind="식물", name="식물",
-         foot=[(0, 0)], fits="1x1", ghost="plants/monstera",
-         note="몬스테라 같은 관엽"),
+         foot=[(0, 0)], width=240, fits="1x1", hint="plants/monstera",
+         note="몬스테라 같은 관엽. 흔한 크기"),
     dict(id="plant_tall", kind="식물", name="키 큰 식물",
-         foot=[(0, 0)], fits="1x1", ghost="plants/bamboo",
-         note="대나무처럼 위로 자라는 것"),
-    dict(id="plant_big", kind="식물", name="큰 식물",
-         foot=[(0, 0), (1, 0), (0, -1), (1, -1)], fits="2x2",
-         ghost="plants/monstera",
-         note="야자처럼 큰 나무"),
+         foot=[(0, 0)], width=200, fits="1x1", hint="plants/bamboo",
+         note="대나무처럼 좁고 위로 자라는 것"),
+    dict(id="plant_big", kind="식물", name="특대형 식물",
+         foot=[(0, 0), (1, 0), (0, -1), (1, -1)], width=400, fits="2x2",
+         hint=None, note="야자처럼 원래 큰 나무. 잎이 넓어 네 칸"),
 ]
 
 
@@ -88,14 +90,8 @@ def foot_width(foot):
 
 
 def allowed(it):
-    """물체가 차지해도 되는 가로 너비.
-
-    화분과 가구는 밑면 그대로입니다. 식물은 잎이 화분보다 넓게 퍼지는 것이
-    자연스러우므로 반 칸을 더 줍니다 - 첫 시험지에서 잎까지 한 칸에 가두려
-    했던 것은 무리한 요구였습니다.
-    """
-    w = foot_width(it["foot"])
-    return w + SPREAD if it["kind"] == "식물" else w
+    """이 물건의 실제 가로 너비. 칸을 채우라는 뜻이 아닙니다."""
+    return it["width"]
 
 
 def cell_width(it):
@@ -173,11 +169,8 @@ def draw_cell(dr, im, ox, oy, cw, n, it):
 
     dr.text((ox + 18, oy + 16), f"{n}. {it['name']}", font=font(19, True), fill=INK)
     spread = {1: "1칸", 2: "2칸", 4: "4칸(2×2)"}[len(it["foot"])]
-    if it["kind"] == "식물":
-        line = (f"식물 · 줄기 자리 {spread} · "
-                f"잎은 {allowed(it) / TW:g}칸까지 · 키는 자유")
-    else:
-        line = f"{it['kind']} · 밑면 {spread}"
+    # 폭은 치수선이 말해 줍니다. 좁은 칸에서는 글자가 넘칩니다.
+    line = f"{it['kind']} · 차지하는 자리 {spread}"
     dr.text((ox + 18, oy + 40), line, font=font(13), fill=MUTE)
     dr.text((ox + 18, oy + 58), it["note"], font=font(12), fill=MUTE)
 
@@ -198,8 +191,15 @@ def draw_cell(dr, im, ox, oy, cw, n, it):
         while y > oy + 112:
             dr.line([(px, y), (px, y - 7)], fill=(238, 176, 132), width=2)
             y -= 13
-    dr.text((gx, oy + 100), "← 좌우 한계 →", font=font(12, True),
-            fill=(214, 140, 90), anchor="ms")
+    # 치수선. 채우라는 뜻이 아니라 이 물건이 이만큼 넓다는 뜻입니다.
+    y = oy + 106
+    dr.line([(gx - half, y), (gx + half, y)], fill=MARK, width=2)
+    for px, d in ((gx - half, 1), (gx + half, -1)):
+        dr.line([(px, y), (px + 7 * d, y - 4)], fill=MARK, width=2)
+        dr.line([(px, y), (px + 7 * d, y + 4)], fill=MARK, width=2)
+    dr.rectangle([gx - 46, y - 10, gx + 46, y + 10], fill=CARD)
+    dr.text((gx, y + 6), f"폭 {allowed(it)}px", font=font(13, True),
+            fill=MARK, anchor="ms")
 
     if it["kind"] == "식물":
         cross(dr, gx, gy)
@@ -224,37 +224,36 @@ def draw_cell(dr, im, ox, oy, cw, n, it):
                     cross(dr, c[0], c[1] - h, r=8)
 
 
-def ghost(im, dr, cw, ox, oy, it):
-    """칸마다 크기 보기를 흐리게 깝니다.
+def hint(im, dr, cw, ox, oy, it):
+    """크기 보기.
 
-    말로 "점선 안에"라고만 하면 모양 해석이 갈리는 칸에서 어긋납니다. 두 번째
-    시험지에서 밑그림이 있던 칸은 0.99 로 맞았고, 없던 칸 둘이 1.30 · 1.33 로
-    커졌습니다. 정답 크기를 눈으로 보여 주는 편이 훨씬 잘 먹습니다.
+    말로 "점선 안에"라고만 하면 모양 해석이 갈리는 칸에서 어긋납니다.
+    2차에서 보기가 있던 칸은 0.99 로 맞았고, 없던 칸 둘이 1.30 · 1.33 이었습니다.
 
-    모양은 칸 설명대로 새로 그리라고 하고, 밑그림은 크기만 알려 줍니다.
+    다만 작은 그림을 늘려서 보여 주면 "늘려서 채우라"는 잘못된 지시가 됩니다.
+    자연스러운 배율로 보여 줄 그림이 있을 때만 깔고, 특대형은 치수선으로만
+    알려 줍니다.
     """
     cs = foot_centers(it["foot"], cw)
-    bottom = (max(y for _, y in cs) + TH / 2 if it["kind"] != "식물"
-              else oy * 0 + GY)
-    want = allowed(it)
+    bottom = (max(y for _, y in cs) + TH / 2) if it["kind"] != "식물" else GY
 
-    if it["ghost"] is None:
-        # 가진 그림이 없으면 상자로 크기만 알려 줍니다.
+    if it["hint"] == "box":
         base = hull([p for c in cs for p in diamond(*c)])
         top = up(base, TW)
-        g = (176, 176, 170)
+        g = (182, 182, 176)
         for a, b in zip(base, top):
             dr.line([(ox + a[0], oy + a[1]), (ox + b[0], oy + b[1])], fill=g, width=2)
         outline(dr, [(ox + x, oy + y) for x, y in top], g, 2)
-        outline(dr, [(ox + x, oy + y) for x, y in base], g, 2)
+        return
+    if it["hint"] is None:
         return
 
     try:
-        art = Image.open(f"../app-kit/assets/{it['ghost']}.png").convert("RGBA")
+        art = Image.open(f"../app-kit/assets/{it['hint']}.png").convert("RGBA")
     except FileNotFoundError:
         return
-    k = want / art.width
-    art = art.resize((round(art.width * k), round(art.height * k)), Image.LANCZOS)
+    art = art.resize((allowed(it), round(art.height * allowed(it) / art.width)),
+                     Image.LANCZOS)
     art.putalpha(art.getchannel("A").point(lambda v: round(v * .20)))
 
     # 칸 밖으로 넘치면 옆 칸까지 흐려집니다. 카드 안으로 잘라 붙입니다.
@@ -273,18 +272,18 @@ def main(out="sheets/spec_02.png"):
     im = Image.new("RGBA", (W, H), BG + (255,))
     dr = ImageDraw.Draw(im)
 
-    dr.text((24, 12), "규격 시험지 3 — 흐린 그림과 같은 크기로",
+    dr.text((24, 12), "규격 시험지 3 — 칸이 아니라 물건의 크기",
             font=font(21, True), fill=INK)
     dr.text((24, 40),
             f"타일 {TW}×{TH} (정확히 2:1)    "
-            "초록 마름모 = 바닥에 닿는 자리 · 주황 점선 = 좌우 한계 · "
+            "초록 마름모 = 이 물건이 차지하는 자리 · 주황 치수선 = 실제 폭 · "
             "갈색 면 = 흙 윗면 / 선반 판 · 주황 십자 = 식물이 놓일 점 · 키는 자유",
             font=font(13), fill=MUTE)
 
     dr.text((24, 58),
-            "흐린 그림·회색 상자는 크기 보기입니다. 모양은 칸 설명대로 새로 그리고 "
-            "크기만 맞춰 주세요.        ※ 안내선·글자·흐린 그림은 결과물에 "
-            "그리지 마세요",
+            "칸이 넓은 것은 물건이 원래 커서입니다. 자리를 채우려고 늘리지 마세요 — "
+            "그 크기의 물건을 그려 주세요.        "
+            "※ 안내선·글자·흐린 그림은 결과물에 그리지 마세요",
             font=font(13), fill=(198, 118, 70))
 
     spec = {"width": W, "height": H, "tileW": TW, "tileH": TH, "items": []}
@@ -297,7 +296,7 @@ def main(out="sheets/spec_02.png"):
         for it, cw in zip(row, widths):
             n = ITEMS.index(it)
             draw_cell(dr, im, round(ox), oy, cw, n + 1, it)
-            ghost(im, dr, cw, round(ox), oy, it)
+            hint(im, dr, cw, round(ox), oy, it)
 
             cs = [(ox + x, oy + y) for x, y in foot_centers(it["foot"], cw)]
             rec = {"id": it["id"], "kind": it["kind"], "cell": n,
