@@ -8,6 +8,7 @@
 import json, sys
 import numpy as np
 from PIL import Image, ImageDraw
+from scipy import ndimage
 
 TOL = 14          # px. 이만큼까지는 봐 줍니다
 KEY = (255, 0, 255)
@@ -23,19 +24,32 @@ def alpha_of(im):
     return d > 120
 
 
-def bbox(mask):
-    ys, xs = np.nonzero(mask)
-    if len(xs) == 0:
-        return None
-    return int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())
+def blobs(mask, least=3000):
+    """물체 하나하나의 바깥 상자. 칸으로 자르지 않습니다 -
+    칸 경계를 넘었는지도 봐야 하기 때문입니다."""
+    lab, k = ndimage.label(ndimage.binary_closing(mask, np.ones((9, 9))))
+    out = []
+    for c in range(1, k + 1):
+        ys, xs = np.nonzero(lab == c)
+        if len(xs) < least:
+            continue
+        out.append((int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())))
+    out.sort(key=lambda o: (o[1] // 400, o[0]))
+    return out
 
 
 def expected(it, spec):
-    """안내선이 정한 좌·우·아래. 키는 정하지 않았으므로 위는 보지 않습니다."""
+    """안내선이 정한 가로 한가운데 · 너비 · 바닥.
+
+    화분과 가구는 밑면이 타일을 덮으므로 마름모의 아래 꼭짓점이 바닥입니다.
+    식물은 줄기만 닿으므로 십자(기준점)가 바닥입니다 - 둘을 같은 자로 재면
+    식물이 늘 40px 떠 있는 것처럼 나옵니다.
+    """
     hw, hh = spec["tileW"] / 2, spec["tileH"] / 2
     xs = [x for x, _ in it["tiles"]]
     ys = [y for _, y in it["tiles"]]
-    return (min(xs) - hw, max(xs) + hw, max(ys) + hh)
+    bottom = it["ground"][1] if it["kind"] == "식물" else max(ys) + hh
+    return (min(xs) + max(xs)) / 2, (max(xs) - min(xs)) + 2 * hw, bottom
 
 
 def main(art, spec_path="sheets/spec_01.json", out="sheets/spec_01_check.png"):
@@ -47,36 +61,37 @@ def main(art, spec_path="sheets/spec_01.json", out="sheets/spec_01_check.png"):
         return 1
 
     mask = alpha_of(im)
-    chk = im.convert("RGB")
+    got = blobs(mask)
+    if len(got) != len(spec["items"]):
+        print(f"물체가 {len(got)}개입니다 (있어야 할 수 {len(spec['items'])}) — "
+              "겹쳤거나 빠졌습니다")
+
+    guide = Image.open(spec_path.replace(".json", ".png")).convert("RGB")
+    chk = Image.alpha_composite(guide.convert("RGBA"), im).convert("RGB")
     dr = ImageDraw.Draw(chk)
     bad = 0
 
-    print(f"{'칸':2} {'이름':12} {'좌':>6} {'우':>6} {'아래':>6}  {'키':>5}   판정")
-    for it in spec["items"]:
-        x0, y0, x1, y1 = it["box"]
-        got = bbox(mask[y0:y1, x0:x1])
-        exl, exr, exb = expected(it, spec)
-        if got is None:
-            print(f"{it['cell'] + 1:2} {it['id']:12}{'':27}   빈 칸")
-            bad += 1
-            continue
-        g = (got[0] + x0, got[1] + y0, got[2] + x0, got[3] + y0)
-        d = [g[0] - exl, g[2] - exr, g[3] - exb]
-        tall = round(exb - g[1])
-        ok = all(abs(v) <= TOL for v in d) and g[1] > y0 + 4
+    print(f"{'칸':2} {'이름':12} {'가로중심':>8} {'바닥':>6} "
+          f"{'너비':>6} {'맞을너비':>8} {'배':>5}   판정")
+    for it, g in zip(spec["items"], got):
+        exc, exw, exb = expected(it, spec)
+        w = g[2] - g[0]
+        dc = (g[0] + g[2]) / 2 - exc
+        db = g[3] - exb
+        ok = abs(dc) <= TOL and abs(db) <= TOL and abs(w / exw - 1) <= .12
         bad += 0 if ok else 1
-        dr.rectangle([exl, y0 + 4, exr, exb],
-                     outline=(60, 160, 90) if ok else (200, 70, 50), width=3)
-        dr.rectangle(g, outline=(40, 90, 200), width=1)
-        print(f"{it['cell'] + 1:2} {it['id']:12} "
-              + " ".join(f"{v:+6.0f}" for v in d)
-              + f"  {tall:5}"
+        color = (40, 150, 80) if ok else (205, 70, 45)
+        dr.rectangle([exc - exw / 2, exb - 7, exc + exw / 2, exb],
+                     outline=color, width=3)
+        dr.rectangle(g, outline=(30, 80, 200), width=2)
+        print(f"{it['cell'] + 1:2} {it['id']:12} {dc:+8.0f} {db:+6.0f} "
+              f"{w:6} {exw:8.0f} {w / exw:5.2f}"
               + ("   통과" if ok else "   ← 어긋남"))
 
     chk.save(out)
-    print(f"\n{out} — 초록/빨강 = 안내선이 정한 좌·우·아래, 파랑 = 실제 그려진 범위")
-    print("키는 검사하지 않습니다. 자유롭게 그리도록 두었습니다.")
-    print(f"허용 오차 {TOL}px · {len(spec['items']) - bad}/{len(spec['items'])} 통과")
+    print(f"\n{out} — 초록/빨강 = 안내선이 정한 좌·우·아래, 파랑 = 실제로 그려진 범위")
+    print(f"허용: 자리 {TOL}px · 너비 ±12%. 키는 검사하지 않습니다.")
+    print(f"{len(spec['items']) - bad}/{len(spec['items'])} 통과")
     if bad:
         print("\n어긋난 칸이 있습니다. 코드로 맞추지 말고 다시 받으세요.")
     return 1 if bad else 0
