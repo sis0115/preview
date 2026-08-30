@@ -31,13 +31,11 @@ def bbox(mask):
 
 
 def expected(it, spec):
-    """안내선이 정한 물체의 바깥 상자."""
-    tiles = it["tiles"]
+    """안내선이 정한 좌·우·아래. 키는 정하지 않았으므로 위는 보지 않습니다."""
     hw, hh = spec["tileW"] / 2, spec["tileH"] / 2
-    xs = [x for x, _ in tiles]
-    ys = [y for _, y in tiles]
-    top = min(ys) - hh - spec["unit"] * it["height"]
-    return (min(xs) - hw, top, max(xs) + hw, max(ys) + hh)
+    xs = [x for x, _ in it["tiles"]]
+    ys = [y for _, y in it["tiles"]]
+    return (min(xs) - hw, max(xs) + hw, max(ys) + hh)
 
 
 def main(art, spec_path="sheets/spec_01.json", out="sheets/spec_01_check.png"):
@@ -53,27 +51,31 @@ def main(art, spec_path="sheets/spec_01.json", out="sheets/spec_01_check.png"):
     dr = ImageDraw.Draw(chk)
     bad = 0
 
-    print(f"{'칸':2} {'이름':12} {'좌':>6} {'우':>6} {'위':>6} {'아래':>6}   판정")
+    print(f"{'칸':2} {'이름':12} {'좌':>6} {'우':>6} {'아래':>6}  {'키':>5}   판정")
     for it in spec["items"]:
         x0, y0, x1, y1 = it["box"]
         got = bbox(mask[y0:y1, x0:x1])
-        ex = expected(it, spec)
+        exl, exr, exb = expected(it, spec)
         if got is None:
-            print(f"{it['cell'] + 1:2} {it['id']:12} {'—':>6}{'':21}   빈 칸")
+            print(f"{it['cell'] + 1:2} {it['id']:12}{'':27}   빈 칸")
             bad += 1
             continue
         g = (got[0] + x0, got[1] + y0, got[2] + x0, got[3] + y0)
-        d = [g[0] - ex[0], g[2] - ex[2], g[1] - ex[1], g[3] - ex[3]]
-        ok = all(abs(v) <= TOL for v in d)
+        d = [g[0] - exl, g[2] - exr, g[3] - exb]
+        tall = round(exb - g[1])
+        ok = all(abs(v) <= TOL for v in d) and g[1] > y0 + 4
         bad += 0 if ok else 1
-        dr.rectangle(ex, outline=(60, 160, 90) if ok else (200, 70, 50), width=3)
+        dr.rectangle([exl, y0 + 4, exr, exb],
+                     outline=(60, 160, 90) if ok else (200, 70, 50), width=3)
         dr.rectangle(g, outline=(40, 90, 200), width=1)
         print(f"{it['cell'] + 1:2} {it['id']:12} "
               + " ".join(f"{v:+6.0f}" for v in d)
+              + f"  {tall:5}"
               + ("   통과" if ok else "   ← 어긋남"))
 
     chk.save(out)
-    print(f"\n{out} — 초록/빨강 = 안내선이 정한 상자, 파랑 = 실제 그려진 범위")
+    print(f"\n{out} — 초록/빨강 = 안내선이 정한 좌·우·아래, 파랑 = 실제 그려진 범위")
+    print("키는 검사하지 않습니다. 자유롭게 그리도록 두었습니다.")
     print(f"허용 오차 {TOL}px · {len(spec['items']) - bad}/{len(spec['items'])} 통과")
     if bad:
         print("\n어긋난 칸이 있습니다. 코드로 맞추지 말고 다시 받으세요.")

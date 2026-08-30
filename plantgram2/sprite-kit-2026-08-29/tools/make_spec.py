@@ -4,8 +4,11 @@
 줄기를 실루엣으로 찾고, 바닥 꼭짓점에서 격자를 되짚었습니다. 매번 틀렸고,
 시트가 바뀌면 또 틀립니다.
 
-여기서는 뒤집습니다. 칸마다 밑면이 덮을 타일, 키가 닿을 선, 흙이 놓일 높이를
-우리가 먼저 그려 보냅니다. 돌아온 그림은 **재지 않습니다** - 그 자리에 그렸는지
+여기서는 뒤집습니다. 칸마다 밑면이 덮을 타일과 흙이 놓일 높이를 우리가 먼저
+그려 보냅니다.
+
+키는 정하지 않습니다. 밑면만 맞으면 놓는 데 아무 문제가 없고, 키까지 묶으면
+그림 쪽 자율성만 깎입니다 - 키가 크든 작든 같은 자리에 놓입니다. 돌아온 그림은 **재지 않습니다** - 그 자리에 그렸는지
 확인만 하고(verify_spec.py), 좌표는 우리가 보낸 spec.json 을 그대로 씁니다.
 
     python3 tools/make_spec.py sheets/spec_01.png
@@ -19,8 +22,7 @@ COLS, ROWS = 4, 2
 CW, CH = W // COLS, (H - HEAD) // ROWS      # 384 x 480
 
 TW, TH = 160, 80                            # 표준 타일. 정확히 2 : 1
-UNIT = TW // 2                              # 높이 1칸 = 80px (등각 정육면체의 세로 모서리)
-GX, GY = CW // 2, 370                       # 칸 안에서 바닥 한가운데
+GX, GY = CW // 2, 390                       # 칸 안에서 바닥 한가운데
 
 BG = (242, 241, 236)
 CARD = (252, 252, 250)
@@ -38,32 +40,29 @@ FONT = "../app-kit/assets/fonts/{}.otf"
 #   "1x1" 한 칸짜리 · "2x1" 두 칸짜리 · "2x2" 네 칸짜리
 ITEMS = [
     dict(id="pot_round", kind="화분", name="둥근 화분",
-         foot=[(0, 0)], height=1, soil=55, slots=[("1x1", (0, 0))],
+         foot=[(0, 0)], soil=55, slots=[("1x1", (0, 0))],
          note="테라코타. 밑면이 타일을 꽉 채우게"),
     dict(id="bed_long", kind="화분", name="긴 화단",
-         foot=[(0, 0), (0, -1)], height=1, soil=58,
+         foot=[(0, 0), (0, -1)], soil=58,
          slots=[("1x1", (0, 0)), ("1x1", (0, -1))],
-         note="나무. 심는 자리 두 곳"),
+         note="나무. 같은 식물을 두 그루 심는 자리"),
     dict(id="planter_big", kind="화분", name="큰 화분",
-         foot=[(0, 0), (1, 0), (0, -1), (1, -1)], height=1, soil=72,
+         foot=[(0, 0), (1, 0), (0, -1), (1, -1)], soil=72,
          slots=[("2x2", None)],
          note="시멘트. 큰 나무 한 그루"),
     dict(id="shelf", kind="가구", name="선반",
-         foot=[(0, 0), (0, -1)], height=2,
-         shelves=[(62, "아래층"), (152, "위층")],
+         foot=[(0, 0), (0, -1)],
+         shelves=[(62, "아래 판"), (152, "위 판")],
          note="층마다 작은 화분 두 개"),
     dict(id="plant_s", kind="식물", name="작은 식물",
-         foot=[(0, 0)], height=1, fits="1x1",
-         note="선반에 올릴 크기"),
+         foot=[(0, 0)], fits="1x1", note="선반에 올릴 작은 것"),
     dict(id="plant_m", kind="식물", name="식물",
-         foot=[(0, 0)], height=2, fits="1x1",
-         note="몬스테라 같은 관엽"),
-    dict(id="plant_wide", kind="식물", name="넓은 식물",
-         foot=[(0, 0), (0, -1)], height=2, fits="2x1",
-         note="화단 두 칸을 채우는 포기"),
+         foot=[(0, 0)], fits="1x1", note="몬스테라 같은 관엽"),
+    dict(id="plant_tall", kind="식물", name="키 큰 식물",
+         foot=[(0, 0)], fits="1x1", note="대나무처럼 위로 자라는 것"),
     dict(id="plant_big", kind="식물", name="큰 식물",
-         foot=[(0, 0), (1, 0), (0, -1), (1, -1)], height=3, fits="2x2",
-         note="야자처럼 키 큰 나무"),
+         foot=[(0, 0), (1, 0), (0, -1), (1, -1)], fits="2x2",
+         note="야자처럼 큰 나무"),
 ]
 
 
@@ -138,14 +137,14 @@ def draw_cell(dr, ox, oy, n, it):
     dr.text((ox + 18, oy + 16), f"{n}. {it['name']}", font=font(19, True), fill=INK)
     spread = {1: "1칸", 2: "2칸", 4: "4칸(2×2)"}[len(it["foot"])]
     what = "퍼지는 범위" if it["kind"] == "식물" else "밑면"
-    dr.text((ox + 18, oy + 41), f"{it['kind']} · {what} {spread} · 높이 {it['height']}칸",
+    tail = " · 키는 자유" if it["kind"] == "식물" else ""
+    dr.text((ox + 18, oy + 41), f"{it['kind']} · {what} {spread}{tail}",
             font=font(14), fill=MUTE)
     dr.text((ox + 18, oy + 61), it["note"], font=font(13), fill=MUTE)
 
     cs = [(ox + x, oy + y) for x, y in foot_centers(it["foot"])]
     gx, gy = ox + GX, oy + GY
     base = hull([p for c in cs for p in diamond(*c)])
-    top = up(base, UNIT * it["height"])
 
     # 밑판 — 여기에 놓입니다
     dr.polygon(base, fill=TILE, outline=TILE_E)
@@ -153,17 +152,14 @@ def draw_cell(dr, ox, oy, n, it):
         dr.polygon(diamond(*c), outline=TILE_E)
         dr.ellipse([c[0] - 2, c[1] - 2, c[0] + 2, c[1] + 2], fill=TILE_E)
 
-    # 키 상자 — 이 안에 들어오게
-    for a, b in zip(base, top):
-        dr.line([a, b], fill=MARK, width=1)
-    outline(dr, top, MARK, 2, dash=True)
-
-    # 왼쪽 모서리에 칸 눈금
-    lx, ly = min(base, key=lambda p: p[0])
-    for k in range(1, it["height"] + 1):
-        y = ly - UNIT * k
-        dr.line([(lx - 7, y), (lx + 7, y)], fill=MARK, width=2)
-        dr.text((lx - 11, y - 8), f"{k}칸", font=font(13, True), fill=MARK, anchor="ra")
+    # 밑면의 좌우 끝을 위로 세워 둡니다. 잎이 넘지 말아야 할 선입니다.
+    lx = min(base, key=lambda p: p[0])
+    rx = max(base, key=lambda p: p[0])
+    for px, py in (lx, rx):
+        y = py
+        while y > oy + 96:
+            dr.line([(px, y), (px, y - 7)], fill=(240, 194, 160), width=1)
+            y -= 13
 
     if it["kind"] == "식물":
         cross(dr, gx, gy)
@@ -174,9 +170,8 @@ def draw_cell(dr, ox, oy, n, it):
     for h, tag in levels:
         plane = up(base, h)
         outline(dr, plane, SOIL, 2)
-        r = max(plane, key=lambda p: p[0])
-        dr.text((min(r[0] + 6, ox + CW - 16), r[1] - 8), tag,
-                font=font(13, True), fill=SOIL, anchor="ra" if r[0] + 60 > ox + CW else "la")
+        t = min(plane, key=lambda p: p[1])
+        dr.text((t[0], t[1] - 17), tag, font=font(13, True), fill=SOIL, anchor="ms")
         if "shelves" in it:
             for c in cs:
                 cross(dr, c[0], c[1] - h, r=7, width=2)
@@ -196,14 +191,13 @@ def main(out="sheets/spec_01.png"):
     dr.text((24, 14), "규격 시험지 — 안내선 위에 그려 주세요",
             font=font(22, True), fill=INK)
     dr.text((24, 42),
-            f"타일 {TW}×{TH} (정확히 2:1) · 높이 1칸 = {UNIT}px    "
-            "초록 마름모 = 밑면이 덮을 자리 · 주황 상자 = 이 안에 들어오게 · "
-            "갈색 면 = 흙 윗면 / 선반 판 · 주황 십자 = 식물이 놓일 점        "
-            "※ 안내선과 글자는 결과물에 그리지 마세요",
+            f"타일 {TW}×{TH} (정확히 2:1)    "
+            "초록 마름모 = 밑면이 덮을 자리(좌우로 넘지 않기) · "
+            "갈색 면 = 흙 윗면 / 선반 판 · 주황 십자 = 식물이 놓일 점 · "
+            "키는 자유        ※ 안내선과 글자는 결과물에 그리지 마세요",
             font=font(14), fill=MUTE)
 
-    spec = {"width": W, "height": H, "tileW": TW, "tileH": TH,
-            "unit": UNIT, "items": []}
+    spec = {"width": W, "height": H, "tileW": TW, "tileH": TH, "items": []}
 
     for n, it in enumerate(ITEMS):
         ox = (n % COLS) * CW
@@ -214,7 +208,7 @@ def main(out="sheets/spec_01.png"):
         rec = {"id": it["id"], "kind": it["kind"], "cell": n,
                "box": [ox, oy, ox + CW, oy + CH],
                "ground": [ox + GX, oy + GY],
-               "foot": it["foot"], "height": it["height"],
+               "foot": it["foot"],
                "tiles": [[round(x), round(y)] for x, y in cs]}
         if it["kind"] == "식물":
             rec["fits"] = it["fits"]
@@ -238,7 +232,7 @@ def main(out="sheets/spec_01.png"):
     im.save(out)
     json.dump(spec, open(out.replace(".png", ".json"), "w"),
               indent=1, ensure_ascii=False)
-    print(f"{out} · {len(ITEMS)}칸 · 타일 {TW}x{TH} · 높이 1칸 {UNIT}px")
+    print(f"{out} · {len(ITEMS)}칸 · 타일 {TW}x{TH} · 키 제한 없음")
 
 
 if __name__ == "__main__":
