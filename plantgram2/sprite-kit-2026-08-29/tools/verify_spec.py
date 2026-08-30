@@ -34,30 +34,51 @@ def alpha_of(im):
     return np.abs(rgb - np.array(KEY)).sum(2) > 120
 
 
-def blobs(mask, least=3000):
+def components(mask, least=3000):
+    """물체 하나하나의 바깥 상자와 **그 물체만의 마스크**.
+
+    네모로만 오리면 상자 안에 들어온 옆 물체까지 딸려 옵니다. 조각을 오릴
+    때는 반드시 자기 덩어리로 걸러야 합니다.
+    """
     lab, k = ndimage.label(ndimage.binary_closing(mask, np.ones((9, 9))))
     out = []
     for c in range(1, k + 1):
         ys, xs = np.nonzero(lab == c)
         if len(xs) < least:
             continue
-        out.append((int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())))
-    out.sort(key=lambda o: (o[1] // 400, o[0]))
+        box = (int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max()))
+        out.append((box, lab == c))
+    out.sort(key=lambda o: (o[0][1] // 400, o[0][0]))
     return out
 
 
-def stem_of(mask, box):
-    """줄기 밑동. 맨 아랫부분 몇 줄의 불투명한 폭 한가운데입니다.
+def blobs(mask, least=3000):
+    return [box for box, _ in components(mask, least)]
 
-    잎이 밑동보다 아래로 내려가면 이 값이 잎 쪽으로 끌려갑니다. 그래서
-    "밑동이 그림에서 가장 아래에 오게" 그려 달라고 합니다.
+
+def stem_of(mask, box):
+    """줄기 밑동.
+
+    맨 아랫줄의 한가운데로 잡으면, 잎이 줄기보다 아래로 처진 식물에서 그
+    잎끝으로 끌려갑니다(몬스테라가 30px 밀렸습니다).
+
+    그래서 맨 아랫부분에서 **가장 넓은 덩어리**를 봅니다. 잎끝은 가늘게
+    한 점으로 끝나고 줄기 뭉치는 굵습니다.
     """
     x0, y0, x1, y1 = box
     sub = mask[y0:y1 + 1, x0:x1 + 1]
+    h = y1 - y0 + 1
+    band = sub[int(h * .92):]
+    lab, k = ndimage.label(band)
+    best = None
+    for c in range(1, k + 1):
+        _, xs = np.nonzero(lab == c)
+        if best is None or len(xs) > best[0]:
+            best = (len(xs), (int(xs.min()) + int(xs.max())) / 2)
     ys, xs = np.nonzero(sub)
-    rows = max(8, round((y1 - y0) * .04))
-    sel = xs[ys > ys.max() - rows]
-    return (x0 + (int(sel.min()) + int(sel.max())) / 2, y0 + int(ys.max()))
+    if best is None:
+        return (x0 + (int(xs.min()) + int(xs.max())) / 2, y0 + int(ys.max()))
+    return (x0 + best[1], y0 + int(ys.max()))
 
 
 def soil_of(im, mask, box):
@@ -139,9 +160,10 @@ def main(art, spec_path="sheets/spec_04.json", out=None):
             ok, why = centred, "" if centred else "밑동이 한쪽으로 치우침"
             what = "줄기 밑동"
         else:
-            s = soil_of(im, mask, g)
+            # 가구는 흙이 없습니다. 닿는 자리만 봅니다.
+            s = soil_of(im, mask, g) if it["kind"] == "화분" else None
             px, py = foot_of(mask, g)
-            ok = s is not None
+            ok = s is not None or it["kind"] != "화분"
             why = "" if ok else "흙이 안 보임"
             what = "닿는 자리"
             if s:
