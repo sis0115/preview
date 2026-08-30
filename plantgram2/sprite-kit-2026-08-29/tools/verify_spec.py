@@ -56,29 +56,38 @@ def blobs(mask, least=3000):
     return [box for box, _ in components(mask, least)]
 
 
-def stem_of(mask, box):
+def stem_of(mask, box, floor=.15):
     """줄기 밑동.
 
-    맨 아랫줄의 한가운데로 잡으면, 잎이 줄기보다 아래로 처진 식물에서 그
-    잎끝으로 끌려갑니다(몬스테라가 30px 밀렸습니다).
+    맨 아랫줄의 한가운데로 잡으면 잎이 줄기보다 처진 식물에서 그 잎끝으로
+    끌려갑니다. 맨 아랫부분의 가장 넓은 덩어리로 잡으면 잎이 아래로 뾰족하게
+    내려온 식물에서 또 끌려갑니다.
 
-    그래서 맨 아랫부분에서 **가장 넓은 덩어리**를 봅니다. 잎끝은 가늘게
-    한 점으로 끝나고 줄기 뭉치는 굵습니다.
+    줄기는 **바닥에서 위로 길게 이어진 기둥**입니다. 세로줄마다 맨 아래부터
+    위로 이어진 길이를 재면, 잎끝은 짧고 줄기는 깁니다. 짧은 줄을 걸러 내고
+    남은 줄들의 한가운데가 밑동입니다.
     """
     x0, y0, x1, y1 = box
     sub = mask[y0:y1 + 1, x0:x1 + 1]
-    h = y1 - y0 + 1
-    band = sub[int(h * .92):]
-    lab, k = ndimage.label(band)
-    best = None
-    for c in range(1, k + 1):
-        _, xs = np.nonzero(lab == c)
-        if best is None or len(xs) > best[0]:
-            best = (len(xs), (int(xs.min()) + int(xs.max())) / 2)
-    ys, xs = np.nonzero(sub)
-    if best is None:
+    h, w = sub.shape
+    run = np.zeros(w)
+    low = np.full(w, -1)
+    for x in range(w):
+        ys = np.nonzero(sub[:, x])[0]
+        if len(ys) == 0:
+            continue
+        low[x] = ys.max()
+        y, n = ys.max(), 0
+        while y >= 0 and sub[y, x]:
+            n += 1
+            y -= 1
+        run[x] = n
+    if run.max() == 0:
+        ys, xs = np.nonzero(sub)
         return (x0 + (int(xs.min()) + int(xs.max())) / 2, y0 + int(ys.max()))
-    return (x0 + best[1], y0 + int(ys.max()))
+    keep = np.nonzero(run >= run.max() * floor)[0]
+    return (x0 + (int(keep.min()) + int(keep.max())) / 2,
+            y0 + int(low[keep].max()))
 
 
 def soil_of(im, mask, box):
