@@ -1,0 +1,98 @@
+{
+ "pots": {
+  "pot_terracotta": {
+   "w": 155,
+   "h": 171,
+   "slots": [
+    {
+     "x": 77,
+     "y": 49,
+     "w": 113
+    }
+   ],
+   "bottom": 171,
+   "shadow": {
+    "w": 225,
+    "h": 138,
+    "anchorX": 112,
+    "anchorY": 69
+   }
+  },
+  "pot_white": {
+   "w": 150,
+   "h": 171,
+   "slots": [
+    {
+     "x": 72,
+     "y": 49,
+     "w": 113
+    }
+   ],
+   "bottom": 171,
+   "shadow": {
+    "w": 225,
+    "h": 138,
+    "anchorX": 112,
+    "anchorY": 69
+   }
+  },
+  "bed_wood": {
+   "w": 232,
+   "h": 194,
+   "slots": [
+    {
+     "x": 46,
+     "y": 84,
+     "w": 91
+    },
+    {
+     "x": 138,
+     "y": 49,
+     "w": 126
+    }
+   ],
+   "bottom": 194,
+   "shadow": {
+    "w": 182,
+    "h": 112,
+    "anchorX": 91,
+    "anchorY": 56
+   }
+  }
+ },
+ "plants": {
+  "monstera": {
+   "w": 254,
+   "h": 282,
+   "stemX": 126,
+   "stemY": 282
+  },
+  "strelitzia": {
+   "w": 241,
+   "h": 299,
+   "stemX": 113,
+   "stemY": 299
+  },
+  "bamboo": {
+   "w": 224,
+   "h": 315,
+   "stemX": 112,
+   "stemY": 315
+  }
+ },
+ "grid": {
+  "iso": 1.968,
+  "n": 5,
+  "tileW": 136.2,
+  "tileH": 63.8,
+  "topX": 793,
+  "topY": 250,
+  "uX": 62.6,
+  "uY": 32.4,
+  "vX": -73.6,
+  "vY": 31.4,
+  "sceneW": 1536,
+  "sceneH": 640,
+  "unitScale": 0.7473
+ }
+}

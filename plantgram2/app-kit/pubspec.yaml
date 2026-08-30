@@ -1,0 +1,28 @@
+name: plantgram_kit
+publish_to: 'none'
+description: "Modular isometric greenhouse demo: separate plant + pot + shadow assets assembled in Flutter."
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.19.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/catalog.json
+    - assets/greenhouse/
+    - assets/plants/
+    - assets/pots/
+    - assets/shadows/
+
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+        - asset: assets/fonts/Pretendard-SemiBold.otf
+          weight: 600
