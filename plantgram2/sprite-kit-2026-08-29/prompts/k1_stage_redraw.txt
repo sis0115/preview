@@ -1,30 +1,32 @@
-Redraw the attached image as a finished illustration of a small glass greenhouse, keeping its geometry exactly.
+Redraw the attached image as a finished illustration of a small glass greenhouse in a garden, keeping its geometry exactly.
 
-WHAT MUST NOT MOVE — this is the whole point of the attached image.
+WHAT MUST NOT MOVE — this is the whole reason for the attached image.
 
-The pale floor in the middle is a 6 by 6 grid of 36 diamond tiles. Every one of those grid lines must stay at the exact same pixel position. Do not move, resize, rotate, or re-space the floor. Do not change the number of tiles. Do not change the angle of the diamonds. Draw the grid lines as the seams between floor tiles, so the finished floor still shows all 36 tiles clearly.
+The pale floor in the middle is a 6 by 6 grid of 36 diamond tiles. Every one of those grid lines must stay at the exact same pixel position. Do not move, resize, rotate or re-space the floor. Do not change the number of tiles. Do not change the angle of the diamonds — a tile is exactly twice as wide as it is tall. Draw the grid lines as the seams between floor tiles so all 36 tiles still read clearly in the finished picture.
 
-The grey outline around and above the floor is the greenhouse frame. Keep every one of those lines where it is — the four corner posts, the base frame, the top frame, the roof ridge and the roof edges. Build the finished greenhouse on exactly those lines.
+The grey lines around and above the floor are the greenhouse frame. Build the finished greenhouse on exactly those lines. The green diamond is the lawn, and the two pale diamonds at the front are a stone path. The four small green ovals mark where shrubs go. Keep all of these where they are.
 
-The green diamond underneath is the lawn the greenhouse sits on. Keep its shape and position.
+THE FRONT STAYS OPEN. Notice the attached image has no front corner post and no front walls — that is deliberate, not a mistake. The player's plants are placed on the front tiles, and a post or a glass panel crossing in front of them would look like the plants are stuck behind a pole. Draw the greenhouse as a cutaway: the two back walls and the back half of the roof are built in full, the front two sides stay open so you can see straight in. Do not add a front corner post. Do not close the front with glass.
 
 WHAT TO ADD.
 
-Turn the wireframe into a real greenhouse: white painted metal frame on those exact lines, with pale blue-white glass panels filling the walls and the pitched roof. The glass is slightly transparent and clean.
+Turn the frame into a real greenhouse: white painted metal posts and rails on those exact lines, with pale blue-white glass panels filling the two back walls and the roof. The glass is clean and slightly transparent, so the garden shows faintly through it.
 
-Against the walls, and only there, add greenhouse things: a potting bench along one wall, a wooden shelf of small pots against another, a watering can, a coiled hose, a stack of empty terracotta pots, a few climbing vines on the frame near the roof. Around the outside on the lawn, add a few small shrubs and a stone path.
+Against the two back walls, and only there, add greenhouse things: a potting bench along one wall, a wooden shelf of small pots against the other, a watering can, a coiled hose, a stack of empty terracotta pots, a few climbing vines on the frame near the roof.
 
-THE FLOOR STAYS COMPLETELY EMPTY. Nothing stands on the 36 tiles — no pots, no plants, no benches, no tools, no boxes. The player's plants get placed on those tiles later, so anything there would collide with them. Every object you add sits against a wall or outside on the lawn.
+Outside on the lawn, add the shrubs at the four marked spots, and turn the two pale diamonds into a stone path leading up to the greenhouse. Add a little more life around the edges — a few stepping stones, a small flower patch, a wheelbarrow at the side — so the ground does not read as a bare slab. Keep all of it outside the 36 tiles.
+
+THE 36 FLOOR TILES STAY COMPLETELY EMPTY. Nothing stands on them — no pots, no plants, no benches, no tools, no boxes, no rug. The player's plants are placed there later, so anything on those tiles would collide with them.
 
 STYLE.
 
 Flat vector. Solid fills, at most two tones per surface — a lit tone and a shade tone. No gradients, no photographic texture, no painterly brushwork, no speckling.
 
-Pale and bright. Low saturation, high value. Nothing dark, nothing vivid. The floor is a quiet near-white so plants placed on it will stand out.
+Pale and bright. Low saturation, high value. Nothing dark, nothing vivid. The floor is a quiet near-white so plants placed on it will stand out against it.
 
 Simple shapes. Every object reads at thumbnail size. Silhouette first, detail almost never.
 
-Light comes from the upper left, soft and even. One faint shadow under each object.
+Light comes from the upper left, soft and even. One faint soft shadow under each object.
 
 Plain white background outside the lawn. No text, no labels, no numbers, no watermark, no UI, no border, no people.
 
