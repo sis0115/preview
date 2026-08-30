@@ -17,7 +17,7 @@ import json, sys
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1536, 1024
-HEAD = 68
+HEAD = 84
 ROWS = 2
 CH = (H - HEAD) // ROWS                     # 478
 GY = 384                                    # 칸 안에서 바닥 한가운데
@@ -49,27 +49,35 @@ FONT = "../app-kit/assets/fonts/{}.otf"
 ITEMS = [
     dict(id="pot_round", kind="화분", name="둥근 화분",
          foot=[(0, 0)], soil=55, slots=[("1x1", (0, 0))],
+         ghost="pots/pot_terracotta",
          note="테라코타. 밑면이 타일을 꽉 채우게"),
     dict(id="bed_long", kind="화분", name="긴 화단",
          foot=[(0, 0), (0, -1)], soil=58,
          slots=[("1x1", (0, 0)), ("1x1", (0, -1))],
+         ghost="pots/bed_wood",
          note="나무. 같은 식물을 두 그루 심는 자리"),
     dict(id="planter_big", kind="화분", name="큰 화분",
          foot=[(0, 0), (1, 0), (0, -1), (1, -1)], soil=72,
          slots=[("2x2", None)],
+         ghost=None,
          note="시멘트. 큰 나무 한 그루"),
     dict(id="shelf", kind="가구", name="선반",
          foot=[(0, 0), (0, -1)],
          shelves=[(62, "아래 판"), (152, "위 판")],
+         ghost=None,
          note="층마다 작은 화분 두 개"),
     dict(id="plant_s", kind="식물", name="작은 식물",
-         foot=[(0, 0)], fits="1x1", note="선반에 올릴 작은 것"),
+         foot=[(0, 0)], fits="1x1", ghost="plants/strelitzia",
+         note="선반에 올릴 작은 것"),
     dict(id="plant_m", kind="식물", name="식물",
-         foot=[(0, 0)], fits="1x1", note="몬스테라 같은 관엽"),
+         foot=[(0, 0)], fits="1x1", ghost="plants/monstera",
+         note="몬스테라 같은 관엽"),
     dict(id="plant_tall", kind="식물", name="키 큰 식물",
-         foot=[(0, 0)], fits="1x1", note="대나무처럼 위로 자라는 것"),
+         foot=[(0, 0)], fits="1x1", ghost="plants/bamboo",
+         note="대나무처럼 위로 자라는 것"),
     dict(id="plant_big", kind="식물", name="큰 식물",
          foot=[(0, 0), (1, 0), (0, -1), (1, -1)], fits="2x2",
+         ghost="plants/monstera",
          note="야자처럼 큰 나무"),
 ]
 
@@ -216,37 +224,68 @@ def draw_cell(dr, im, ox, oy, cw, n, it):
                     cross(dr, c[0], c[1] - h, r=8)
 
 
-def ghost(im, cell, cw, ox, oy, it):
-    """1번 칸에 크기 보기를 흐리게 깝니다.
+def ghost(im, dr, cw, ox, oy, it):
+    """칸마다 크기 보기를 흐리게 깝니다.
 
-    말로 "마름모 안에 들어오게"라고 해도 첫 시험지는 전부 1.09~2.26배 크게
-    왔습니다. 정답 크기를 눈으로 보여 주는 편이 훨씬 잘 먹습니다.
+    말로 "점선 안에"라고만 하면 모양 해석이 갈리는 칸에서 어긋납니다. 두 번째
+    시험지에서 밑그림이 있던 칸은 0.99 로 맞았고, 없던 칸 둘이 1.30 · 1.33 로
+    커졌습니다. 정답 크기를 눈으로 보여 주는 편이 훨씬 잘 먹습니다.
+
+    모양은 칸 설명대로 새로 그리라고 하고, 밑그림은 크기만 알려 줍니다.
     """
+    cs = foot_centers(it["foot"], cw)
+    bottom = (max(y for _, y in cs) + TH / 2 if it["kind"] != "식물"
+              else oy * 0 + GY)
+    want = allowed(it)
+
+    if it["ghost"] is None:
+        # 가진 그림이 없으면 상자로 크기만 알려 줍니다.
+        base = hull([p for c in cs for p in diamond(*c)])
+        top = up(base, TW)
+        g = (176, 176, 170)
+        for a, b in zip(base, top):
+            dr.line([(ox + a[0], oy + a[1]), (ox + b[0], oy + b[1])], fill=g, width=2)
+        outline(dr, [(ox + x, oy + y) for x, y in top], g, 2)
+        outline(dr, [(ox + x, oy + y) for x, y in base], g, 2)
+        return
+
     try:
-        art = Image.open("../app-kit/assets/pots/pot_terracotta.png").convert("RGBA")
+        art = Image.open(f"../app-kit/assets/{it['ghost']}.png").convert("RGBA")
     except FileNotFoundError:
         return
-    k = TW / art.width                       # 물체 전체가 밑면 너비 안에
+    k = want / art.width
     art = art.resize((round(art.width * k), round(art.height * k)), Image.LANCZOS)
-    cs = foot_centers(it["foot"], cw)
-    bottom = max(y for _, y in cs) + TH / 2
-    art.putalpha(art.getchannel("A").point(lambda v: round(v * .32)))
-    im.paste(art, (round(ox + cw / 2 - art.width / 2),
-                   round(oy + bottom - art.height)), art)
+    art.putalpha(art.getchannel("A").point(lambda v: round(v * .20)))
+
+    # 칸 밖으로 넘치면 옆 칸까지 흐려집니다. 카드 안으로 잘라 붙입니다.
+    px = round(ox + cw / 2 - art.width / 2)
+    py = round(oy + bottom - art.height)
+    card = (ox + 8, oy + 8, ox + cw - 8, oy + CH - 8)
+    cut = (max(0, card[0] - px), max(0, card[1] - py),
+           min(art.width, card[2] - px), min(art.height, card[3] - py))
+    if cut[0] >= cut[2] or cut[1] >= cut[3]:
+        return
+    art = art.crop(cut)
+    im.paste(art, (px + cut[0], py + cut[1]), art)
 
 
 def main(out="sheets/spec_02.png"):
     im = Image.new("RGBA", (W, H), BG + (255,))
     dr = ImageDraw.Draw(im)
 
-    dr.text((24, 12), "규격 시험지 2 — 칸을 넘지 않는 크기로",
+    dr.text((24, 12), "규격 시험지 3 — 흐린 그림과 같은 크기로",
             font=font(21, True), fill=INK)
     dr.text((24, 40),
             f"타일 {TW}×{TH} (정확히 2:1)    "
             "초록 마름모 = 바닥에 닿는 자리 · 주황 점선 = 좌우 한계 · "
-            "갈색 면 = 흙 윗면 / 선반 판 · 주황 십자 = 식물이 놓일 점 · "
-            "키는 자유        ※ 안내선과 글자는 결과물에 그리지 마세요",
+            "갈색 면 = 흙 윗면 / 선반 판 · 주황 십자 = 식물이 놓일 점 · 키는 자유",
             font=font(13), fill=MUTE)
+
+    dr.text((24, 58),
+            "흐린 그림·회색 상자는 크기 보기입니다. 모양은 칸 설명대로 새로 그리고 "
+            "크기만 맞춰 주세요.        ※ 안내선·글자·흐린 그림은 결과물에 "
+            "그리지 마세요",
+            font=font(13), fill=(198, 118, 70))
 
     spec = {"width": W, "height": H, "tileW": TW, "tileH": TH, "items": []}
 
@@ -258,10 +297,7 @@ def main(out="sheets/spec_02.png"):
         for it, cw in zip(row, widths):
             n = ITEMS.index(it)
             draw_cell(dr, im, round(ox), oy, cw, n + 1, it)
-            if n == 0:
-                ghost(im, dr, cw, round(ox), oy, it)
-                dr.text((ox + cw / 2, oy + GY + 62), "← 이 크기로",
-                        font=font(13, True), fill=MARK, anchor="ms")
+            ghost(im, dr, cw, round(ox), oy, it)
 
             cs = [(ox + x, oy + y) for x, y in foot_centers(it["foot"], cw)]
             rec = {"id": it["id"], "kind": it["kind"], "cell": n,

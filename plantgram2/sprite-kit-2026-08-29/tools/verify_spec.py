@@ -1,7 +1,14 @@
 """돌아온 그림이 안내선을 지켰는지 검사합니다. 재지 않고, 확인만 합니다.
 
-어긋난 그림을 코드로 흡수하지 않습니다. 통과하지 못하면 다시 받습니다 -
-지금까지 흡수해 온 것이 뒤틀림과 잘림의 뿌리였습니다.
+합격 기준은 **크기** 하나입니다. 시트 위 어디에 그렸는지는 정보가 아닙니다 -
+물체가 통째로 옮겨졌을 뿐이면 바깥 상자에서 그만큼 되돌려 읽으면 되고,
+흙 높이와 줄기 밑동은 물체에 붙어 함께 옮겨집니다.
+
+되돌려 읽는 것과 알아내는 것은 다릅니다. 색으로 흙을 찾거나 실루엣에서
+다리를 찾는 것은 알아내는 것이고 매번 틀렸습니다. 여기서는 안내선이 정한
+기하를 그대로 쓰고, 평행이동 두 값만 바깥 상자에서 구합니다.
+
+크기가 어긋나면 되돌릴 수 없으므로 다시 받습니다.
 
     python3 tools/verify_spec.py sheets/spec_02_art.png sheets/spec_02.json
 """
@@ -73,29 +80,30 @@ def main(art, spec_path="sheets/spec_02.json", out=None):
     dr = ImageDraw.Draw(chk)
     bad = 0
 
-    print(f"{'칸':2} {'이름':12} {'가로중심':>8} {'바닥':>6} "
-          f"{'너비':>6} {'맞을너비':>8} {'배':>5}   판정")
+    print(f"{'칸':2} {'이름':12} {'너비':>6} {'맞을너비':>8} {'배':>5}   판정"
+          f"        되돌릴 이동")
     for it, g in zip(spec["items"], got):
         exc, exw, exb = expected(it, spec)
         w = g[2] - g[0]
         dc = (g[0] + g[2]) / 2 - exc
         db = g[3] - exb
-        ok = abs(dc) <= TOL and abs(db) <= TOL and abs(w / exw - 1) <= .12
+        # 합격은 크기로만 봅니다. 자리는 되돌려 읽을 수 있습니다.
+        ok = abs(w / exw - 1) <= .12
         bad += 0 if ok else 1
         color = (40, 150, 80) if ok else (205, 70, 45)
         dr.rectangle([exc - exw / 2, exb - 7, exc + exw / 2, exb],
                      outline=color, width=3)
         dr.rectangle(g, outline=(30, 80, 200), width=2)
-        print(f"{it['cell'] + 1:2} {it['id']:12} {dc:+8.0f} {db:+6.0f} "
-              f"{w:6} {exw:8.0f} {w / exw:5.2f}"
-              + ("   통과" if ok else "   ← 어긋남"))
+        print(f"{it['cell'] + 1:2} {it['id']:12} {w:6} {exw:8.0f} {w / exw:5.2f}"
+              + ("   통과   " if ok else "   너무 큼 " if w > exw else "   너무 작음")
+              + f"  {dc:+6.0f} {db:+6.0f}")
 
     chk.save(out)
     print(f"\n{out} — 초록/빨강 = 안내선이 정한 좌·우·아래, 파랑 = 실제로 그려진 범위")
-    print(f"허용: 자리 {TOL}px · 너비 ±12%. 키는 검사하지 않습니다.")
+    print("합격은 너비 ±12% 하나로 봅니다. 키와 시트 위 자리는 보지 않습니다.")
     print(f"{len(spec['items']) - bad}/{len(spec['items'])} 통과")
     if bad:
-        print("\n어긋난 칸이 있습니다. 코드로 맞추지 말고 다시 받으세요.")
+        print("\n크기가 어긋난 칸이 있습니다. 크기는 되돌릴 수 없으니 다시 받으세요.")
     return 1 if bad else 0
 
 
