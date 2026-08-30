@@ -160,7 +160,11 @@ def main(sheet_path, out="assets", ref="sheets/kit_ref.json"):
         print(f"  {p['id']:16} {art.width:4}x{art.height:<4}")
 
     # 조각은 아래 칸에 크게 그려져 있고 무대의 타일은 작습니다. 한 배율로
-    # 묶어 둡니다 - 표준 화분의 흙 폭이 타일 폭의 0.62 가 되게 합니다.
+    # 묶습니다.
+    #
+    # 0.34 는 눈으로 맞춘 값입니다. 온실 안에 이미 그려진 작업대 화분과
+    # 선반 화분에 견주어 정했습니다. 처음에 0.62 로 잡았더니 식물이 지붕을
+    # 뚫었습니다 - 타일이 크고 식물이 작은 것이 이 그림의 비율입니다.
     ref = next((v for k, v in cat["pots"].items() if not k.startswith("bed")),
                next(iter(cat["pots"].values())))
     cat["grid"]["unitScale"] = round(
