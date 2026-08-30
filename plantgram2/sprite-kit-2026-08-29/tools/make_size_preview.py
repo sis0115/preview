@@ -29,13 +29,18 @@ MARK = (232, 106, 30)
 FONT = "../app-kit/assets/fonts/{}.otf"
 
 # (이름, 타일 대비 폭, 화분, 화분 배율, 밑그림으로 쓸 식물, 차지하는 칸)
+# (이름, 식물 폭 · 타일 대비, 화분 폭 · 타일 대비, 밑그림으로 쓸 식물, 차지하는 칸)
+#
+# 화분도 등급마다 커집니다. 모양은 하나(둥근 테라코타)로 통일합니다 -
+# 재질이 달라지면 크기 차이가 눈에 안 들어옵니다.
 GRADES = [
-    ("새싹",   .22, "pot_round",   .55, "plant_s",   1),
-    ("소형",   .45, "pot_round",   .55, "plant_s",   1),
-    ("중형",   .63, "pot_round",   1.0, "plant_s",   1),
-    ("대형",   .85, "pot_round",   1.0, "plant_m",   1),
-    ("특대형", 1.30, "planter_big", 1.0, "plant_big", 4),
+    ("새싹",   .22, .30, "plant_s",   1),
+    ("소형",   .45, .45, "plant_s",   1),
+    ("중형",   .63, .60, "plant_s",   1),
+    ("대형",   .85, .80, "plant_m",   1),
+    ("특대형", 1.30, 1.20, "plant_big", 4),
 ]
+POT = "pot_round"          # 기준 화분. 시트에서 180px = 타일의 0.80
 
 
 def tiles(dr, cx, base, cells):
@@ -59,8 +64,8 @@ def font(size, bold=False):
 
 def main(out="sheets/size_preview.png"):
     piece = load()
-    W, H = 1536, 1180
-    base = 660
+    W, H = 1536, 1210
+    base = 640
     im = Image.new("RGBA", (W, H), BG + (255,))
     dr = ImageDraw.Draw(im)
 
@@ -76,8 +81,10 @@ def main(out="sheets/size_preview.png"):
     gap = (W - sum(slots) - 80) / (len(GRADES) + 1)
     x = gap + 40
 
-    print(f"{'등급':6} {'타일 대비':>8} {'시트 폭':>7} {'무대 폭':>7}  화분")
-    for (name, k, pot_id, pot_k, plant_id, cells), wid in zip(GRADES, slots):
+    print(f"{'등급':6} {'식물 (타일 대비 · 폭)':>22}   {'화분':>20}   칸")
+    for (name, k, potk, plant_id, cells), wid in zip(GRADES, slots):
+        pot_id = POT
+        pot_k = potk * TILE / piece[POT]["art"].width
         cx = x + wid / 2
         tiles(dr, cx, base, cells)
 
@@ -106,26 +113,27 @@ def main(out="sheets/size_preview.png"):
             dr.line([(px, base + 88), (px + 7 * d, base + 92)], fill=MARK, width=2)
         dr.text((cx, base + 122), name, font=font(19, True), fill=INK, anchor="ms")
         dr.text((cx, base + 146),
-                f"한 칸의 {k:.2f}배 · {'한' if cells == 1 else '네'} 칸 차지",
+                f"{'한' if cells == 1 else '네'} 칸 차지",
                 font=font(13), fill=MUTE, anchor="ms")
-        dr.text((cx, base + 166), f"{round(wid)}px", font=font(13, True),
+        dr.text((cx, base + 168), f"식물 {round(wid)}px", font=font(13, True),
                 fill=MARK, anchor="ms")
-        print(f"{name:6} {k:8.2f}배 {round(wid):7} {round(wid * .6969):7}  "
-              f"{pot_id}{' ×' + str(pot_k) if pot_k != 1 else ''} · "
-              f"{cells}칸")
+        dr.text((cx, base + 188), f"화분 {round(potk * TILE)}px",
+                font=font(13), fill=(150, 120, 96), anchor="ms")
+        print(f"{name:6} 식물 {k:5.2f}배 {round(wid):5}px   "
+              f"화분 {potk:5.2f}배 {round(potk * TILE):5}px   {cells}칸")
         x += wid + gap
 
     # 확인 — 긴 화단에 소형 두 그루가 안 겹치는지
-    dr.line([(40, 830), (W - 40, 830)], fill=(224, 222, 214), width=1)
-    dr.text((40, 856), "확인 — 긴 화단에 소형 두 그루",
+    dr.line([(40, 856), (W - 40, 856)], fill=(224, 222, 214), width=1)
+    dr.text((40, 880), "확인 — 긴 화단에 소형 두 그루",
             font=font(19, True), fill=INK)
-    dr.text((40, 884),
+    dr.text((40, 908),
             "심는 자리 간격이 108px 이므로 한 그루가 100px 를 넘으면 겹칩니다. "
             f"소형은 {round(GRADES[1][1] * TILE)}px 입니다.",
             font=font(13), fill=MUTE)
 
     bed = piece["bed_long"]
-    cx, cbase = 420, 1100
+    cx, cbase = 420, 1120
     def bed_tiles(cx0):
         hw, hh = TILE / 2, TILE / 2 / ISO
         for j in (0, 1):
