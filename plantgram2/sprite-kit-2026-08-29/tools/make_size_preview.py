@@ -32,9 +32,9 @@ FONT = "../app-kit/assets/fonts/{}.otf"
 GRADES = [
     ("새싹",   .22, "pot_round",   .55, "plant_s",   1),
     ("소형",   .45, "pot_round",   .55, "plant_s",   1),
-    ("중형",   .85, "pot_round",   1.0, "plant_m",   1),
-    ("대형",  1.30, "planter_big", 1.0, "plant_m",   4),
-    ("특대형", 1.80, "planter_big", 1.0, "plant_big", 4),
+    ("중형",   .63, "pot_round",   1.0, "plant_s",   1),
+    ("대형",   .85, "pot_round",   1.0, "plant_m",   1),
+    ("특대형", 1.30, "planter_big", 1.0, "plant_big", 4),
 ]
 
 
@@ -68,7 +68,8 @@ def main(out="sheets/size_preview.png"):
             font=font(23, True), fill=INK)
     dr.text((24, 50),
             f"기준은 타일 한 칸. 회색 마름모가 한 칸({round(TILE)}px)입니다. "
-            "화분은 그 등급이 심길 자리를 보여 주려고 같이 그렸습니다.",
+            "화분은 그 등급이 심길 자리를 보여 주려고 같이 그렸습니다.        "
+            "텃밭(긴 화단)은 지금 크기 그대로 씁니다.",
             font=font(14), fill=MUTE)
 
     slots = [g[1] * TILE for g in GRADES]
