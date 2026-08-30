@@ -33,7 +33,16 @@ def keyed(path):
     a = np.asarray(im).astype(float) / 255
     mx, mn = a.max(2), a.min(2)
     sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-6), 0)
-    soft = np.clip(np.maximum(sat / .09, (.96 - mx) / .10), 0, 1)
+
+    corner = np.median(np.stack([a[:8, :8], a[:8, -8:],
+                                 a[-8:, :8], a[-8:, -8:]]).reshape(-1, 3), 0)
+    if corner[0] > .8 and corner[2] > .8 and corner[1] < .3:
+        # 마젠타 단색 배경. 색이 얼마나 다른지로 바로 알파가 나옵니다 -
+        # 체커보드처럼 두 밝기가 번갈아 튀지 않으므로 훨씬 깨끗합니다.
+        d = np.linalg.norm(a - corner, axis=2)
+        soft = np.clip(d / .38, 0, 1)
+    else:
+        soft = np.clip(np.maximum(sat / .09, (.96 - mx) / .10), 0, 1)
     # 체커보드가 두 가지 밝기로 번갈아 있어 가장자리에서 알파가 한 칸씩
     # 튑니다. 작은 중앙값 필터로 그 무늬만 지웁니다.
     soft = ndimage.median_filter(soft, 3)

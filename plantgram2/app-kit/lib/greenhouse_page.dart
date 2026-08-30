@@ -297,7 +297,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
                         label: widget.catalog.names[k] ?? k,
                         asset: widget.catalog.plants[k]!.path,
                         onTap: () {
-                          garden.add(k, 'pot_medium', at: c);
+                          garden.add(k, widget.catalog.plants[k]!.pot, at: c);
                           Navigator.pop(context);
                         },
                       ),
@@ -387,7 +387,9 @@ class _GreenhousePageState extends State<GreenhousePage> {
                       Text(widget.catalog.names[p.potId] ?? p.potId,
                           style: const TextStyle(color: _mut, fontSize: 12.5)),
                       const Spacer(),
-                      for (final k in widget.catalog.pots.keys)
+                      // 가구(선반)는 식물을 담지 못하므로 고를 수 없습니다.
+                      for (final k in widget.catalog.pots.keys
+                          .where((k) => !widget.catalog.pots[k]!.isFurniture))
                         Padding(
                           padding: const EdgeInsets.only(left: 6),
                           child: GestureDetector(

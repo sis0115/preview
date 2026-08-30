@@ -30,6 +30,11 @@ NAMES = {
 }
 BOXY = {"bed_long", "shelf", "planter_big"}
 
+# 등급마다 어울리는 화분. 심을 때 이 화분에 담깁니다.
+DEFAULT_POT = {"sprout": "pot_sprout", "small": "pot_small",
+               "medium": "pot_medium", "large": "pot_large",
+               "xlarge": "pot_xlarge"}
+
 
 def main(out="../app-kit/assets"):
     grid = json.load(open("sheets/stage_grid.json"))
@@ -64,7 +69,8 @@ def main(out="../app-kit/assets"):
             art.save(f"{out}/plants/{pid}.png")
             x, y = p["anchor"][0]
             cat["plants"][pid] = {"w": art.width, "h": art.height,
-                                  "stemX": round(x), "stemY": round(y)}
+                                  "stemX": round(x), "stemY": round(y),
+                                  "pot": DEFAULT_POT.get(pid, "pot_medium")}
             print(f"{pid:14} {art.width:5} {art.height:5}  밑동 ({x:.0f},{y:.0f})")
             continue
 

@@ -173,31 +173,36 @@
    "w": 58,
    "h": 48,
    "stemX": 29,
-   "stemY": 47
+   "stemY": 47,
+   "pot": "pot_sprout"
   },
   "small": {
    "w": 111,
    "h": 112,
    "stemX": 55,
-   "stemY": 111
+   "stemY": 111,
+   "pot": "pot_small"
   },
   "medium": {
    "w": 183,
    "h": 164,
    "stemX": 92,
-   "stemY": 163
+   "stemY": 163,
+   "pot": "pot_medium"
   },
   "large": {
    "w": 221,
    "h": 259,
    "stemX": 110,
-   "stemY": 258
+   "stemY": 258,
+   "pot": "pot_large"
   },
   "xlarge": {
    "w": 286,
    "h": 315,
    "stemX": 140,
-   "stemY": 314
+   "stemY": 314,
+   "pot": "pot_xlarge"
   }
  },
  "grid": {

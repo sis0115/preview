@@ -39,6 +39,9 @@ class PotAsset {
 
   String get path => 'assets/pots/$id.png';
 
+  /// 심는 자리가 없으면 가구입니다. 식물을 담지 못합니다.
+  bool get isFurniture => slots.isEmpty;
+
   /// 식물 크기는 조각에 이미 들어 있습니다.
   ///
   /// 예전에는 자리 폭에 맞춰 코드가 줄였습니다. 이제는 등급별로 알맞은
@@ -47,10 +50,18 @@ class PotAsset {
 }
 
 class PlantAsset {
-  const PlantAsset({required this.id, required this.size, required this.stem});
+  const PlantAsset({
+    required this.id,
+    required this.size,
+    required this.stem,
+    required this.pot,
+  });
 
   final String id;
   final Size size;
+
+  /// 이 등급에 어울리는 화분. 심을 때 이 화분에 담깁니다.
+  final String pot;
 
   /// 줄기가 흙에 닿는 자리.
   final Offset stem;
@@ -163,6 +174,7 @@ class Catalog {
         id: e.key,
         size: Size(_d(v, 'w'), _d(v, 'h')),
         stem: Offset(_d(v, 'stemX'), _d(v, 'stemY')),
+        pot: v['pot'] as String,
       );
     }
 
