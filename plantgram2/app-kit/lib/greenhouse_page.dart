@@ -25,7 +25,7 @@ class GreenhousePage extends StatefulWidget {
 
 class _GreenhousePageState extends State<GreenhousePage> {
   late final IsoGrid grid = IsoGrid(widget.catalog.grid);
-  late final Garden garden = Garden(grid);
+  late final Garden garden = Garden(grid, widget.catalog.pots);
   final view = TransformationController();
 
   /// 바닥 격자는 늘 보입니다. 이 값은 진하게 볼지 여부입니다.
@@ -48,7 +48,14 @@ class _GreenhousePageState extends State<GreenhousePage> {
       ..add('medium', 'pot_medium', at: const Cell(3, 4))
       ..add('small', 'bed_long', at: const Cell(4, 2))
       ..add('sprout', 'pot_sprout', at: const Cell(2, 2))
+      ..add(null, 'shelf', at: const Cell(2, 0))
       ..select(null);
+    // 긴 화단은 자리가 둘입니다. 첫 자리만 채워 두면 반쪽으로 보이므로
+    // 시작 화면에서는 둘 다 심어 둡니다.
+    final bed = garden.at(const Cell(4, 2));
+    if (bed != null && bed.slots.length > 1) {
+      garden.plantInto(bed, 1, 'small');
+    }
   }
 
   @override
@@ -201,7 +208,8 @@ class _GreenhousePageState extends State<GreenhousePage> {
 
   Widget _sprite(PlacedPlant p) {
     final at = grid.center(p.cell);
-    final layout = SpriteLayout.of(widget.catalog, p.plantId, p.potId, p.scale);
+    final layout =
+        SpriteLayout.of(widget.catalog, p.slots, p.potId, p.scale);
     final pot = widget.catalog.pots[p.potId]!;
     final ps = layout.scale;
     // 손이 닿는 곳은 화분까지입니다. 잎은 옆 칸 위까지 뻗으므로, 잎이
@@ -223,7 +231,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
           IgnorePointer(
             child: PlantSprite(
               catalog: widget.catalog,
-              plantId: p.plantId,
+              slots: p.slots,
               potId: p.potId,
               layout: layout,
             ),
@@ -363,7 +371,95 @@ class _GreenhousePageState extends State<GreenhousePage> {
       color: _ink,
       visualDensity: VisualDensity.compact);
 
-  /// 고른 식물에 따라 바뀌는 아래 판.
+  /// 자리 하나를 나타내는 칩. 누르면 그 자리에 맞는 식물만 보여 줍니다.
+  Widget _slotChip(PlacedPlant p, int k) {
+    final slot = widget.catalog.pots[p.potId]!.slots[k];
+    final here = p.slots[k];
+    final name = here == null
+        ? '비었음'
+        : widget.catalog.names[here] ?? here;
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: GestureDetector(
+        onTap: () => _slotSheet(p, k),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+          decoration: BoxDecoration(
+            color: _card,
+            borderRadius: BorderRadius.circular(11),
+            border: Border.all(
+                color: here == null ? const Color(0xFFE2E2DD) : _leaf,
+                width: here == null ? 1 : 2),
+          ),
+          child: Text(
+              '${k + 1} · ${widget.catalog.names[slot.grade] ?? slot.grade} 자리'
+              ' — $name',
+              style: TextStyle(
+                  fontSize: 12.5,
+                  color: here == null ? _mut : _ink,
+                  fontWeight: here == null ? FontWeight.w400 : FontWeight.w700)),
+        ),
+      ),
+    );
+  }
+
+  /// 자리 하나에 심거나 비웁니다.
+  ///
+  /// 등급이 맞는 식물만 보여 줍니다. 안 맞는 것을 눌러 놓고 거절당하는
+  /// 것보다, 애초에 들어갈 수 있는 것만 보이는 편이 낫습니다.
+  void _slotSheet(PlacedPlant p, int k) {
+    final slot = widget.catalog.pots[p.potId]!.slots[k];
+    final ok = widget.catalog.plants.keys.where((n) => n == slot.grade);
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFFF7F7F2),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${k + 1}번 자리 — '
+                  '${widget.catalog.names[slot.grade] ?? slot.grade}만 들어갑니다',
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w800, color: _ink)),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  for (final n in ok)
+                    Expanded(
+                      child: _pick(
+                        label: widget.catalog.names[n] ?? n,
+                        asset: widget.catalog.plants[n]!.path,
+                        onTap: () {
+                          garden.plantInto(p, k, n);
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                  if (p.slots[k] != null)
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          garden.plantInto(p, k, null);
+                          Navigator.pop(context);
+                        },
+                        child: const Text('비우기'),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 고른 그릇에 따라 바뀌는 아래 판.
   Widget _panel() => AnimatedBuilder(
         animation: garden,
         builder: (context, _) {
@@ -378,39 +474,26 @@ class _GreenhousePageState extends State<GreenhousePage> {
                         style: TextStyle(color: _mut, fontSize: 13)))
                 : Row(
                     children: [
-                      Text(widget.catalog.names[p.plantId] ?? p.plantId,
+                      Text(widget.catalog.names[p.potId] ?? p.potId,
                           style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
                               color: _ink)),
-                      const SizedBox(width: 8),
-                      Text(widget.catalog.names[p.potId] ?? p.potId,
-                          style: const TextStyle(color: _mut, fontSize: 12.5)),
-                      const Spacer(),
-                      // 가구(선반)는 식물을 담지 못하므로 고를 수 없습니다.
-                      for (final k in widget.catalog.pots.keys
-                          .where((k) => !widget.catalog.pots[k]!.isFurniture))
-                        Padding(
-                          padding: const EdgeInsets.only(left: 6),
-                          child: GestureDetector(
-                            onTap: () => garden.repot(p, k),
-                            child: Container(
-                              width: 46,
-                              height: 46,
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: _card,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                    color: p.potId == k
-                                        ? _leaf
-                                        : const Color(0xFFE2E2DD),
-                                    width: p.potId == k ? 2 : 1),
+                      const SizedBox(width: 10),
+                      // 늘어나는 자식은 하나만 둡니다. Expanded 와 Spacer 를
+                      // 같이 쓰면 남는 자리를 둘이 나눠 가져 칩이 잘립니다.
+                      Expanded(
+                        child: p.isFurniture
+                            ? const Text('아직 심는 자리가 없는 가구입니다',
+                                style: TextStyle(color: _mut, fontSize: 12.5))
+                            : SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(children: [
+                                  for (var k = 0; k < p.slots.length; k++)
+                                    _slotChip(p, k),
+                                ]),
                               ),
-                              child: Image.asset(widget.catalog.pots[k]!.path),
-                            ),
-                          ),
-                        ),
+                      ),
                       const SizedBox(width: 6),
                       IconButton(
                           onPressed: () => garden.remove(p),

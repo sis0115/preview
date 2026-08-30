@@ -10,7 +10,8 @@
    "slots": [
     {
      "x": 35,
-     "y": 24
+     "y": 24,
+     "grade": "sprout"
     }
    ],
    "shadow": {
@@ -31,7 +32,8 @@
    "slots": [
     {
      "x": 46,
-     "y": 34
+     "y": 34,
+     "grade": "small"
     }
    ],
    "shadow": {
@@ -52,7 +54,8 @@
    "slots": [
     {
      "x": 64,
-     "y": 47
+     "y": 47,
+     "grade": "medium"
     }
    ],
    "shadow": {
@@ -73,7 +76,8 @@
    "slots": [
     {
      "x": 80,
-     "y": 55
+     "y": 55,
+     "grade": "large"
     }
    ],
    "shadow": {
@@ -94,7 +98,8 @@
    "slots": [
     {
      "x": 111,
-     "y": 71
+     "y": 71,
+     "grade": "xlarge"
     }
    ],
    "shadow": {
@@ -115,11 +120,13 @@
    "slots": [
     {
      "x": 99,
-     "y": 123
+     "y": 123,
+     "grade": "small"
     },
     {
      "x": 207,
-     "y": 59
+     "y": 59,
+     "grade": "small"
     }
    ],
    "shadow": {
@@ -156,7 +163,8 @@
    "slots": [
     {
      "x": 167,
-     "y": 109
+     "y": 109,
+     "grade": "xlarge"
     }
    ],
    "shadow": {

@@ -2,49 +2,72 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import 'catalog.dart';
 import 'iso.dart';
 
-/// 온실에 놓인 화분 식물 하나.
+/// 온실에 놓인 그릇 하나와 그 안에 심긴 것들.
 ///
 /// 자리를 화면 좌표가 아니라 칸으로 들고 있습니다. 그래야 확대·이동과
 /// 무관하게 자리가 유지되고, 앞뒤 순서를 칸만으로 정할 수 있습니다.
+///
+/// 한 그릇에 심는 자리가 여럿일 수 있습니다 - 긴 화단은 둘, 둥근 화분은
+/// 하나, 선반은 아직 없습니다. [slots] 는 그릇의 자리 수와 길이가 같고,
+/// 비어 있으면 null 입니다.
 class PlacedPlant {
   PlacedPlant({
     required this.id,
-    required this.plantId,
     required this.potId,
     required this.cell,
+    required this.slots,
     this.scale = 1,
   });
 
   final int id;
-  String plantId;
   String potId;
   Cell cell;
+  final List<String?> slots;
   double scale;
+
+  /// 자리가 없으면 가구입니다. 식물을 담지 못합니다.
+  bool get isFurniture => slots.isEmpty;
+  bool get isEmpty => slots.every((s) => s == null);
+  int get filled => slots.where((s) => s != null).length;
+
+  /// 이름표에 쓸 대표 식물. 비어 있으면 그릇 이름을 씁니다.
+  String? get anyPlant {
+    for (final s in slots) {
+      if (s != null) return s;
+    }
+    return null;
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'plant': plantId,
         'pot': potId,
         'i': cell.i,
         'j': cell.j,
+        'slots': slots,
         'scale': scale,
       };
 
   static PlacedPlant fromJson(Map<String, dynamic> m) => PlacedPlant(
         id: m['id'] as int,
-        plantId: m['plant'] as String,
         potId: m['pot'] as String,
         cell: Cell(m['i'] as int, m['j'] as int),
+        slots: [
+          for (final s in (m['slots'] as List? ?? const [])) s as String?,
+        ],
         scale: (m['scale'] as num).toDouble(),
       );
 }
 
 class Garden extends ChangeNotifier {
-  Garden(this.grid);
+  Garden(this.grid, this.pots);
 
   final IsoGrid grid;
+
+  /// 그릇마다 자리가 몇 개인지 알아야 심을 수 있습니다.
+  final Map<String, PotAsset> pots;
   final List<PlacedPlant> plants = [];
   int? selectedId;
   int _nextId = 1;
@@ -104,16 +127,40 @@ class Garden extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool add(String plantId, String potId, {Cell? at}) {
+  /// 그릇을 놓습니다. [plantId] 를 주면 첫 자리에 심습니다.
+  bool add(String? plantId, String potId, {Cell? at}) {
     final want = at ?? Cell(grid.size ~/ 2, grid.size ~/ 2);
     final cell = fits(want) ? want : nearestFree(want);
     if (cell == null) return false;
-    plants.add(
-      PlacedPlant(id: _nextId, plantId: plantId, potId: potId, cell: cell),
-    );
+    final slots = pots[potId]!.slots;
+    plants.add(PlacedPlant(
+      id: _nextId,
+      potId: potId,
+      cell: cell,
+      slots: [
+        for (var k = 0; k < slots.length; k++)
+          k == 0 && plantId != null && slots[k].grade == plantId
+              ? plantId
+              : null,
+      ],
+    ));
     selectedId = _nextId++;
     notifyListeners();
     return true;
+  }
+
+  /// 자리 하나에 심거나 비웁니다.
+  ///
+  /// 등급이 맞지 않으면 크기를 조절하지 않고 거절합니다(RULES 8). 왜
+  /// 안 되는지 부르는 쪽에서 알려 줄 수 있도록 이유를 돌려줍니다.
+  String? plantInto(PlacedPlant p, int slot, String? plantId) {
+    final want = pots[p.potId]!.slots[slot];
+    if (plantId != null && want.grade != plantId) {
+      return '이 자리는 ${want.grade} 자리입니다';
+    }
+    p.slots[slot] = plantId;
+    notifyListeners();
+    return null;
   }
 
   void moveTo(PlacedPlant p, Cell c) {

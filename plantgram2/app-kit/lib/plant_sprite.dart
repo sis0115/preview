@@ -27,13 +27,15 @@ class SpriteLayout {
   /// 시트에서 무대로 옮기는 배율.
   final double scale;
 
+  /// [slots] 는 자리마다 심긴 식물(비었으면 null)입니다. 상자는 그릇과
+  /// **실제로 심긴** 식물만으로 잽니다 - 빈 자리까지 넣으면 아무것도 없는
+  /// 쪽으로 상자가 늘어납니다.
   static SpriteLayout of(
-      Catalog cat, String plantId, String potId, double userScale) {
+      Catalog cat, List<String?> slots, String potId, double userScale) {
     // 시트의 조각은 무대보다 크게 그려져 있습니다. 그 차이를 메운 뒤
     // 사용자가 키운 만큼을 곱합니다.
     final s = cat.grid.unit * userScale;
     final pot = cat.pots[potId]!;
-    final plant = cat.plants[plantId]!;
     final foot = pot.foot;
 
     var l = 0.0, r = 0.0, t = 0.0, b = 0.0;
@@ -49,11 +51,14 @@ class SpriteLayout {
     // 그림자 — 닿는 자리에. 다리 달린 것은 조금 내려서 앞으로 비치게.
     extend(-pot.shadow.anchor * s + Offset(0, pot.shadow.drop * s),
         pot.shadow.size, s);
-    // 식물 — 심는 자리마다 하나씩.
+    // 식물 — 심긴 자리마다 하나씩.
     // 밑동이 심는 자리에 오게 하려면 원점을 (자리 - 닿는자리) 로 둡니다.
     // 여기에 밑동을 한 번 더 더하면 그만큼 아래로 밀립니다.
-    for (final slot in pot.slots) {
-      extend((slot.offset - foot) * s - plant.stem * s, plant.size, s);
+    for (var k = 0; k < pot.slots.length && k < slots.length; k++) {
+      final id = slots[k];
+      if (id == null) continue;
+      final plant = cat.plants[id]!;
+      extend((pot.slots[k].offset - foot) * s - plant.stem * s, plant.size, s);
     }
 
     return SpriteLayout(
@@ -64,25 +69,24 @@ class SpriteLayout {
   }
 }
 
-/// 화분 식물 한 그루. 긴 화단이면 같은 식물을 심는 자리 수만큼 심습니다.
+/// 그릇 하나와 그 안에 심긴 것들. 자리마다 다른 식물이 들어갈 수 있습니다.
 class PlantSprite extends StatelessWidget {
   const PlantSprite({
     super.key,
     required this.catalog,
-    required this.plantId,
+    required this.slots,
     required this.potId,
     required this.layout,
   });
 
   final Catalog catalog;
-  final String plantId;
+  final List<String?> slots;
   final String potId;
   final SpriteLayout layout;
 
   @override
   Widget build(BuildContext context) {
     final pot = catalog.pots[potId]!;
-    final plant = catalog.plants[plantId]!;
     final foot = pot.foot;
     final ps = layout.scale;
 
@@ -95,11 +99,18 @@ class PlantSprite extends StatelessWidget {
               fit: BoxFit.fill, filterQuality: FilterQuality.medium),
         );
 
-    Widget plantAt(Slot slot) => at(plant.path, plant.size,
-        (slot.offset - foot) * ps - plant.stem * ps, ps);
+    Widget plantAt(int k) {
+      final plant = catalog.plants[slots[k]]!;
+      final slot = pot.slots[k];
+      return at(plant.path, plant.size,
+          (slot.offset - foot) * ps - plant.stem * ps, ps);
+    }
 
     // 뒤쪽 자리부터 심어야 앞 그루가 뒤 그루를 가립니다.
-    final slots = [...pot.slots]..sort((a, b) => a.y.compareTo(b.y));
+    final order = [
+      for (var k = 0; k < pot.slots.length && k < slots.length; k++)
+        if (slots[k] != null) k,
+    ]..sort((a, b) => pot.slots[a].y.compareTo(pot.slots[b].y));
 
     return SizedBox.fromSize(
       size: layout.size,
@@ -109,7 +120,7 @@ class PlantSprite extends StatelessWidget {
           at(pot.shadow.path, pot.shadow.size,
               -pot.shadow.anchor * ps + Offset(0, pot.shadow.drop * ps), ps),
           at(pot.path, pot.size, -foot * ps, ps),
-          for (final slot in slots) plantAt(slot),
+          for (final k in order) plantAt(k),
         ],
       ),
     );

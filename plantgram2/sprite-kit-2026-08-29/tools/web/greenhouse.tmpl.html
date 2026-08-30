@@ -1,0 +1,366 @@
+<title>온실 배치 시험대</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#F3F1EA; --card:#FBFAF6; --edge:#E2DED2;
+    --ink:#26332B; --mute:#78877D; --faint:#9AA79F;
+    --accent:#BF6236; --ok:#3F7C51; --block:#A8452F;
+    --shadow:0 1px 2px rgba(38,51,43,.05), 0 8px 24px -12px rgba(38,51,43,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#161B18; --card:#1E2521; --edge:#2E3733;
+      --ink:#E6EBE4; --mute:#93A199; --faint:#6E7C74;
+      --accent:#D98455; --ok:#6BAE7E; --block:#D0705A;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#161B18; --card:#1E2521; --edge:#2E3733;
+    --ink:#E6EBE4; --mute:#93A199; --faint:#6E7C74;
+    --accent:#D98455; --ok:#6BAE7E; --block:#D0705A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  body{background:var(--paper); color:var(--ink);
+    font-family:"IBM Plex Sans KR", system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1080px; margin:0 auto; padding:36px 20px 72px;
+    display:flex; flex-direction:column; gap:22px;}
+
+  header{display:flex; flex-direction:column; gap:8px;}
+  h1{margin:0; font-size:27px; font-weight:600; letter-spacing:-.01em;
+     text-wrap:balance;}
+  .lede{margin:0; color:var(--mute); font-size:15px; line-height:1.6; max-width:62ch;}
+
+  .facts{display:flex; flex-wrap:wrap; gap:6px 26px; padding-top:4px;}
+  .fact{display:flex; align-items:baseline; gap:7px;}
+  .fact b{font:500 14px/1 "IBM Plex Mono", monospace; color:var(--ink);
+    font-variant-numeric:tabular-nums;}
+  .fact span{font-size:12px; color:var(--faint); letter-spacing:.03em;}
+
+  .stage{background:var(--card); border:1px solid var(--edge); border-radius:16px;
+    box-shadow:var(--shadow); overflow:hidden; position:relative;}
+  canvas{display:block; width:100%; height:auto; touch-action:none; cursor:pointer;}
+
+  .bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px;}
+  .grades{display:flex; flex-wrap:wrap; gap:8px;}
+  button{font-family:inherit; font-size:14px; color:var(--ink); cursor:pointer;
+    background:var(--card); border:1px solid var(--edge); border-radius:10px;
+    padding:9px 14px; transition:border-color .12s, background .12s;}
+  button:hover{border-color:var(--faint);}
+  button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  button[aria-pressed="true"]{border-color:var(--accent); color:var(--accent);
+    background:color-mix(in srgb, var(--accent) 8%, var(--card));}
+  .spacer{flex:1 1 auto;}
+  .ghost{color:var(--mute);}
+
+  .slots{display:flex; flex-wrap:wrap; align-items:center; gap:8px; min-height:38px;}
+  .slots .note{font-size:13px; color:var(--faint);}
+  .slots button{font-size:13px; padding:7px 12px;}
+  .slots button.full{border-color:var(--ok); color:var(--ok);}
+
+  .hint{font-size:13.5px; color:var(--mute); min-height:20px;}
+  .hint b{color:var(--ink); font-weight:600;}
+
+  table{border-collapse:collapse; width:100%; font-size:14px;}
+  caption{text-align:left; font-size:12px; letter-spacing:.06em; color:var(--faint);
+    text-transform:uppercase; padding-bottom:8px;}
+  th,td{text-align:left; padding:8px 12px 8px 0; border-bottom:1px solid var(--edge);}
+  th{font-weight:500; color:var(--mute); font-size:12.5px;}
+  td.n{font:500 13.5px/1 "IBM Plex Mono", monospace; font-variant-numeric:tabular-nums;}
+  .scroll{overflow-x:auto;}
+  footer{font-size:13px; color:var(--faint); line-height:1.7;}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>온실 배치 시험대</h1>
+    <p class="lede">Flutter 시제품과 <b>같은 조각·같은 격자·같은 계산</b>으로 도는 웹판입니다.
+      등급을 고르고 빈 칸을 누르면 심기고, 끌면 옮겨집니다.
+      그릇을 고르면 <b>그 안의 자리</b>가 아래에 뜹니다 — 긴 화단은 자리가 둘이라 두 그루를 따로 심습니다.
+      자리마다 등급이 정해져 있어서, 맞지 않으면 크기를 줄이는 대신 놓을 수 없다고 알려 줍니다.</p>
+    <div class="facts" id="facts"></div>
+  </header>
+
+  <div class="stage"><canvas id="cv" width="1536" height="1024"></canvas></div>
+
+  <div class="bar">
+    <div class="grades" id="grades"></div>
+    <div class="spacer"></div>
+    <button id="gridBtn" aria-pressed="false">칸선 보기</button>
+    <button id="delBtn" class="ghost">지우기</button>
+    <button id="resetBtn" class="ghost">처음으로</button>
+  </div>
+  <div class="slots" id="slots"></div>
+  <p class="hint" id="hint"></p>
+
+  <div class="scroll">
+    <table>
+      <caption>그릇과 자리</caption>
+      <thead><tr><th>그릇</th><th>자리 수</th><th>자리 등급</th><th>폭</th></tr></thead>
+      <tbody id="tbl2"></tbody>
+    </table>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <caption>재서 정한 값</caption>
+      <thead><tr><th>등급</th><th>식물 폭</th><th>화분 폭</th><th>화분 조각</th></tr></thead>
+      <tbody id="tbl"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    격자는 배경의 앞쪽 두 변에서 읽었습니다 — 뒤쪽 꼭짓점은 유리에 가려 있고 바닥 턱까지 딸려 오기 때문입니다.
+    조각은 시트 전체에 같은 배율을 곱해 무대에 얹습니다. 접지 그림자는 코드가 그립니다.
+  </footer>
+</div>
+
+<script>
+const D = __DATA__;
+const G = D.catalog.grid, POTS = D.catalog.pots, PLANTS = D.catalog.plants,
+      NAMES = D.catalog.names, IMG = D.img;
+const T = [G.topX, G.topY], U = [G.uX, G.uY], V = [G.vX, G.vY], N = G.n, S = G.unitScale;
+
+const bank = {};
+let ready = 0, total = Object.keys(IMG).length;
+for (const k in IMG) {
+  const im = new Image();
+  im.onload = () => { if (++ready === total) draw(); };
+  im.src = IMG[k];
+  bank[k] = im;
+}
+
+const centre = (i, j) => [T[0] + U[0]*(i+.5) + V[0]*(j+.5),
+                          T[1] + U[1]*(i+.5) + V[1]*(j+.5)];
+function cellAt(x, y) {
+  const d = U[0]*V[1] - U[1]*V[0], qx = x - T[0], qy = y - T[1];
+  return [Math.round((qx*V[1] - qy*V[0])/d - .5),
+          Math.round((U[0]*qy - U[1]*qx)/d - .5)];
+}
+const inGrid = ([i, j]) => i >= 0 && j >= 0 && i < N && j < N;
+
+// 그릇 하나에 자리가 여럿일 수 있습니다. 긴 화단은 둘, 둥근 화분은 하나,
+// 선반은 아직 없습니다 - 자리가 없으면 가구입니다. 가구 시트가 오면
+// 선반·작업대·받침대에 자리가 붙고, 이 코드는 그대로 씁니다.
+const START = [
+  ['pot_xlarge', 0, 2, ['xlarge']],
+  ['pot_large',  1, 4, ['large']],
+  ['pot_medium', 3, 4, ['medium']],
+  ['bed_long',   4, 2, ['small', 'small']],
+  ['pot_sprout', 2, 2, ['sprout']],
+  ['shelf',      2, 0, []],
+];
+const GRADES = ['sprout', 'small', 'medium', 'large', 'xlarge'];
+
+let plants = [], nextId = 1, sel = null, pick = 'medium', showGrid = false;
+let drag = null, hover = null, hoverOk = true, msg = '';
+
+const isFurniture = id => POTS[id].slots.length === 0;
+
+function reset() {
+  plants = START.map(([pot, i, j, fill]) => ({
+    id: nextId++, i, j, pot,
+    slots: POTS[pot].slots.map((s, k) => fill[k] || null),
+  }));
+  sel = null; hover = null; msg = ''; refresh();
+}
+const at = (i, j) => plants.find(p => p.i === i && p.j === j);
+const free = (i, j, skip) =>
+  inGrid([i, j]) && !plants.some(p => p.i === i && p.j === j && p !== skip);
+
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+
+function diamond(i, j) {
+  const o = [T[0]+U[0]*i+V[0]*j, T[1]+U[1]*i+V[1]*j];
+  ctx.beginPath();
+  ctx.moveTo(o[0], o[1]);
+  ctx.lineTo(o[0]+U[0], o[1]+U[1]);
+  ctx.lineTo(o[0]+U[0]+V[0], o[1]+U[1]+V[1]);
+  ctx.lineTo(o[0]+V[0], o[1]+V[1]);
+  ctx.closePath();
+}
+
+// 그릇 그림 안의 좌표를 무대 좌표로. 기준은 닿는 자리입니다.
+function inPot(p, s) {
+  const [cx, cy] = centre(p.i, p.j), pot = POTS[p.pot];
+  return [cx + (s.x - pot.foot.x) * S, cy + (s.y - pot.foot.y) * S];
+}
+
+function draw() {
+  if (ready < total) return;
+  ctx.clearRect(0, 0, 1536, 1024);
+  ctx.drawImage(bank.stage, 0, 0, 1536, 1024);
+
+  if (showGrid) {
+    ctx.lineWidth = 1.4;
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      diamond(i, j);
+      ctx.fillStyle = 'rgba(86,96,82,.07)';
+      if (!at(i, j)) ctx.fill();
+      ctx.strokeStyle = 'rgba(86,96,82,.45)'; ctx.stroke();
+    }
+  }
+
+  // 끄는 중에는 칸을 채워 보여 주고, 그냥 골라 둔 것은 테두리만 그립니다.
+  // 큰 그릇 밑에서 채운 마름모가 반쯤 가리면 엉뚱한 초록 상자로 보입니다.
+  const mark = hover || (sel ? [sel.i, sel.j] : null);
+  if (mark) {
+    const tint = hoverOk ? '78,140,94' : '180,80,63';
+    diamond(mark[0], mark[1]);
+    if (drag) { ctx.fillStyle = `rgba(${tint},.26)`; ctx.fill(); }
+    ctx.strokeStyle = `rgba(${tint},${drag ? .9 : .65})`;
+    ctx.lineWidth = drag ? 2.6 : 2;
+    ctx.stroke();
+  }
+
+  // 앞뒤는 놓인 칸의 화면 높이로 정합니다. 칸 합(i+j)으로 정하면 두 축의
+  // 기울기가 다를 때 순서가 흔들립니다.
+  for (const p of [...plants].sort((a, b) => centre(a.i,a.j)[1] - centre(b.i,b.j)[1])) {
+    const [cx, cy] = centre(p.i, p.j), pot = POTS[p.pot];
+    const sh = pot.shadow;
+    ctx.drawImage(bank['sh:' + p.pot], cx - sh.anchorX*S, cy - sh.anchorY*S + (sh.drop||0)*S,
+                  sh.w*S, sh.h*S);
+    ctx.drawImage(bank['pot:' + p.pot], cx - pot.foot.x*S, cy - pot.foot.y*S,
+                  pot.w*S, pot.h*S);
+    // 한 그릇 안에서도 뒤쪽 자리부터. 화단 뒷그루가 앞그루를 덮으면 안 됩니다.
+    const order = pot.slots.map((s, k) => [s, k]).sort((a, b) => a[0].y - b[0].y);
+    for (const [s, k] of order) {
+      const id = p.slots[k];
+      if (!id) continue;
+      const pl = PLANTS[id], [sx, sy] = inPot(p, s);
+      ctx.drawImage(bank['pl:' + id], sx - pl.stemX*S, sy - pl.stemY*S,
+                    pl.w*S, pl.h*S);
+    }
+  }
+
+  // 고른 그릇의 빈 자리를 마지막에 표시합니다. 식물에 가리면 안 됩니다.
+  if (sel && POTS[sel.pot].slots.length > 1) {
+    POTS[sel.pot].slots.forEach((s, k) => {
+      const [sx, sy] = inPot(sel, s), full = !!sel.slots[k];
+      ctx.beginPath(); ctx.arc(sx, sy, 15, 0, 7);
+      ctx.fillStyle = full ? 'rgba(63,124,81,.85)' : 'rgba(38,51,43,.55)';
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = '600 18px "IBM Plex Mono", monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(k + 1), sx, sy + 1);
+    });
+  }
+}
+
+function scenePos(e) {
+  const r = cv.getBoundingClientRect();
+  return [(e.clientX - r.left) / r.width * 1536, (e.clientY - r.top) / r.height * 1024];
+}
+
+cv.addEventListener('pointerdown', e => {
+  cv.setPointerCapture(e.pointerId);
+  const c = cellAt(...scenePos(e));
+  const p = at(c[0], c[1]);
+  msg = '';
+  if (p) { sel = p; drag = p; hover = [p.i, p.j]; hoverOk = true; }
+  else if (inGrid(c)) {
+    const pot = PLANTS[pick].pot;
+    plants.push({id: nextId++, i: c[0], j: c[1], pot,
+                 slots: POTS[pot].slots.map((s, k) => k === 0 ? pick : null)});
+    sel = plants[plants.length - 1];
+  } else sel = null;
+  refresh();
+});
+cv.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const c = cellAt(...scenePos(e));
+  hover = c; hoverOk = free(c[0], c[1], drag);
+  if (hoverOk) { drag.i = c[0]; drag.j = c[1]; }
+  refresh();
+});
+const stop = () => { drag = null; hover = null; hoverOk = true; refresh(); };
+cv.addEventListener('pointerup', stop);
+cv.addEventListener('pointercancel', stop);
+
+// 자리에 심고 비웁니다. 등급이 다르면 크기를 줄이지 않고 거절합니다.
+function toggleSlot(k) {
+  const s = POTS[sel.pot].slots[k];
+  if (sel.slots[k]) { sel.slots[k] = null; msg = `${k+1}번 자리를 비웠습니다.`; }
+  else if (s.grade !== pick)
+    msg = `${k+1}번은 <b>${NAMES[s.grade]}</b> 자리입니다. ${NAMES[pick]}은 들어가지 않습니다.`;
+  else { sel.slots[k] = pick; msg = `${k+1}번 자리에 ${NAMES[pick]}을 심었습니다.`; }
+  refresh();
+}
+
+function chips() {
+  const w = document.getElementById('slots');
+  if (!sel) { w.innerHTML = ''; return; }
+  const pot = POTS[sel.pot];
+  if (isFurniture(sel.pot)) {
+    w.innerHTML = `<span class="note"><b>${NAMES[sel.pot]}</b> — 심는 자리가 아직 없는 가구입니다. ` +
+                  `가구 시트가 오면 여기에 자리가 뜹니다.</span>`;
+    return;
+  }
+  w.innerHTML = `<span class="note">${NAMES[sel.pot]}의 자리</span>`;
+  pot.slots.forEach((s, k) => {
+    const has = sel.slots[k], b = document.createElement('button');
+    b.textContent = `${k+1} · ${NAMES[s.grade]} 자리 — ${has ? NAMES[has] : '비었음'}`;
+    if (has) b.className = 'full';
+    b.onclick = () => toggleSlot(k);
+    w.appendChild(b);
+  });
+}
+
+function say() {
+  const h = document.getElementById('hint');
+  if (drag) h.innerHTML = hoverOk ? '놓을 수 있습니다' : '<b>이미 찬 칸입니다</b>';
+  else if (msg) h.innerHTML = msg;
+  else if (sel) h.innerHTML =
+    `<b>${NAMES[sel.pot]}</b> — ${sel.i+1}번째 줄 ${sel.j+1}번째 칸 · ` +
+    (isFurniture(sel.pot) ? '가구'
+      : `자리 ${sel.slots.filter(Boolean).length}/${sel.slots.length} 참`);
+  else h.textContent = '등급을 고르고 빈 칸을 누르면 심깁니다. 그릇을 고르면 자리가 뜹니다.';
+}
+const refresh = () => { draw(); chips(); say(); };
+
+const gw = document.getElementById('grades');
+for (const k of GRADES) {
+  const b = document.createElement('button');
+  b.textContent = NAMES[k]; b.setAttribute('aria-pressed', k === pick);
+  b.onclick = () => { pick = k; msg = '';
+    [...gw.children].forEach((c, n) => c.setAttribute('aria-pressed', GRADES[n] === pick));
+    chips(); say(); };
+  gw.appendChild(b);
+}
+document.getElementById('gridBtn').onclick = e => {
+  showGrid = !showGrid;
+  e.currentTarget.setAttribute('aria-pressed', showGrid);
+  e.currentTarget.textContent = showGrid ? '칸선 끄기' : '칸선 보기';
+  draw();
+};
+document.getElementById('delBtn').onclick = () => {
+  if (!sel) return;
+  plants = plants.filter(p => p !== sel); sel = null; msg = ''; refresh();
+};
+document.getElementById('resetBtn').onclick = reset;
+
+document.getElementById('facts').innerHTML = [
+  [`${N}×${N}`, '바닥 칸'],
+  [`${G.tileW} × ${G.tileH}`, '타일'],
+  [(G.tileW / G.tileH).toFixed(2) + ' : 1', '등각비'],
+  [S.toFixed(4), '조각 배율'],
+].map(([v, l]) => `<span class="fact"><b>${v}</b><span>${l}</span></span>`).join('');
+
+document.getElementById('tbl').innerHTML = GRADES.map(k => {
+  const p = PLANTS[k], q = POTS[p.pot];
+  return `<tr><td>${NAMES[k]}</td><td class="n">${p.w}</td>` +
+         `<td class="n">${q.w}</td><td>${NAMES[p.pot]}</td></tr>`;
+}).join('');
+
+document.getElementById('tbl2').innerHTML = Object.keys(POTS).map(k => {
+  const q = POTS[k], g = q.slots.map(s => NAMES[s.grade]).join(' · ') || '—';
+  return `<tr><td>${NAMES[k]}</td><td class="n">${q.slots.length}</td>` +
+         `<td>${g}</td><td class="n">${q.w}</td></tr>`;
+}).join('');
+
+reset();
+</script>

@@ -35,6 +35,24 @@ DEFAULT_POT = {"sprout": "pot_sprout", "small": "pot_small",
                "medium": "pot_medium", "large": "pot_large",
                "xlarge": "pot_xlarge"}
 
+# 자리마다 **어느 등급이 들어가는지**. 크기가 안 맞으면 줄이는 게 아니라
+# 놓을 수 없다고 알려 줍니다(RULES 8). 선반은 자리가 아직 없어 가구입니다 -
+# 가구 시트가 오면 여기에 자리가 붙습니다.
+SLOT_GRADE = {
+    "pot_sprout": ["sprout"], "pot_small": ["small"],
+    "pot_medium": ["medium"], "pot_large": ["large"],
+    "pot_xlarge": ["xlarge"],
+    "bed_long": ["small", "small"],     # 두 칸짜리 식물 하나가 아니라 두 그루
+    "planter_big": ["xlarge"],
+    "shelf": [],
+}
+
+
+def slot_grades(pid, n):
+    """자리 수와 등급표의 길이가 어긋나도 그림이 정한 자리 수를 따릅니다."""
+    g = SLOT_GRADE.get(pid) or ["medium"]
+    return [g[min(k, len(g) - 1)] for k in range(n)]
+
 
 def main(out="../app-kit/assets"):
     grid = json.load(open("sheets/stage_grid.json"))
@@ -83,7 +101,9 @@ def main(out="../app-kit/assets"):
         cat["pots"][pid] = {
             "w": art.width, "h": art.height,
             "foot": {"x": round(fx), "y": round(fy)},
-            "slots": [{"x": round(x), "y": round(y)} for x, y in p["anchor"]],
+            "slots": [{"x": round(x), "y": round(y), "grade": g}
+                      for (x, y), g in zip(p["anchor"],
+                                           slot_grades(pid, len(p["anchor"])))],
             "shadow": {"w": sh.width, "h": sh.height,
                        "anchorX": sh.width // 2, "anchorY": sh.height // 2,
                        "drop": round((art.height - fy) * .34) if boxy else 0},
