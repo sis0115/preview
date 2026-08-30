@@ -41,15 +41,24 @@ def load(sheet="sheets/spec_04_art.png", spec_path="sheets/spec_04.json"):
     return out
 
 
-def shadow(width, iso):
-    """접지 그림자. 바닥에 놓인 타원이므로 높이는 폭 ÷ 등각비입니다."""
+def shadow(width, iso, shape="ellipse", ink=104, blur=.34):
+    """접지 그림자. 바닥에 놓인 자국이므로 높이는 폭 ÷ 등각비입니다.
+
+    둥근 화분은 타원이지만, 다리 달린 선반이나 상자꼴 화단은 밑면이
+    마름모입니다. 타원을 깔면 다리 사이가 비어 떠 보입니다.
+    """
     w = max(8, round(width))
     h = max(4, round(w / iso))
     pad = round(w * .3)
     im = Image.new("RGBA", (w + pad * 2, h + pad * 2), (0, 0, 0, 0))
-    ImageDraw.Draw(im).ellipse([pad, pad, pad + w, pad + h],
-                               fill=(58, 48, 36, 104))
-    return im.filter(ImageFilter.GaussianBlur(pad * .34))
+    dr = ImageDraw.Draw(im)
+    tone = (58, 48, 36, ink)
+    if shape == "diamond":
+        cx, cy = pad + w / 2, pad + h / 2
+        dr.polygon([(cx, pad), (pad + w, cy), (cx, pad + h), (pad, cy)], fill=tone)
+    else:
+        dr.ellipse([pad, pad, pad + w, pad + h], fill=tone)
+    return im.filter(ImageFilter.GaussianBlur(pad * blur))
 
 
 def main(out="sheets/scene_test.png"):
