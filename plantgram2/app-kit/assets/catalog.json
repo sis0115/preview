@@ -64,20 +64,20 @@
   "monstera": {
    "w": 254,
    "h": 282,
-   "stemX": 126,
-   "stemY": 282
+   "stemX": 140,
+   "stemY": 277
   },
   "strelitzia": {
    "w": 241,
    "h": 299,
-   "stemX": 113,
-   "stemY": 299
+   "stemX": 130,
+   "stemY": 294
   },
   "bamboo": {
    "w": 224,
    "h": 315,
-   "stemX": 112,
-   "stemY": 315
+   "stemX": 118,
+   "stemY": 310
   }
  },
  "grid": {

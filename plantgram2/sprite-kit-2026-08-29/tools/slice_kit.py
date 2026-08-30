@@ -112,6 +112,27 @@ def find_soil(im, slots):
     return out
 
 
+def find_stem(im, mark):
+    """줄기가 흙에 닿는 자리를 그림에서 찾습니다.
+
+    표시선을 그대로 쓰지 않습니다. 생성기가 식물을 칸 한가운데에 정확히
+    그리지 않으면 표시와 실제 줄기가 5~17px 어긋나고, 그만큼 식물이
+    화분에서 밀립니다. 화분의 흙을 찾아 쓰면서 식물만 표시를 믿을
+    이유가 없습니다.
+
+    맨 아랫부분 몇 줄의 불투명 폭 한가운데가 줄기입니다. 잎은 위로
+    벌어지므로 아래쪽만 보면 줄기만 남습니다.
+    """
+    a = np.asarray(im.getchannel("A")) > 110
+    ys, xs = np.nonzero(a)
+    if len(xs) == 0:
+        return mark
+    bottom = int(ys.max())
+    rows = max(8, round(im.height * .04))
+    sel = xs[ys > bottom - rows]
+    return {"x": round((int(sel.min()) + int(sel.max())) / 2), "y": bottom}
+
+
 def make_shadow(width, path):
     """접지 그림자. 진한 반투명이라 어떤 바닥에서도 얼룩이 되지 않습니다."""
     w = round(width * 1.25)
@@ -169,12 +190,11 @@ def main(sheet_path, out="assets", ref="sheets/kit_ref.json"):
         else:
             a = p["anchor"]
             art.save(f"{out}/plants/{p['id']}.png")
-            # 밑동은 표시한 자리를 쓰되, 그림 밖으로 나가면 밑변으로
-            # 당깁니다. 잎이 표시선 위에서 끝나는 경우가 있습니다.
+            stem = find_stem(art, {"x": a["x"] - x0 - dx,
+                                   "y": min(a["y"] - y0 - dy, art.height)})
             cat["plants"][p["id"]] = {
                 "w": art.width, "h": art.height,
-                "stemX": a["x"] - x0 - dx,
-                "stemY": min(a["y"] - y0 - dy, art.height),
+                "stemX": stem["x"], "stemY": stem["y"],
             }
         print(f"  {p['id']:16} {art.width:4}x{art.height:<4}")
 
