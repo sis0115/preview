@@ -58,7 +58,14 @@ class SpriteLayout {
       final id = slots[k];
       if (id == null) continue;
       final plant = cat.plants[id]!;
-      extend((pot.slots[k].offset - foot) * s - plant.stem * s, plant.size, s);
+      var base = pot.slots[k].offset - foot;
+      if (pot.slots[k].potted) {
+        // 판 위의 자리는 화분째 올라갑니다. 식물 밑동은 그 화분의 흙에.
+        final inner = cat.pots[plant.pot]!;
+        extend((base - inner.foot) * s, inner.size, s);
+        base += inner.slots.first.offset - inner.foot;
+      }
+      extend(base * s - plant.stem * s, plant.size, s);
     }
 
     return SpriteLayout(
@@ -99,11 +106,19 @@ class PlantSprite extends StatelessWidget {
               fit: BoxFit.fill, filterQuality: FilterQuality.medium),
         );
 
-    Widget plantAt(int k) {
+    /// 자리 하나에 놓이는 것들. 판 위면 화분이 먼저, 그 위에 식물.
+    List<Widget> slotAt(int k) {
       final plant = catalog.plants[slots[k]]!;
       final slot = pot.slots[k];
-      return at(plant.path, plant.size,
-          (slot.offset - foot) * ps - plant.stem * ps, ps);
+      var base = slot.offset - foot;
+      final out = <Widget>[];
+      if (slot.potted) {
+        final inner = catalog.pots[plant.pot]!;
+        out.add(at(inner.path, inner.size, (base - inner.foot) * ps, ps));
+        base += inner.slots.first.offset - inner.foot;
+      }
+      out.add(at(plant.path, plant.size, base * ps - plant.stem * ps, ps));
+      return out;
     }
 
     // 뒤쪽 자리부터 심어야 앞 그루가 뒤 그루를 가립니다.
@@ -120,7 +135,7 @@ class PlantSprite extends StatelessWidget {
           at(pot.shadow.path, pot.shadow.size,
               -pot.shadow.anchor * ps + Offset(0, pot.shadow.drop * ps), ps),
           at(pot.path, pot.size, -foot * ps, ps),
-          for (final k in order) plantAt(k),
+          for (final k in order) ...slotAt(k),
         ],
       ),
     );

@@ -18,6 +18,7 @@ sys.path.insert(0, "tools")
 from grade_kit import load as load_grade, scaled     # noqa: E402
 from scene_test import load as load_kit, shadow      # noqa: E402
 from furniture_kit import load as load_furniture, KEEP as FURNITURE  # noqa: E402
+from furniture2_kit import load as load_furniture2   # noqa: E402
 
 SHEET_TILE = 225.0
 
@@ -27,11 +28,12 @@ NAMES = {
     "pot_xlarge": "특대형 화분", "bed_long": "긴 화단",
     "shelf": "선반", "planter_big": "석재 화분",
     "shelf_planted": "심어 놓은 선반", "bench_planted": "모종 작업대",
+    "shelf_two": "2층 선반", "bench": "작업대",
     "sprout": "새싹", "small": "소형", "medium": "중형",
     "large": "대형", "xlarge": "특대형",
 }
 BOXY = {"bed_long", "shelf", "planter_big", "shelf_planted",
-        "bench_planted"}
+        "bench_planted", "shelf_two", "bench"}
 
 # 등급마다 어울리는 화분. 심을 때 이 화분에 담깁니다.
 DEFAULT_POT = {"sprout": "pot_sprout", "small": "pot_small",
@@ -50,6 +52,8 @@ SLOT_GRADE = {
     # 자리가 없으면 가구입니다. 선반은 빈 그림을 아직 못 받았고, 아래 둘은
     # 화분과 식물이 그려져 들어와 장식으로만 씁니다.
     "shelf": [], "shelf_planted": [], "bench_planted": [],
+    # 빈 가구. 윗판 위 두 자리에 소형이 올라갑니다.
+    "shelf_two": ["small", "small"], "bench": ["small", "small"],
 }
 
 
@@ -78,6 +82,10 @@ def footprint(art, to_stage, grid):
     return [step(left), step(right)]
 
 
+# 판 위의 자리는 **화분째** 올라갑니다. 흙에 바로 심는 화단·화분과 다릅니다.
+POTTED = {"shelf_two", "bench"}
+
+
 def slot_grades(pid, n):
     """자리 수와 등급표의 길이가 어긋나도 그림이 정한 자리 수를 따릅니다."""
     g = SLOT_GRADE.get(pid) or ["medium"]
@@ -103,6 +111,10 @@ def main(out="../app-kit/assets"):
     for k in FURNITURE:
         pieces[k] = furn[k]
     print(f"가구 시트 축척 {f_unit:.4f} · {', '.join(FURNITURE)}")
+    # 빈 가구 시트. 자리를 가진 첫 가구이고, 야자도 화분 없이 새로 왔습니다.
+    furn2, f2_unit = load_furniture2(bed_in_kit=pieces["bed_long"]["art"].width)
+    pieces.update(furn2)
+    print(f"빈 가구 시트 축척 {f2_unit:.4f} · {', '.join(furn2)}")
 
     for d in ("greenhouse", "pots", "plants", "shadows"):
         os.makedirs(f"{out}/{d}", exist_ok=True)
@@ -138,7 +150,8 @@ def main(out="../app-kit/assets"):
         cat["pots"][pid] = {
             "w": art.width, "h": art.height, "cells": cells,
             "foot": {"x": round(fx), "y": round(fy)},
-            "slots": [{"x": round(x), "y": round(y), "grade": g}
+            "slots": [{"x": round(x), "y": round(y), "grade": g,
+                       "potted": pid in POTTED}
                       for (x, y), g in zip(p["anchor"],
                                            slot_grades(pid, len(p["anchor"])))],
             "shadow": {"w": sh.width, "h": sh.height,

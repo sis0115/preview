@@ -83,6 +83,7 @@
       등급을 고르고 빈 칸을 누르면 심기고, 끌면 옮겨집니다.
       그릇을 고르면 <b>그 안의 자리</b>가 아래에 뜹니다 — 긴 화단은 자리가 둘이라 두 그루를 따로 심습니다.
       선반·화단처럼 한 칸보다 넓은 것은 <b>두 칸</b>을 차지해, 옆 칸을 말없이 침범하지 않습니다.
+      <b>2층 선반</b>과 <b>작업대</b>는 윗판에 자리가 둘씩 있어 화분을 올릴 수 있습니다.
       자리마다 등급이 정해져 있어서, 맞지 않으면 크기를 줄이는 대신 놓을 수 없다고 알려 줍니다.</p>
     <div class="facts" id="facts"></div>
   </header>
@@ -159,11 +160,11 @@ const inGrid = ([i, j]) => i >= 0 && j >= 0 && i < N && j < N;
 // i 가 하나 줄어드는 칸을 함께 먹으므로, 격자 가장자리에서는 방향에 따라
 // 놓을 수 없는 자리가 생깁니다.
 const START = [
-  ['shelf_planted', 1, 1, [], 0],                   // 그린 대로 2x1 — (1,1)(0,1)
-  ['bench_planted', 4, 2, [], 1],                   // 뒤집어 1x2 — (4,2)(4,1)
-  ['bed_long',      2, 4, ['small', 'small'], 0],   // 1x2 — (2,4)(2,3)
-  ['pot_xlarge',    4, 4, ['xlarge'], 0],
-  ['pot_sprout',    2, 1, ['sprout'], 0],
+  ['shelf_two', 1, 1, ['small', 'small'], 0],       // 자리 있는 가구 — 1x2
+  ['bench',     4, 2, ['small', 'small'], 1],       // 돌려서 2x1
+  ['bed_long',  2, 4, ['small', 'small'], 0],
+  ['pot_xlarge', 4, 4, ['xlarge'], 0],
+  ['pot_sprout', 2, 1, ['sprout'], 0],
 ];
 // 자리 없는 그릇 = 가구. 눌러서 놓을 수 있게 따로 모아 둡니다.
 const FURN = Object.keys(POTS).filter(k => POTS[k].slots.length === 0);
@@ -309,9 +310,17 @@ function draw() {
       const id = p.slots[k];
       if (!id) continue;
       const pl = PLANTS[id];
-      ctx.drawImage(bank['pl:' + id],
-                    (s.x - pot.foot.x - pl.stemX)*S,
-                    (s.y - pot.foot.y - pl.stemY)*S, pl.w*S, pl.h*S);
+      // 판 위의 자리는 화분째 올라갑니다. 화단은 흙에 바로 심습니다.
+      let bx = s.x - pot.foot.x, by = s.y - pot.foot.y;
+      if (s.potted) {
+        const inner = POTS[pl.pot];
+        ctx.drawImage(bank['pot:' + pl.pot], (bx - inner.foot.x)*S,
+                      (by - inner.foot.y)*S, inner.w*S, inner.h*S);
+        bx += inner.slots[0].x - inner.foot.x;
+        by += inner.slots[0].y - inner.foot.y;
+      }
+      ctx.drawImage(bank['pl:' + id], (bx - pl.stemX)*S, (by - pl.stemY)*S,
+                    pl.w*S, pl.h*S);
     }
     ctx.restore();
   }

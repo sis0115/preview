@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 /// 긴 화단은 자리가 둘입니다. 등각이라 앞쪽 자리가 뒤쪽보다 아래에
 /// 있으므로, 좌표를 각각 들고 있어야 두 그루가 나란히 앉습니다.
 class Slot {
-  const Slot(this.x, this.y, this.grade);
+  const Slot(this.x, this.y, this.grade, this.potted);
 
   final double x;
   final double y;
@@ -18,6 +18,12 @@ class Slot {
   /// 등급이 다르면 코드가 식물을 줄이는 게 아니라 놓을 수 없다고 알려
   /// 줍니다. 줄이면 다른 물건이 아니라 뭉개진 같은 물건이 됩니다.
   final String grade;
+
+  /// 화분째 올라가는 자리인지.
+  ///
+  /// 선반·작업대의 판 위에는 화분이 통째로 놓입니다. 화단이나 화분의
+  /// 흙 자리는 식물만 심깁니다.
+  final bool potted;
 
   Offset get offset => Offset(x, y);
 }
@@ -174,7 +180,8 @@ class Catalog {
         slots: [
           for (final s in v['slots'] as List)
             Slot(_d(s as Map, 'x'), _d(s, 'y'),
-                ((s as Map)['grade'] as String?) ?? 'medium'),
+                ((s as Map)['grade'] as String?) ?? 'medium',
+                ((s as Map)['potted'] as bool?) ?? false),
         ],
         cells: [
           for (final n in (v['cells'] as List? ?? const [1, 1])) n as int,
