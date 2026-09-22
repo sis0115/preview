@@ -83,7 +83,7 @@
       등급을 고르고 빈 칸을 누르면 심기고, 끌면 옮겨집니다.
       그릇을 고르면 <b>그 안의 자리</b>가 아래에 뜹니다 — 긴 화단은 자리가 둘이라 두 그루를 따로 심습니다.
       선반·화단처럼 한 칸보다 넓은 것은 <b>두 칸</b>을 차지해, 옆 칸을 말없이 침범하지 않습니다.
-      <b>2층 선반</b>과 <b>작업대</b>는 윗판에 자리가 둘씩 있어 화분을 올릴 수 있습니다.
+      <b>선반</b>과 <b>작업대</b>는 윗판에 자리가 둘씩 있어 <b>작은 화분</b>(새싹 · 소형)을 올릴 수 있습니다.
       자리마다 등급이 정해져 있어서, 맞지 않으면 크기를 줄이는 대신 놓을 수 없다고 알려 줍니다.</p>
     <div class="facts" id="facts"></div>
   </header>
@@ -99,7 +99,7 @@
     <button id="resetBtn" class="ghost">처음으로</button>
   </div>
   <div class="bar">
-    <span class="tag">가구</span>
+    <span class="tag">가구 · 화단</span>
     <div class="grades" id="furn"></div>
   </div>
   <div class="slots" id="slots"></div>
@@ -160,14 +160,16 @@ const inGrid = ([i, j]) => i >= 0 && j >= 0 && i < N && j < N;
 // i 가 하나 줄어드는 칸을 함께 먹으므로, 격자 가장자리에서는 방향에 따라
 // 놓을 수 없는 자리가 생깁니다.
 const START = [
-  ['shelf_two', 1, 1, ['small', 'small'], 0],       // 자리 있는 가구 — 1x2
-  ['bench',     4, 2, ['small', 'small'], 1],       // 돌려서 2x1
-  ['bed_long',  2, 4, ['small', 'small'], 0],
-  ['pot_xlarge', 4, 4, ['xlarge'], 0],
-  ['pot_sprout', 2, 1, ['sprout'], 0],
+  ['shelf',     1, 1, ['small', 'sprout'], 0],      // 빈 선반 — 2x1
+  ['shelf_two', 4, 1, ['small', 'small'], 0],       // 1x2
+  ['bench',     4, 4, ['sprout', 'small'], 1],      // 돌려서 2x1
+  ['bed_long',  1, 4, ['small', 'small'], 0],
+  ['pot_xlarge', 3, 3, ['xlarge'], 0],
 ];
-// 자리 없는 그릇 = 가구. 눌러서 놓을 수 있게 따로 모아 둡니다.
-const FURN = Object.keys(POTS).filter(k => POTS[k].slots.length === 0);
+// 등급 칩으로는 놓을 수 없는 그릇들 - 선반 · 작업대 · 화단처럼 제 모양이
+// 있는 것. 이제 선반에도 자리가 있으므로 "자리 없음"으로는 못 가릅니다.
+const OWN_POT = new Set(Object.values(PLANTS).map(p => p.pot));
+const FURN = Object.keys(POTS).filter(k => !OWN_POT.has(k));
 const GRADES = ['sprout', 'small', 'medium', 'large', 'xlarge'];
 
 // 무엇을 놓을지. 등급이면 그 등급 화분에 심고, 가구면 그 가구를 놓습니다.
@@ -176,6 +178,8 @@ let rot = 0, showGrid = false;      // rot 0 = 오른쪽 위로, 1 = 왼쪽 위�
 let drag = null, hover = null, hoverOk = true, msg = '';
 
 const isFurniture = id => POTS[id].slots.length === 0;
+// 자리 하나에 여러 등급이 들어갈 수 있습니다 - 판 위에는 새싹도 소형도.
+const gradeNames = s => s.grades.map(g => NAMES[g] || g).join(' · ');
 
 // 조각이 차지하는 칸. 한 칸 마름모보다 넓은 조각을 한 칸에 놓으면 옆 칸을
 // 침범해, 그 칸에 다른 것을 놓을 수 없는데도 비어 보입니다.
@@ -375,8 +379,8 @@ cv.addEventListener('pointercancel', stop);
 function toggleSlot(k) {
   const s = POTS[sel.pot].slots[k];
   if (sel.slots[k]) { sel.slots[k] = null; msg = `${k+1}번 자리를 비웠습니다.`; }
-  else if (s.grade !== pick)
-    msg = `${k+1}번은 <b>${NAMES[s.grade]}</b> 자리입니다. ${NAMES[pick]}은 들어가지 않습니다.`;
+  else if (!s.grades.includes(pick))
+    msg = `${k+1}번은 <b>${gradeNames(s)}</b> 자리입니다. ${NAMES[pick]}은 들어가지 않습니다.`;
   else { sel.slots[k] = pick; msg = `${k+1}번 자리에 ${NAMES[pick]}을 심었습니다.`; }
   refresh();
 }
@@ -393,7 +397,7 @@ function chips() {
   w.innerHTML = `<span class="note">${NAMES[sel.pot]}의 자리</span>`;
   pot.slots.forEach((s, k) => {
     const has = sel.slots[k], b = document.createElement('button');
-    b.textContent = `${k+1} · ${NAMES[s.grade]} 자리 — ${has ? NAMES[has] : '비었음'}`;
+    b.textContent = `${k+1} · ${gradeNames(s)} 자리 — ${has ? NAMES[has] : '비었음'}`;
     if (has) b.className = 'full';
     b.onclick = () => toggleSlot(k);
     w.appendChild(b);
@@ -494,7 +498,10 @@ document.getElementById('cap2').textContent =
   '그릇과 자리 — 칸 수는 그림의 밑면을 축마다 재서 나온 값입니다. 돌리면 1×2 ↔ 2×1';
 
 document.getElementById('tbl2').innerHTML = Object.keys(POTS).map(k => {
-  const q = POTS[k], g = q.slots.map(s => NAMES[s.grade]).join(' · ') || '—';
+  const q = POTS[k];
+  const g = q.slots.length
+    ? q.slots.map(s => gradeNames(s)).join(q.slots.length > 1 ? ' / ' : '')
+    : '—';
   const w = Math.round(q.w * S);
   return `<tr><td>${NAMES[k]}</td><td class="n">${cellsOf(k).join(' × ')}</td>` +
          `<td class="n">${q.slots.length}</td>` +

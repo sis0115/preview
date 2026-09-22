@@ -50,14 +50,19 @@ class _GreenhousePageState extends State<GreenhousePage> {
     // 위로면 i 가 하나 줄어드는 칸을 함께 먹으므로, 가장자리에서는 방향에
     // 따라 놓을 수 없는 자리가 생깁니다.
     garden
-      ..add('small', 'shelf_two', at: const Cell(1, 1))
-      ..add('small', 'bench', at: const Cell(4, 2), rot: 1)
-      ..add('small', 'bed_long', at: const Cell(2, 4))
-      ..add('xlarge', 'pot_xlarge', at: const Cell(4, 4))
-      ..add('sprout', 'pot_sprout', at: const Cell(2, 1))
+      ..add('small', 'shelf', at: const Cell(1, 1))
+      ..add('small', 'shelf_two', at: const Cell(4, 1))
+      ..add('sprout', 'bench', at: const Cell(4, 4), rot: 1)
+      ..add('small', 'bed_long', at: const Cell(1, 4))
+      ..add('xlarge', 'pot_xlarge', at: const Cell(3, 3))
       ..select(null);
     // 자리가 둘인 그릇은 첫 자리만 채우면 반쪽으로 보입니다.
-    for (final c in [const Cell(1, 1), const Cell(4, 2), const Cell(2, 4)]) {
+    for (final c in [
+      const Cell(1, 1),
+      const Cell(4, 1),
+      const Cell(4, 4),
+      const Cell(1, 4)
+    ]) {
       final p = garden.at(c);
       if (p != null && p.slots.length > 1) garden.plantInto(p, 1, 'small');
     }
@@ -425,6 +430,9 @@ class _GreenhousePageState extends State<GreenhousePage> {
     final name = here == null
         ? '비었음'
         : widget.catalog.names[here] ?? here;
+    final takes = slot.grades
+        .map((g) => widget.catalog.names[g] ?? g)
+        .join(' · ');
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: GestureDetector(
@@ -439,8 +447,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
                 width: here == null ? 1 : 2),
           ),
           child: Text(
-              '${k + 1} · ${widget.catalog.names[slot.grade] ?? slot.grade} 자리'
-              ' — $name',
+              '${k + 1} · $takes 자리 — $name',
               style: TextStyle(
                   fontSize: 12.5,
                   color: here == null ? _mut : _ink,
@@ -456,7 +463,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
   /// 것보다, 애초에 들어갈 수 있는 것만 보이는 편이 낫습니다.
   void _slotSheet(PlacedPlant p, int k) {
     final slot = widget.catalog.pots[p.potId]!.slots[k];
-    final ok = widget.catalog.plants.keys.where((n) => n == slot.grade);
+    final ok = widget.catalog.plants.keys.where(slot.takes);
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: const Color(0xFFF7F7F2),
@@ -470,7 +477,8 @@ class _GreenhousePageState extends State<GreenhousePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('${k + 1}번 자리 — '
-                  '${widget.catalog.names[slot.grade] ?? slot.grade}만 들어갑니다',
+                  '${slot.grades.map((g) => widget.catalog.names[g] ?? g).join(" · ")}'
+                  '만 들어갑니다',
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w800, color: _ink)),
               const SizedBox(height: 12),

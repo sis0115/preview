@@ -8,16 +8,19 @@ import 'package:flutter/services.dart';
 /// 긴 화단은 자리가 둘입니다. 등각이라 앞쪽 자리가 뒤쪽보다 아래에
 /// 있으므로, 좌표를 각각 들고 있어야 두 그루가 나란히 앉습니다.
 class Slot {
-  const Slot(this.x, this.y, this.grade, this.potted);
+  const Slot(this.x, this.y, this.grades, this.potted);
 
   final double x;
   final double y;
 
-  /// 이 자리에 들어갈 수 있는 등급.
+  /// 이 자리에 들어갈 수 있는 등급들.
   ///
-  /// 등급이 다르면 코드가 식물을 줄이는 게 아니라 놓을 수 없다고 알려
-  /// 줍니다. 줄이면 다른 물건이 아니라 뭉개진 같은 물건이 됩니다.
-  final String grade;
+  /// 판 위에는 새싹도 소형도 올라갑니다. 등급이 다르면 코드가 식물을
+  /// 줄이는 게 아니라 놓을 수 없다고 알려 줍니다 — 줄이면 다른 물건이
+  /// 아니라 뭉개진 같은 물건이 됩니다.
+  final List<String> grades;
+
+  bool takes(String grade) => grades.contains(grade);
 
   /// 화분째 올라가는 자리인지.
   ///
@@ -179,9 +182,15 @@ class Catalog {
         foot: Offset(_d(v['foot'] as Map, 'x'), _d(v['foot'] as Map, 'y')),
         slots: [
           for (final s in v['slots'] as List)
-            Slot(_d(s as Map, 'x'), _d(s, 'y'),
-                ((s as Map)['grade'] as String?) ?? 'medium',
-                ((s as Map)['potted'] as bool?) ?? false),
+            Slot(
+                _d(s as Map, 'x'),
+                _d(s, 'y'),
+                [
+                  for (final g in ((s as Map)['grades'] as List? ??
+                      const ['medium']))
+                    g as String,
+                ],
+                (s['potted'] as bool?) ?? false),
         ],
         cells: [
           for (final n in (v['cells'] as List? ?? const [1, 1])) n as int,

@@ -15,7 +15,9 @@
     {
      "x": 35,
      "y": 24,
-     "grade": "sprout",
+     "grades": [
+      "sprout"
+     ],
      "potted": false
     }
    ],
@@ -42,7 +44,9 @@
     {
      "x": 46,
      "y": 34,
-     "grade": "small",
+     "grades": [
+      "small"
+     ],
      "potted": false
     }
    ],
@@ -69,7 +73,9 @@
     {
      "x": 64,
      "y": 47,
-     "grade": "medium",
+     "grades": [
+      "medium"
+     ],
      "potted": false
     }
    ],
@@ -96,7 +102,9 @@
     {
      "x": 80,
      "y": 55,
-     "grade": "large",
+     "grades": [
+      "large"
+     ],
      "potted": false
     }
    ],
@@ -123,7 +131,9 @@
     {
      "x": 111,
      "y": 71,
-     "grade": "xlarge",
+     "grades": [
+      "xlarge"
+     ],
      "potted": false
     }
    ],
@@ -150,13 +160,17 @@
     {
      "x": 99,
      "y": 123,
-     "grade": "small",
+     "grades": [
+      "small"
+     ],
      "potted": false
     },
     {
      "x": 207,
      "y": 59,
-     "grade": "small",
+     "grades": [
+      "small"
+     ],
      "potted": false
     }
    ],
@@ -179,7 +193,26 @@
     "x": 138,
     "y": 282
    },
-   "slots": [],
+   "slots": [
+    {
+     "x": 81,
+     "y": 65,
+     "grades": [
+      "sprout",
+      "small"
+     ],
+     "potted": true
+    },
+    {
+     "x": 194,
+     "y": 130,
+     "grades": [
+      "sprout",
+      "small"
+     ],
+     "potted": true
+    }
+   ],
    "shadow": {
     "w": 453,
     "h": 334,
@@ -203,7 +236,9 @@
     {
      "x": 167,
      "y": 109,
-     "grade": "xlarge",
+     "grades": [
+      "xlarge"
+     ],
      "potted": false
     }
    ],
@@ -213,46 +248,6 @@
     "anchorX": 272,
     "anchorY": 200,
     "drop": 24
-   }
-  },
-  "shelf_planted": {
-   "w": 232,
-   "h": 268,
-   "cells": [
-    2,
-    1
-   ],
-   "foot": {
-    "x": 116,
-    "y": 216
-   },
-   "slots": [],
-   "shadow": {
-    "w": 379,
-    "h": 279,
-    "anchorX": 189,
-    "anchorY": 139,
-    "drop": 18
-   }
-  },
-  "bench_planted": {
-   "w": 305,
-   "h": 307,
-   "cells": [
-    2,
-    1
-   ],
-   "foot": {
-    "x": 152,
-    "y": 239
-   },
-   "slots": [],
-   "shadow": {
-    "w": 497,
-    "h": 366,
-    "anchorX": 248,
-    "anchorY": 183,
-    "drop": 23
    }
   },
   "shelf_two": {
@@ -270,13 +265,19 @@
     {
      "x": 188,
      "y": 65,
-     "grade": "small",
+     "grades": [
+      "sprout",
+      "small"
+     ],
      "potted": true
     },
     {
      "x": 75,
      "y": 131,
-     "grade": "small",
+     "grades": [
+      "sprout",
+      "small"
+     ],
      "potted": true
     }
    ],
@@ -303,13 +304,19 @@
     {
      "x": 191,
      "y": 65,
-     "grade": "small",
+     "grades": [
+      "sprout",
+      "small"
+     ],
      "potted": true
     },
     {
      "x": 78,
      "y": 131,
-     "grade": "small",
+     "grades": [
+      "sprout",
+      "small"
+     ],
      "potted": true
     }
    ],
@@ -382,8 +389,6 @@
   "bed_long": "긴 화단",
   "shelf": "선반",
   "planter_big": "석재 화분",
-  "shelf_planted": "심어 놓은 선반",
-  "bench_planted": "모종 작업대",
   "shelf_two": "2층 선반",
   "bench": "작업대",
   "sprout": "새싹",

@@ -173,7 +173,7 @@ class Garden extends ChangeNotifier {
       rot: rot,
       slots: [
         for (var k = 0; k < slots.length; k++)
-          k == 0 && plantId != null && slots[k].grade == plantId
+          k == 0 && plantId != null && slots[k].takes(plantId)
               ? plantId
               : null,
       ],
@@ -189,8 +189,8 @@ class Garden extends ChangeNotifier {
   /// 안 되는지 부르는 쪽에서 알려 줄 수 있도록 이유를 돌려줍니다.
   String? plantInto(PlacedPlant p, int slot, String? plantId) {
     final want = pots[p.potId]!.slots[slot];
-    if (plantId != null && want.grade != plantId) {
-      return '이 자리는 ${want.grade} 자리입니다';
+    if (plantId != null && !want.takes(plantId)) {
+      return '이 자리는 ${want.grades.join(" · ")} 자리입니다';
     }
     p.slots[slot] = plantId;
     notifyListeners();
