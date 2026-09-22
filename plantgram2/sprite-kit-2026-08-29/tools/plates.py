@@ -10,7 +10,23 @@
 import numpy as np
 
 
-def plate_slots(art, cells, grid, art_to_stage, foot_x):
+def base_span(art, grid, art_to_stage):
+    """밑면이 두 축으로 몇 칸인지. **반올림하지 않은** 값입니다.
+
+    칸 수는 자리를 잡을 때 반올림하지만, 판 높이를 잴 때는 반올림하면
+    안 됩니다. 선반은 밑면이 1.87 칸인데 2 로 올려서 재면 판이 31px
+    아래로 내려가, 화분이 판을 뚫고 가라앉습니다.
+    """
+    U = np.array([grid["uX"], grid["uY"]]) / art_to_stage
+    V = np.array([grid["vX"], grid["vY"]]) / art_to_stage
+    m = np.asarray(art.convert("RGBA")).astype(float)[..., 3] / 255 > .5
+    ys, xs = np.nonzero(m)
+    near = xs[ys > ys.max() - 3]
+    xb = (near.min() + near.max()) / 2
+    return ((xb - xs.min()) / abs(U[0]), (xs.max() - xb) / abs(V[0]))
+
+
+def plate_slots(art, cells, grid, art_to_stage, foot_x, span=None):
     """윗판 위의 자리들.
 
     [cells] 는 (u 쪽, v 쪽) 칸 수, [foot_x] 는 **밑면 한가운데**의 가로
@@ -23,7 +39,10 @@ def plate_slots(art, cells, grid, art_to_stage, foot_x):
     m = np.asarray(art.convert("RGBA")).astype(float)[..., 3] / 255 > .5
     ys, _ = np.nonzero(m)
 
-    half = (cells[0] * abs(U[1]) + cells[1] * abs(V[1])) / 2
+    # 윗면은 밑면과 **같은 크기**의 평행사변형입니다. 반올림한 칸 수가
+    # 아니라 실제로 잰 밑면으로 반 칸을 구해야 판 위에 정확히 앉습니다.
+    L, R = span if span is not None else base_span(art, grid, art_to_stage)
+    half = (L * abs(U[1]) + R * abs(V[1])) / 2
     cx = foot_x
     top = ys.min() + half                       # 윗면 한가운데의 화면 높이
 

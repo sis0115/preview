@@ -33,6 +33,13 @@
      text-wrap:balance;}
   .lede{margin:0; color:var(--mute); font-size:15px; line-height:1.6; max-width:62ch;}
 
+  .more{color:var(--mute); font-size:14px; line-height:1.65; max-width:62ch;}
+  .more summary{cursor:pointer; color:var(--accent); font-size:13.5px;
+    letter-spacing:.01em; width:fit-content;}
+  .more summary:focus-visible{outline:2px solid var(--accent); outline-offset:3px;}
+  .more ul{margin:10px 0 0; padding-left:18px; display:flex; flex-direction:column; gap:7px;}
+  .more b{color:var(--ink); font-weight:600;}
+
   .facts{display:flex; flex-wrap:wrap; gap:6px 26px; padding-top:4px;}
   .fact{display:flex; align-items:baseline; gap:7px;}
   .fact b{font:500 14px/1 "IBM Plex Mono", monospace; color:var(--ink);
@@ -79,12 +86,20 @@
 <div class="wrap">
   <header>
     <h1>온실 배치 시험대</h1>
-    <p class="lede">Flutter 시제품과 <b>같은 조각·같은 격자·같은 계산</b>으로 도는 웹판입니다.
-      등급을 고르고 빈 칸을 누르면 심기고, 끌면 옮겨집니다.
-      그릇을 고르면 <b>그 안의 자리</b>가 아래에 뜹니다 — 긴 화단은 자리가 둘이라 두 그루를 따로 심습니다.
-      선반·화단처럼 한 칸보다 넓은 것은 <b>두 칸</b>을 차지해, 옆 칸을 말없이 침범하지 않습니다.
-      <b>선반</b>과 <b>작업대</b>는 윗판에 자리가 둘씩 있어 <b>작은 화분</b>(새싹 · 소형)을 올릴 수 있습니다.
-      자리마다 등급이 정해져 있어서, 맞지 않으면 크기를 줄이는 대신 놓을 수 없다고 알려 줍니다.</p>
+    <p class="lede">Flutter 시제품과 <b>같은 조각 · 같은 격자 · 같은 계산</b>으로 도는 웹판입니다.
+      등급을 고르고 빈 칸을 누르면 심기고, 끌면 옮겨집니다.</p>
+    <details class="more">
+      <summary>규칙 세 가지</summary>
+      <ul>
+        <li><b>그릇마다 자리가 있습니다.</b> 긴 화단은 둘이라 두 그루를 따로 심고,
+          선반·작업대는 윗판에 둘씩 있어 작은 화분(새싹 · 소형)을 올립니다.
+          자리가 맞지 않으면 크기를 줄이는 대신 놓을 수 없다고 알려 줍니다.</li>
+        <li><b>한 칸보다 넓은 것은 두 칸을 차지합니다.</b> 칸 수는 그림의 밑면을
+          축마다 재서 나온 값이라, 선반은 2×1이고 화단은 1×2입니다.</li>
+        <li><b>R 키</b>나 ↻ 단추로 돌리면 1×2가 2×1이 됩니다. 등각에서는 좌우로
+          뒤집는 것이 곧 90도 돌리는 것이라 그림을 새로 그리지 않아도 됩니다.</li>
+      </ul>
+    </details>
     <div class="facts" id="facts"></div>
   </header>
 
@@ -175,7 +190,7 @@ const GRADES = ['sprout', 'small', 'medium', 'large', 'xlarge'];
 // 무엇을 놓을지. 등급이면 그 등급 화분에 심고, 가구면 그 가구를 놓습니다.
 let plants = [], nextId = 1, sel = null, pick = 'medium', pickPot = null;
 let rot = 0, showGrid = false;      // rot 0 = 오른쪽 위로, 1 = 왼쪽 위로
-let drag = null, hover = null, hoverOk = true, msg = '';
+let drag = null, grab = [0, 0], hover = null, hoverOk = true, msg = '';
 
 const isFurniture = id => POTS[id].slots.length === 0;
 // 자리 하나에 여러 등급이 들어갈 수 있습니다 - 판 위에는 새싹도 소형도.
@@ -282,14 +297,16 @@ function draw() {
   const mark = hover || (sel ? [sel.i, sel.j] : null);
   if (mark) {
     const tint = hoverOk ? '78,140,94' : '180,80,63';
-    const who = drag ? drag.pot : (hover ? (pickPot || PLANTS[pick].pot)
-                                         : (sel ? sel.pot : null));
-    const wrot = drag ? drag.rot : (hover ? rot : (sel ? sel.rot : 0));
+    const who = drag ? drag.pot
+              : hover ? (pickPot || PLANTS[pick].pot)
+              : sel ? sel.pot : null;
+    const wrot = drag ? drag.rot : hover ? rot : sel ? sel.rot : 0;
     for (const [i, j] of covers(mark[0], mark[1], who, wrot)) {
       diamond(i, j);
-      if (drag) { ctx.fillStyle = `rgba(${tint},.26)`; ctx.fill(); }
-      ctx.strokeStyle = `rgba(${tint},${drag ? .9 : .65})`;
-      ctx.lineWidth = drag ? 2.6 : 2;
+      const live = drag || hover;
+      if (live) { ctx.fillStyle = `rgba(${tint},.26)`; ctx.fill(); }
+      ctx.strokeStyle = `rgba(${tint},${live ? .9 : .65})`;
+      ctx.lineWidth = live ? 2.6 : 2;
       ctx.stroke();
     }
   }
@@ -351,10 +368,24 @@ function scenePos(e) {
 
 cv.addEventListener('pointerdown', e => {
   cv.setPointerCapture(e.pointerId);
-  const c = cellAt(...scenePos(e));
-  const p = at(c[0], c[1]);
+  const q = scenePos(e);
   msg = '';
-  if (p) { sel = p; drag = p; hover = [p.i, p.j]; hoverOk = true; }
+  // 자리 번호를 그려 놓고 눌러도 아무 일 없으면 속은 기분입니다.
+  if (sel && POTS[sel.pot].slots.length > 1) {
+    const hit = POTS[sel.pot].slots.findIndex(s => {
+      const [sx, sy] = inPot(sel, s);
+      return Math.hypot(q[0] - sx, q[1] - sy) < 22;
+    });
+    if (hit >= 0) { toggleSlot(hit); return; }
+  }
+  const c = cellAt(...q);
+  const p = at(c[0], c[1]);
+  if (p) {
+    // 집은 칸과 조각의 기준 칸이 다를 수 있습니다(두 칸짜리의 뒤쪽을 집은
+    // 경우). 그 차이를 기억해야 손가락 밑에서 조각이 튀지 않습니다.
+    sel = p; drag = p; grab = [p.i - c[0], p.j - c[1]];
+    hover = [p.i, p.j]; hoverOk = true;
+  }
   else if (free(c[0], c[1], pickPot || PLANTS[pick].pot, rot)) {
     const pot = pickPot || PLANTS[pick].pot;
     plants.push({id: nextId++, i: c[0], j: c[1], pot, rot,
@@ -365,11 +396,24 @@ cv.addEventListener('pointerdown', e => {
   refresh();
 });
 cv.addEventListener('pointermove', e => {
-  if (!drag) return;
   const c = cellAt(...scenePos(e));
-  hover = c; hoverOk = free(c[0], c[1], drag.pot, drag.rot, drag);
-  if (hoverOk) { drag.i = c[0]; drag.j = c[1]; }
+  if (!drag) {
+    // 끌지 않을 때도 어디에 놓일지 미리 보여 줍니다. 두 칸짜리는 눌러
+    // 보기 전에는 어느 칸을 먹는지 알 수 없었습니다.
+    const who = pickPot || PLANTS[pick].pot;
+    const was = hover;
+    hover = at(c[0], c[1]) || !inGrid(c) ? null : c;
+    hoverOk = hover ? free(c[0], c[1], who, rot) : true;
+    if (String(was) !== String(hover)) refresh();
+    return;
+  }
+  const t = [c[0] + grab[0], c[1] + grab[1]];
+  hover = t; hoverOk = free(t[0], t[1], drag.pot, drag.rot, drag);
+  if (hoverOk) { drag.i = t[0]; drag.j = t[1]; }
   refresh();
+});
+cv.addEventListener('pointerleave', () => {
+  if (!drag && hover) { hover = null; refresh(); }
 });
 const stop = () => { drag = null; hover = null; hoverOk = true; refresh(); };
 cv.addEventListener('pointerup', stop);
@@ -450,6 +494,11 @@ marks();
 // 돌리기. 고른 조각이 있으면 그것을, 없으면 다음에 놓을 것을 돌립니다.
 function turn() {
   if (sel) {
+    const [a, b] = POTS[sel.pot].cells || [1, 1];
+    if (a === b) {
+      msg = `<b>${NAMES[sel.pot]}</b>은 밑면이 ${a}×${b}이라 돌려도 같습니다.`;
+      return refresh();
+    }
     if (!free(sel.i, sel.j, sel.pot, 1 - sel.rot, sel)) {
       msg = '돌리면 옆 칸을 침범합니다. 먼저 자리를 옮겨 주세요.';
       return refresh();

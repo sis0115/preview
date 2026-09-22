@@ -196,7 +196,7 @@
    "slots": [
     {
      "x": 81,
-     "y": 65,
+     "y": 47,
      "grades": [
       "sprout",
       "small"
@@ -205,7 +205,7 @@
     },
     {
      "x": 194,
-     "y": 130,
+     "y": 112,
      "grades": [
       "sprout",
       "small"
@@ -264,7 +264,7 @@
    "slots": [
     {
      "x": 188,
-     "y": 65,
+     "y": 43,
      "grades": [
       "sprout",
       "small"
@@ -273,7 +273,7 @@
     },
     {
      "x": 75,
-     "y": 131,
+     "y": 109,
      "grades": [
       "sprout",
       "small"
@@ -303,7 +303,7 @@
    "slots": [
     {
      "x": 191,
-     "y": 65,
+     "y": 46,
      "grades": [
       "sprout",
       "small"
@@ -312,7 +312,7 @@
     },
     {
      "x": 78,
-     "y": 131,
+     "y": 111,
      "grades": [
       "sprout",
       "small"
