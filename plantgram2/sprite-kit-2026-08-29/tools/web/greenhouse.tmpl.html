@@ -55,6 +55,8 @@
   .spacer{flex:1 1 auto;}
   .ghost{color:var(--mute);}
 
+  .tag{font-size:12px; letter-spacing:.06em; color:var(--faint);
+    text-transform:uppercase;}
   .slots{display:flex; flex-wrap:wrap; align-items:center; gap:8px; min-height:38px;}
   .slots .note{font-size:13px; color:var(--faint);}
   .slots button{font-size:13px; padding:7px 12px;}
@@ -92,6 +94,10 @@
     <button id="gridBtn" aria-pressed="false">칸선 보기</button>
     <button id="delBtn" class="ghost">지우기</button>
     <button id="resetBtn" class="ghost">처음으로</button>
+  </div>
+  <div class="bar">
+    <span class="tag">가구</span>
+    <div class="grades" id="furn"></div>
   </div>
   <div class="slots" id="slots"></div>
   <p class="hint" id="hint"></p>
@@ -146,16 +152,20 @@ const inGrid = ([i, j]) => i >= 0 && j >= 0 && i < N && j < N;
 // 선반은 아직 없습니다 - 자리가 없으면 가구입니다. 가구 시트가 오면
 // 선반·작업대·받침대에 자리가 붙고, 이 코드는 그대로 씁니다.
 const START = [
-  ['pot_xlarge', 0, 2, ['xlarge']],
-  ['pot_large',  1, 4, ['large']],
-  ['pot_medium', 3, 4, ['medium']],
-  ['bed_long',   4, 2, ['small', 'small']],
-  ['pot_sprout', 2, 2, ['sprout']],
-  ['shelf',      2, 0, []],
+  ['pot_xlarge',    0, 2, ['xlarge']],
+  ['pot_large',     1, 4, ['large']],
+  ['bed_long',      4, 2, ['small', 'small']],
+  ['pot_sprout',    2, 2, ['sprout']],
+  ['shelf_planted', 1, 0, []],
+  ['bench_planted', 3, 0, []],
 ];
+// 자리 없는 그릇 = 가구. 눌러서 놓을 수 있게 따로 모아 둡니다.
+const FURN = Object.keys(POTS).filter(k => POTS[k].slots.length === 0);
 const GRADES = ['sprout', 'small', 'medium', 'large', 'xlarge'];
 
-let plants = [], nextId = 1, sel = null, pick = 'medium', showGrid = false;
+// 무엇을 놓을지. 등급이면 그 등급 화분에 심고, 가구면 그 가구를 놓습니다.
+let plants = [], nextId = 1, sel = null, pick = 'medium', pickPot = null;
+let showGrid = false;
 let drag = null, hover = null, hoverOk = true, msg = '';
 
 const isFurniture = id => POTS[id].slots.length === 0;
@@ -263,9 +273,10 @@ cv.addEventListener('pointerdown', e => {
   msg = '';
   if (p) { sel = p; drag = p; hover = [p.i, p.j]; hoverOk = true; }
   else if (inGrid(c)) {
-    const pot = PLANTS[pick].pot;
+    const pot = pickPot || PLANTS[pick].pot;
     plants.push({id: nextId++, i: c[0], j: c[1], pot,
-                 slots: POTS[pot].slots.map((s, k) => k === 0 ? pick : null)});
+                 slots: POTS[pot].slots.map((s, k) =>
+                   (!pickPot && k === 0) ? pick : null)});
     sel = plants[plants.length - 1];
   } else sel = null;
   refresh();
@@ -318,7 +329,9 @@ function say() {
     `<b>${NAMES[sel.pot]}</b> — ${sel.i+1}번째 줄 ${sel.j+1}번째 칸 · ` +
     (isFurniture(sel.pot) ? '가구'
       : `자리 ${sel.slots.filter(Boolean).length}/${sel.slots.length} 참`);
-  else h.textContent = '등급을 고르고 빈 칸을 누르면 심깁니다. 그릇을 고르면 자리가 뜹니다.';
+  else h.innerHTML = pickPot
+    ? `빈 칸을 누르면 <b>${NAMES[pickPot]}</b>을 놓습니다. 가구는 심는 자리가 없습니다.`
+    : `빈 칸을 누르면 <b>${NAMES[pick]}</b>을 심습니다. 놓인 그릇을 누르면 그 안의 자리가 뜹니다.`;
 }
 const refresh = () => { draw(); chips(); say(); };
 
@@ -326,11 +339,26 @@ const gw = document.getElementById('grades');
 for (const k of GRADES) {
   const b = document.createElement('button');
   b.textContent = NAMES[k]; b.setAttribute('aria-pressed', k === pick);
-  b.onclick = () => { pick = k; msg = '';
-    [...gw.children].forEach((c, n) => c.setAttribute('aria-pressed', GRADES[n] === pick));
-    chips(); say(); };
+  b.onclick = () => { pick = k; pickPot = null; msg = ''; marks(); chips(); say(); };
   gw.appendChild(b);
 }
+
+const fw = document.getElementById('furn');
+for (const k of FURN) {
+  const b = document.createElement('button');
+  b.textContent = NAMES[k] || k; b.setAttribute('aria-pressed', 'false');
+  b.onclick = () => { pickPot = k; msg = ''; marks(); chips(); say(); };
+  fw.appendChild(b);
+}
+
+// 고른 것은 한 줄에 하나만 켜집니다.
+function marks() {
+  [...gw.children].forEach((c, n) =>
+    c.setAttribute('aria-pressed', !pickPot && GRADES[n] === pick));
+  [...fw.children].forEach((c, n) =>
+    c.setAttribute('aria-pressed', FURN[n] === pickPot));
+}
+marks();
 document.getElementById('gridBtn').onclick = e => {
   showGrid = !showGrid;
   e.currentTarget.setAttribute('aria-pressed', showGrid);

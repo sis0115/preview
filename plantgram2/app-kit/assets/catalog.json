@@ -174,6 +174,38 @@
     "anchorY": 200,
     "drop": 24
    }
+  },
+  "shelf_planted": {
+   "w": 232,
+   "h": 268,
+   "foot": {
+    "x": 116,
+    "y": 216
+   },
+   "slots": [],
+   "shadow": {
+    "w": 379,
+    "h": 279,
+    "anchorX": 189,
+    "anchorY": 139,
+    "drop": 18
+   }
+  },
+  "bench_planted": {
+   "w": 305,
+   "h": 307,
+   "foot": {
+    "x": 152,
+    "y": 239
+   },
+   "slots": [],
+   "shadow": {
+    "w": 497,
+    "h": 366,
+    "anchorX": 248,
+    "anchorY": 183,
+    "drop": 23
+   }
   }
  },
  "plants": {
@@ -236,6 +268,8 @@
   "bed_long": "긴 화단",
   "shelf": "선반",
   "planter_big": "석재 화분",
+  "shelf_planted": "심어 놓은 선반",
+  "bench_planted": "모종 작업대",
   "sprout": "새싹",
   "small": "소형",
   "medium": "중형",

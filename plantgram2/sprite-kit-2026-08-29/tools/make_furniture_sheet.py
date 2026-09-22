@@ -8,8 +8,14 @@
 
   · 주황 십자 - 물건이 **바닥에** 닿는 점
   · 초록 십자 - **화분 바닥이 놓이는** 점. 자리마다 등급이 정해져 있습니다.
-  · 흐린 화분 - 그 자리에 실제로 올라갈 화분
+  · 납작한 마름모 - 화분이 차지할 바닥 넓이. **화분을 그리지 않습니다.**
   · 세로 막대 - 그 자리에 필요한 여유 높이 (화분 + 식물)
+
+처음에는 자리마다 흐린 화분을 깔아 두었는데, 생성기가 그것을 **내용으로
+읽고 화분과 식물을 그려서** 보냈습니다. 판 위에 물건이 붙어 오면 그건
+그릇이 아니라 그림입니다. 그래서 가구 칸에서는 화분 밑그림을 빼고, 넓이만
+납작한 마름모로 알려 줍니다. 다시 그려 받을 조각(야자·화단)에는 밑그림을
+그대로 둡니다 - 거기서는 그리는 것이 목적이니까요.
 
 판 사이 간격은 우리가 지어낸 값이 아니라, 이미 가진 조각을 재서 나온
 값입니다. 소형은 화분 114 + 식물 117 = 231 이므로 판 사이가 그보다
@@ -45,15 +51,15 @@ LEAN = (0.865, -0.501)
 # 고칠 한 조각만, 축척 기준(긴 화단)과 함께 받습니다.
 ITEMS = [
     ("shelf_two", "선반 · 2층",
-     "다리 넷에 판 두 장. 아래 판과 맨 위 판이\n각각 초록 십자를 지나가야 합니다.",
+     "지난번 보내 주신 선반 디자인 그대로,\n다만 판 위를 비워서 그려 주세요.",
      344, [("small", -58, 96), ("small", 58, 96),
            ("medium", -70, 352), ("medium", 70, 352)], None),
     ("bench", "작업대",
-     "상판 하나와 그 아래 낮은 판 하나.\n흙자루·모종삽을 곁들여도 좋습니다.",
+     "지난번 보내 주신 작업대 디자인 그대로,\n다만 판 위를 비워서 그려 주세요.",
      344, [("sprout", -46, 72), ("sprout", 46, 72),
            ("medium", -70, 268), ("medium", 70, 268)], None),
     ("xlarge", "야자 · 갈래 사이만 넓게",
-     "지난번 그림 그대로, 갈래를 조금 굵게 하고\n사이를 넓혀 배경색이 보이게만 해 주세요.",
+     "잎과 줄기만. 화분은 빼 주세요.\n지난번에는 회색 화분이 붙어 왔습니다.",
      318, [], "xlarge"),
     ("bed_long", "긴 화단 · 지난번과 똑같이",
      "축척을 맞추는 기준입니다.\n지난 시트와 같은 크기·모양으로 그려 주세요.",
@@ -72,6 +78,13 @@ def font(s, b=False):
 def cross(dr, x, y, colour, r=11, w=3):
     dr.line([(x - r, y), (x + r, y)], fill=colour, width=w)
     dr.line([(x, y - r), (x, y + r)], fill=colour, width=w)
+
+
+def footprint(dr, x, y, w, iso=1.73):
+    """화분이 차지할 바닥 넓이. 납작한 마름모라 물건으로 보이지 않습니다."""
+    h = w / iso
+    dr.polygon([(x, y - h / 2), (x + w / 2, y), (x, y + h / 2), (x - w / 2, y)],
+               outline=SLOT)
 
 
 def ghost(im, art, foot, x, y, a=.30):
@@ -93,18 +106,18 @@ def main(out="sheets/furniture_sheet.png"):
     im = Image.new("RGBA", (W, H), BG + (255,))
     dr = ImageDraw.Draw(im)
 
-    dr.text((24, 14), "가구 시험지 — 식물 놓는 자리를 정해서 보냅니다",
+    dr.text((24, 14), "가구 시험지 2 — 판 위를 비워 주세요",
             font=font(22, True), fill=INK)
     dr.text((24, 44),
             "주황 십자 = 물건이 바닥에 닿는 점        "
-            "초록 십자 = 화분 바닥이 놓이는 점 · 판이 이 점을 지나가게        "
-            "흐린 화분 = 그 자리에 올라갈 화분        "
+            "초록 십자 = 화분이 놓일 점 · 판 윗면이 이 점을 지나가게        "
+            "초록 마름모 = 화분이 차지할 넓이        "
             "세로 막대 = 남겨야 할 여유 높이",
             font=font(13), fill=MUTE)
     dr.text((24, 66),
-            "※ 안내선 · 글자 · 십자 · 막대 · 흐린 밑그림은 결과물에 그리지 마세요. "
-            "네 칸 모두 같은 각도 · 같은 축척 · 배경은 순수 마젠타 #FF00FF 단색. "
-            "빛 번짐 · 글로우를 넣지 마세요.",
+            "※ 선반과 작업대의 판 위에는 아무것도 올리지 마세요 — 화분도 식물도 "
+            "연장도. 빈 가구만 그려 주세요. 안내선 · 글자 · 십자 · 마름모 · 막대 · "
+            "흐린 밑그림도 결과물에 그리지 마세요.",
             font=font(13), fill=MUTE)
 
     spec = {"width": W, "height": H, "ground": GROUND, "items": []}
@@ -115,13 +128,11 @@ def main(out="sheets/furniture_sheet.png"):
         cx = x + cw / 2
         dr.line([(x + 16, GROUND), (x + cw - 16, GROUND)], fill=BASE, width=1)
 
-        # 뒤쪽(위) 자리부터 깔아야 앞 화분이 위에 옵니다.
-        put = sorted(slots, key=lambda s: -s[2])
-        for grade, dx, dy in put:
+        for grade, dx, dy in slots:
             p = piece["pot_" + grade]
             sx = cx + dx * LEAN[0]
             sy = GROUND - dy + dx * LEAN[1]
-            ghost(im, p["art"], p["foot"], sx, sy)
+            footprint(dr, sx, sy, p["art"].width * .92)
 
         for n, (grade, dx, dy) in enumerate(slots, 1):
             sx = cx + dx * LEAN[0]
@@ -153,7 +164,7 @@ def main(out="sheets/furniture_sheet.png"):
         dr.text((cx, TOP + 34), name, font=font(19, True), fill=INK, anchor="ms")
         dr.multiline_text((cx, TOP + 48), note, font=font(13), fill=MUTE,
                           anchor="ma", spacing=5, align="center")
-        tag = (f"식물 자리 {len(slots)}개" if slots
+        tag = (f"식물 자리 {len(slots)}개 · 판 위는 비우기" if slots
                else "흐린 밑그림과 같은 크기로")
         dr.text((x + 18, BOT - 30), tag,
                 font=font(14, True), fill=SLOT if slots else MUTE)
