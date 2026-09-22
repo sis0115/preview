@@ -21,6 +21,7 @@ class PlacedPlant {
     required this.potId,
     required this.cell,
     required this.slots,
+    this.rot = 0,
     this.scale = 1,
   });
 
@@ -28,6 +29,9 @@ class PlacedPlant {
   String potId;
   Cell cell;
   final List<String?> slots;
+
+  /// 놓인 방향. 0 = 오른쪽 위로 뻗음, 1 = 왼쪽 위로 뻗음(좌우 뒤집기).
+  int rot;
   double scale;
 
   /// 자리가 없으면 가구입니다. 식물을 담지 못합니다.
@@ -49,6 +53,7 @@ class PlacedPlant {
         'i': cell.i,
         'j': cell.j,
         'slots': slots,
+        'rot': rot,
         'scale': scale,
       };
 
@@ -59,6 +64,7 @@ class PlacedPlant {
         slots: [
           for (final s in (m['slots'] as List? ?? const [])) s as String?,
         ],
+        rot: (m['rot'] as int?) ?? 0,
         scale: (m['scale'] as num).toDouble(),
       );
 }
@@ -83,11 +89,11 @@ class Garden extends ChangeNotifier {
 
   /// 그 조각이 실제로 덮는 칸들.
   List<Cell> cellsOf(PlacedPlant p) =>
-      IsoGrid.footprint(p.cell, pots[p.potId]!.cells);
+      IsoGrid.footprint(p.cell, pots[p.potId]!.cells, p.rot);
 
   /// 그 조각이 놓이는 점. 여러 칸에 걸치면 그 칸들의 한가운데입니다.
   Offset anchorOf(PlacedPlant p) =>
-      grid.anchor(p.cell, pots[p.potId]!.cells);
+      grid.anchor(p.cell, pots[p.potId]!.cells, p.rot);
 
   Set<Cell> get occupied => {
         for (final p in plants) ...cellsOf(p),
@@ -103,8 +109,8 @@ class Garden extends ChangeNotifier {
   /// 덮는 칸이 **모두** 격자 안이고 비어 있어야 놓입니다.
   ///
   /// 맨 앞 칸만 보면 두 칸짜리 조각이 뒤 칸을 말없이 침범합니다.
-  bool fits(Cell c, String potId, {int? ignore}) {
-    final want = IsoGrid.footprint(c, pots[potId]!.cells);
+  bool fits(Cell c, String potId, {int rot = 0, int? ignore}) {
+    final want = IsoGrid.footprint(c, pots[potId]!.cells, rot);
     if (!want.every(grid.contains)) return false;
     for (final p in plants) {
       if (p.id == ignore) continue;
@@ -115,11 +121,11 @@ class Garden extends ChangeNotifier {
   }
 
   /// [from] 에서 가장 가까운, 그 조각이 들어갈 수 있는 칸.
-  Cell? nearestFree(Cell from, String potId, {int? ignore}) {
+  Cell? nearestFree(Cell from, String potId, {int rot = 0, int? ignore}) {
     Cell? best;
     var bestD = 1 << 30;
     for (final c in grid.cells) {
-      if (!fits(c, potId, ignore: ignore)) continue;
+      if (!fits(c, potId, rot: rot, ignore: ignore)) continue;
       final d =
           (c.i - from.i) * (c.i - from.i) + (c.j - from.j) * (c.j - from.j);
       if (d < bestD) {
@@ -153,15 +159,18 @@ class Garden extends ChangeNotifier {
   }
 
   /// 그릇을 놓습니다. [plantId] 를 주면 첫 자리에 심습니다.
-  bool add(String? plantId, String potId, {Cell? at}) {
+  bool add(String? plantId, String potId, {Cell? at, int rot = 0}) {
     final want = at ?? Cell(grid.size ~/ 2, grid.size ~/ 2);
-    final cell = fits(want, potId) ? want : nearestFree(want, potId);
+    final cell = fits(want, potId, rot: rot)
+        ? want
+        : nearestFree(want, potId, rot: rot);
     if (cell == null) return false;
     final slots = pots[potId]!.slots;
     plants.add(PlacedPlant(
       id: _nextId,
       potId: potId,
       cell: cell,
+      rot: rot,
       slots: [
         for (var k = 0; k < slots.length; k++)
           k == 0 && plantId != null && slots[k].grade == plantId
@@ -189,15 +198,24 @@ class Garden extends ChangeNotifier {
   }
 
   void moveTo(PlacedPlant p, Cell c) {
-    if (c == p.cell || !fits(c, p.potId, ignore: p.id)) return;
+    if (c == p.cell || !fits(c, p.potId, rot: p.rot, ignore: p.id)) return;
     p.cell = c;
     notifyListeners();
   }
 
   /// 그릇을 바꿉니다. 새 그릇이 더 넓어 옆 칸을 침범하면 바꾸지 않습니다.
   bool repot(PlacedPlant p, String potId) {
-    if (!fits(p.cell, potId, ignore: p.id)) return false;
+    if (!fits(p.cell, potId, rot: p.rot, ignore: p.id)) return false;
     p.potId = potId;
+    notifyListeners();
+    return true;
+  }
+
+  /// 90도 돌립니다. 돌린 자리가 옆 칸을 침범하면 돌리지 않습니다.
+  bool turn(PlacedPlant p) {
+    final next = 1 - p.rot;
+    if (!fits(p.cell, p.potId, rot: next, ignore: p.id)) return false;
+    p.rot = next;
     notifyListeners();
     return true;
   }

@@ -38,6 +38,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
   Offset? _dragAt;
   Cell? _dropAt;
   String? _dropPot;
+  int? _dropRot;
   bool _dropOk = true;
 
   @override
@@ -45,13 +46,15 @@ class _GreenhousePageState extends State<GreenhousePage> {
     super.initState();
     // 두 칸짜리끼리 겹치지 않는 자리로. 겹치면 add 가 가까운 빈 칸을
     // 찾아 옮기므로 조용히 어긋납니다.
+    // 두 칸짜리는 누른 칸에서 뒤로 뻗습니다. 오른쪽 위로면 j 가, 왼쪽
+    // 위로면 i 가 하나 줄어드는 칸을 함께 먹으므로, 가장자리에서는 방향에
+    // 따라 놓을 수 없는 자리가 생깁니다.
     garden
-      ..add('xlarge', 'pot_xlarge', at: const Cell(0, 4))
-      ..add('large', 'pot_large', at: const Cell(2, 4))
-      ..add('sprout', 'pot_sprout', at: const Cell(3, 2))
+      ..add(null, 'shelf_planted', at: const Cell(1, 1))
+      ..add(null, 'bench_planted', at: const Cell(1, 4), rot: 1)
       ..add('small', 'bed_long', at: const Cell(4, 4))
-      ..add(null, 'shelf_planted', at: const Cell(0, 1))
-      ..add(null, 'bench_planted', at: const Cell(2, 1))
+      ..add('xlarge', 'pot_xlarge', at: const Cell(4, 1))
+      ..add('sprout', 'pot_sprout', at: const Cell(3, 2))
       ..select(null);
     // 긴 화단은 자리가 둘입니다. 첫 자리만 채워 두면 반쪽으로 보이므로
     // 시작 화면에서는 둘 다 심어 둡니다.
@@ -214,7 +217,9 @@ class _GreenhousePageState extends State<GreenhousePage> {
     final c = _dropAt ?? garden.selected?.cell;
     if (c == null) return const [];
     final pot = _dropPot ?? garden.selected?.potId;
-    return IsoGrid.footprint(c, widget.catalog.pots[pot]?.cells ?? const [1, 1]);
+    final rot = _dropRot ?? garden.selected?.rot ?? 0;
+    return IsoGrid.footprint(
+        c, widget.catalog.pots[pot]?.cells ?? const [1, 1], rot);
   }
 
   Widget _sprite(PlacedPlant p) {
@@ -223,16 +228,24 @@ class _GreenhousePageState extends State<GreenhousePage> {
         SpriteLayout.of(widget.catalog, p.slots, p.potId, p.scale);
     final pot = widget.catalog.pots[p.potId]!;
     final ps = layout.scale;
+    // 돌린 조각은 상자를 통째로 좌우 뒤집습니다. 그러면 상자 안에서
+    // 기준점의 가로 위치도 반대편으로 갑니다.
+    final flip = p.rot == 1;
+    final ax = flip ? layout.size.width - layout.anchor.dx : layout.anchor.dx;
     // 손이 닿는 곳은 화분까지입니다. 잎은 옆 칸 위까지 뻗으므로, 잎이
     // 덮은 자리를 눌러도 그 밑의 화분이 잡혀야 합니다.
-    final grip = Rect.fromLTWH(
+    var grip = Rect.fromLTWH(
       layout.anchor.dx - pot.foot.dx * ps,
       layout.anchor.dy - pot.foot.dy * ps,
       pot.size.width * ps,
       pot.size.height * ps,
     );
+    if (flip) {
+      grip = Rect.fromLTWH(layout.size.width - grip.right, grip.top,
+          grip.width, grip.height);
+    }
     return Positioned(
-      left: at.dx - layout.anchor.dx,
+      left: at.dx - ax,
       top: at.dy - layout.anchor.dy,
       width: layout.size.width,
       height: layout.size.height,
@@ -240,12 +253,23 @@ class _GreenhousePageState extends State<GreenhousePage> {
         clipBehavior: Clip.none,
         children: [
           IgnorePointer(
-            child: PlantSprite(
-              catalog: widget.catalog,
-              slots: p.slots,
-              potId: p.potId,
-              layout: layout,
-            ),
+            child: flip
+                ? Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()..scaleByDouble(-1, 1, 1, 1),
+                    child: PlantSprite(
+                      catalog: widget.catalog,
+                      slots: p.slots,
+                      potId: p.potId,
+                      layout: layout,
+                    ),
+                  )
+                : PlantSprite(
+                    catalog: widget.catalog,
+                    slots: p.slots,
+                    potId: p.potId,
+                    layout: layout,
+                  ),
           ),
           Positioned.fromRect(
             rect: grip,
@@ -257,6 +281,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
                 setState(() {
                   _dragAt = garden.anchorOf(p);
                   _dropPot = p.potId;
+                  _dropRot = p.rot;
                   _dropAt = p.cell;
                   _dropOk = true;
                 });
@@ -268,7 +293,8 @@ class _GreenhousePageState extends State<GreenhousePage> {
                   final now = (_dragAt ?? garden.anchorOf(p)) +
                       d.focalPointDelta * _sceneScale;
                   final c = grid.cellAt(now);
-                  final ok = garden.fits(c, p.potId, ignore: p.id);
+                  final ok =
+                      garden.fits(c, p.potId, rot: p.rot, ignore: p.id);
                   setState(() {
                     _dragAt = now;
                     _dropAt = c;
@@ -283,6 +309,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
                 _dragAt = null;
                 _dropAt = null;
                 _dropPot = null;
+                _dropRot = null;
                 _dropOk = true;
               }),
             ),
@@ -383,6 +410,13 @@ class _GreenhousePageState extends State<GreenhousePage> {
       icon: Icon(i, size: 19),
       color: _ink,
       visualDensity: VisualDensity.compact);
+
+  void _say(String text) {
+    final m = ScaffoldMessenger.maybeOf(context);
+    m?.hideCurrentSnackBar();
+    m?.showSnackBar(SnackBar(
+        content: Text(text), duration: const Duration(milliseconds: 1400)));
+  }
 
   /// 자리 하나를 나타내는 칩. 누르면 그 자리에 맞는 식물만 보여 줍니다.
   Widget _slotChip(PlacedPlant p, int k) {
@@ -508,6 +542,14 @@ class _GreenhousePageState extends State<GreenhousePage> {
                               ),
                       ),
                       const SizedBox(width: 6),
+                      IconButton(
+                          onPressed: () {
+                            if (!garden.turn(p)) _say('돌리면 옆 칸을 침범합니다');
+                          },
+                          icon: const Icon(Icons.rotate_90_degrees_cw_outlined,
+                              size: 19),
+                          tooltip: '돌리기',
+                          color: _ink),
                       IconButton(
                           onPressed: () => garden.remove(p),
                           icon: const Icon(Icons.delete_outline, size: 20),
