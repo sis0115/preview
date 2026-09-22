@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'dart:ui' show Offset;
+
 import 'package:flutter/foundation.dart';
 
 import 'catalog.dart';
@@ -79,29 +81,45 @@ class Garden extends ChangeNotifier {
     return null;
   }
 
-  Set<Cell> get occupied => {for (final p in plants) p.cell};
+  /// 그 조각이 실제로 덮는 칸들.
+  List<Cell> cellsOf(PlacedPlant p) =>
+      IsoGrid.footprint(p.cell, pots[p.potId]!.cells);
+
+  /// 그 조각이 놓이는 점. 여러 칸에 걸치면 그 칸들의 한가운데입니다.
+  Offset anchorOf(PlacedPlant p) =>
+      grid.anchor(p.cell, pots[p.potId]!.cells);
+
+  Set<Cell> get occupied => {
+        for (final p in plants) ...cellsOf(p),
+      };
 
   PlacedPlant? at(Cell c) {
     for (final p in plants) {
-      if (p.cell == c) return p;
+      if (cellsOf(p).contains(c)) return p;
     }
     return null;
   }
 
-  bool fits(Cell c, {int? ignore}) {
-    if (!grid.contains(c)) return false;
+  /// 덮는 칸이 **모두** 격자 안이고 비어 있어야 놓입니다.
+  ///
+  /// 맨 앞 칸만 보면 두 칸짜리 조각이 뒤 칸을 말없이 침범합니다.
+  bool fits(Cell c, String potId, {int? ignore}) {
+    final want = IsoGrid.footprint(c, pots[potId]!.cells);
+    if (!want.every(grid.contains)) return false;
     for (final p in plants) {
-      if (p.id != ignore && p.cell == c) return false;
+      if (p.id == ignore) continue;
+      final has = cellsOf(p);
+      if (want.any(has.contains)) return false;
     }
     return true;
   }
 
-  /// [from] 에서 가장 가까운 빈 칸.
-  Cell? nearestFree(Cell from, {int? ignore}) {
+  /// [from] 에서 가장 가까운, 그 조각이 들어갈 수 있는 칸.
+  Cell? nearestFree(Cell from, String potId, {int? ignore}) {
     Cell? best;
     var bestD = 1 << 30;
     for (final c in grid.cells) {
-      if (!fits(c, ignore: ignore)) continue;
+      if (!fits(c, potId, ignore: ignore)) continue;
       final d =
           (c.i - from.i) * (c.i - from.i) + (c.j - from.j) * (c.j - from.j);
       if (d < bestD) {
@@ -112,11 +130,18 @@ class Garden extends ChangeNotifier {
     return best;
   }
 
-  /// 화분이 놓인 자리의 화면 높이. 앞뒤 순서의 기준입니다.
+  /// 앞뒤 순서의 기준. 그 조각이 덮은 칸 중 **가장 앞** 칸의 화면 높이입니다.
   ///
   /// 화면에서 아래에 있는 것이 앞이라는 규칙은 언제나 맞습니다. 칸 합
   /// (i+j) 으로 정하면 두 축의 기울기가 다를 때 순서가 흔들립니다.
-  double footY(PlacedPlant p) => grid.center(p.cell).dy;
+  double footY(PlacedPlant p) {
+    var y = double.negativeInfinity;
+    for (final c in cellsOf(p)) {
+      final d = grid.center(c).dy;
+      if (d > y) y = d;
+    }
+    return y;
+  }
 
   /// 뒤에서 앞으로.
   List<PlacedPlant> get inDrawOrder =>
@@ -130,7 +155,7 @@ class Garden extends ChangeNotifier {
   /// 그릇을 놓습니다. [plantId] 를 주면 첫 자리에 심습니다.
   bool add(String? plantId, String potId, {Cell? at}) {
     final want = at ?? Cell(grid.size ~/ 2, grid.size ~/ 2);
-    final cell = fits(want) ? want : nearestFree(want);
+    final cell = fits(want, potId) ? want : nearestFree(want, potId);
     if (cell == null) return false;
     final slots = pots[potId]!.slots;
     plants.add(PlacedPlant(
@@ -164,14 +189,17 @@ class Garden extends ChangeNotifier {
   }
 
   void moveTo(PlacedPlant p, Cell c) {
-    if (c == p.cell || !fits(c, ignore: p.id)) return;
+    if (c == p.cell || !fits(c, p.potId, ignore: p.id)) return;
     p.cell = c;
     notifyListeners();
   }
 
-  void repot(PlacedPlant p, String potId) {
+  /// 그릇을 바꿉니다. 새 그릇이 더 넓어 옆 칸을 침범하면 바꾸지 않습니다.
+  bool repot(PlacedPlant p, String potId) {
+    if (!fits(p.cell, potId, ignore: p.id)) return false;
     p.potId = potId;
     notifyListeners();
+    return true;
   }
 
   void resize(PlacedPlant p, double factor) {

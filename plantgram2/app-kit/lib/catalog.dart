@@ -29,11 +29,22 @@ class PotAsset {
     required this.slots,
     required this.foot,
     required this.shadow,
+    required this.cells,
   });
 
   final String id;
   final Size size;
   final List<Slot> slots;
+
+  /// 차지하는 칸 수 (u 쪽, v 쪽).
+  ///
+  /// 재서 나오는 값입니다. 한 칸 마름모의 가로가 타일 폭인데 조각이 그보다
+  /// 넓으면, 한 칸에 놓았을 때 옆 칸을 침범합니다. 그 칸은 실제로는 못 쓰는데
+  /// 비어 보여서, 거기에 다른 것을 놓으면 겹칩니다.
+  final List<int> cells;
+
+  int get wide => cells[0];
+  int get deep => cells[1];
 
   /// 그림 안에서 화분이 바닥에 닿는 자리. 이 점을 칸 한가운데에 놓습니다.
   ///
@@ -164,6 +175,9 @@ class Catalog {
           for (final s in v['slots'] as List)
             Slot(_d(s as Map, 'x'), _d(s, 'y'),
                 ((s as Map)['grade'] as String?) ?? 'medium'),
+        ],
+        cells: [
+          for (final n in (v['cells'] as List? ?? const [1, 1])) n as int,
         ],
         shadow: ShadowAsset(
           e.key,

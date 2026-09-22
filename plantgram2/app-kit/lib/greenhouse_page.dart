@@ -37,22 +37,25 @@ class _GreenhousePageState extends State<GreenhousePage> {
   /// 끌고 있는 동안: 손가락을 따라가는 기준점과, 놓이려는 칸.
   Offset? _dragAt;
   Cell? _dropAt;
+  String? _dropPot;
   bool _dropOk = true;
 
   @override
   void initState() {
     super.initState();
+    // 두 칸짜리끼리 겹치지 않는 자리로. 겹치면 add 가 가까운 빈 칸을
+    // 찾아 옮기므로 조용히 어긋납니다.
     garden
-      ..add('xlarge', 'pot_xlarge', at: const Cell(0, 2))
-      ..add('large', 'pot_large', at: const Cell(1, 4))
-      ..add('medium', 'pot_medium', at: const Cell(3, 4))
-      ..add('small', 'bed_long', at: const Cell(4, 2))
-      ..add('sprout', 'pot_sprout', at: const Cell(2, 2))
-      ..add(null, 'shelf', at: const Cell(2, 0))
+      ..add('xlarge', 'pot_xlarge', at: const Cell(0, 4))
+      ..add('large', 'pot_large', at: const Cell(2, 4))
+      ..add('sprout', 'pot_sprout', at: const Cell(3, 2))
+      ..add('small', 'bed_long', at: const Cell(4, 4))
+      ..add(null, 'shelf_planted', at: const Cell(0, 1))
+      ..add(null, 'bench_planted', at: const Cell(2, 1))
       ..select(null);
     // 긴 화단은 자리가 둘입니다. 첫 자리만 채워 두면 반쪽으로 보이므로
     // 시작 화면에서는 둘 다 심어 둡니다.
-    final bed = garden.at(const Cell(4, 2));
+    final bed = garden.at(const Cell(4, 4));
     if (bed != null && bed.slots.length > 1) {
       garden.plantInto(bed, 1, 'small');
     }
@@ -178,7 +181,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
                         grid: grid,
                         taken: garden.occupied,
                         strong: strongGrid,
-                        mark: _markedCell(),
+                        mark: _markedCells(),
                         markOk: _dropOk,
                       ),
                     ),
@@ -203,11 +206,19 @@ class _GreenhousePageState extends State<GreenhousePage> {
         );
       });
 
-  /// 지금 표시할 칸. 끌고 있으면 놓이려는 자리, 아니면 고른 식물의 자리.
-  Cell? _markedCell() => _dropAt ?? garden.selected?.cell;
+  /// 지금 표시할 칸들. 끌고 있으면 놓이려는 자리, 아니면 고른 것의 자리.
+  ///
+  /// 두 칸짜리는 두 칸 모두 표시해야 합니다. 맨 앞 칸만 칠하면 뒤 칸이
+  /// 비어 보이는데 실제로는 못 씁니다.
+  List<Cell> _markedCells() {
+    final c = _dropAt ?? garden.selected?.cell;
+    if (c == null) return const [];
+    final pot = _dropPot ?? garden.selected?.potId;
+    return IsoGrid.footprint(c, widget.catalog.pots[pot]?.cells ?? const [1, 1]);
+  }
 
   Widget _sprite(PlacedPlant p) {
-    final at = grid.center(p.cell);
+    final at = garden.anchorOf(p);
     final layout =
         SpriteLayout.of(widget.catalog, p.slots, p.potId, p.scale);
     final pot = widget.catalog.pots[p.potId]!;
@@ -244,7 +255,8 @@ class _GreenhousePageState extends State<GreenhousePage> {
               onScaleStart: (_) {
                 garden.select(p.id);
                 setState(() {
-                  _dragAt = grid.center(p.cell);
+                  _dragAt = garden.anchorOf(p);
+                  _dropPot = p.potId;
                   _dropAt = p.cell;
                   _dropOk = true;
                 });
@@ -253,10 +265,10 @@ class _GreenhousePageState extends State<GreenhousePage> {
                 if (d.pointerCount == 1) {
                   // 손가락 이동을 확대율로 나눠 그림 좌표로 되돌립니다. 칸이 아니라
                   // 기준점을 들고 다녀야 반 칸 미만의 움직임이 버려지지 않습니다.
-                  final now = (_dragAt ?? grid.center(p.cell)) +
+                  final now = (_dragAt ?? garden.anchorOf(p)) +
                       d.focalPointDelta * _sceneScale;
                   final c = grid.cellAt(now);
-                  final ok = garden.fits(c, ignore: p.id);
+                  final ok = garden.fits(c, p.potId, ignore: p.id);
                   setState(() {
                     _dragAt = now;
                     _dropAt = c;
@@ -270,6 +282,7 @@ class _GreenhousePageState extends State<GreenhousePage> {
               onScaleEnd: (_) => setState(() {
                 _dragAt = null;
                 _dropAt = null;
+                _dropPot = null;
                 _dropOk = true;
               }),
             ),
@@ -572,8 +585,8 @@ class _StagePainter extends CustomPainter {
   /// 칸선을 또렷하게 볼지. 자리를 맞출 때 켭니다.
   final bool strong;
 
-  /// 지금 노리는 칸.
-  final Cell? mark;
+  /// 지금 노리는 칸들. 두 칸짜리 조각은 두 칸 모두 칠합니다.
+  final List<Cell> mark;
 
   /// 그 자리에 놓을 수 있는지. 안 되면 붉게 표시합니다.
   final bool markOk;
@@ -601,24 +614,24 @@ class _StagePainter extends CustomPainter {
       }
     }
 
-    final m = mark;
-    if (m == null) return;
-    final path = grid.diamond(m);
+    if (mark.isEmpty) return;
     final tint = markOk ? const Color(0xFF4E8C5E) : const Color(0xFFB4503F);
-    canvas.drawPath(path, Paint()..color = tint.withValues(alpha: .24));
-    canvas.drawPath(
-      path,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.4
-        ..color = tint.withValues(alpha: .85),
-    );
+    final fill = Paint()..color = tint.withValues(alpha: .24);
+    final edge = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.4
+      ..color = tint.withValues(alpha: .85);
+    for (final c in mark) {
+      final path = grid.diamond(c);
+      canvas.drawPath(path, fill);
+      canvas.drawPath(path, edge);
+    }
   }
 
   @override
   bool shouldRepaint(_StagePainter o) =>
       o.strong != strong ||
       o.markOk != markOk ||
-      o.mark != mark ||
+      !listEquals(o.mark, mark) ||
       !setEquals(o.taken, taken);
 }

@@ -82,6 +82,7 @@
     <p class="lede">Flutter 시제품과 <b>같은 조각·같은 격자·같은 계산</b>으로 도는 웹판입니다.
       등급을 고르고 빈 칸을 누르면 심기고, 끌면 옮겨집니다.
       그릇을 고르면 <b>그 안의 자리</b>가 아래에 뜹니다 — 긴 화단은 자리가 둘이라 두 그루를 따로 심습니다.
+      선반·화단처럼 한 칸보다 넓은 것은 <b>두 칸</b>을 차지해, 옆 칸을 말없이 침범하지 않습니다.
       자리마다 등급이 정해져 있어서, 맞지 않으면 크기를 줄이는 대신 놓을 수 없다고 알려 줍니다.</p>
     <div class="facts" id="facts"></div>
   </header>
@@ -104,8 +105,8 @@
 
   <div class="scroll">
     <table>
-      <caption>그릇과 자리</caption>
-      <thead><tr><th>그릇</th><th>자리 수</th><th>자리 등급</th><th>폭</th></tr></thead>
+      <caption id="cap2">그릇과 자리</caption>
+      <thead><tr><th>그릇</th><th>차지하는 칸</th><th>자리 수</th><th>자리 등급</th><th>무대 폭</th></tr></thead>
       <tbody id="tbl2"></tbody>
     </table>
   </div>
@@ -152,12 +153,12 @@ const inGrid = ([i, j]) => i >= 0 && j >= 0 && i < N && j < N;
 // 선반은 아직 없습니다 - 자리가 없으면 가구입니다. 가구 시트가 오면
 // 선반·작업대·받침대에 자리가 붙고, 이 코드는 그대로 씁니다.
 const START = [
-  ['pot_xlarge',    0, 2, ['xlarge']],
-  ['pot_large',     1, 4, ['large']],
-  ['bed_long',      4, 2, ['small', 'small']],
-  ['pot_sprout',    2, 2, ['sprout']],
-  ['shelf_planted', 1, 0, []],
-  ['bench_planted', 3, 0, []],
+  ['pot_xlarge',    0, 4, ['xlarge']],
+  ['pot_large',     2, 4, ['large']],
+  ['bed_long',      4, 4, ['small', 'small']],
+  ['pot_sprout',    3, 2, ['sprout']],
+  ['shelf_planted', 0, 1, []],
+  ['bench_planted', 2, 1, []],
 ];
 // 자리 없는 그릇 = 가구. 눌러서 놓을 수 있게 따로 모아 둡니다.
 const FURN = Object.keys(POTS).filter(k => POTS[k].slots.length === 0);
@@ -170,16 +171,51 @@ let drag = null, hover = null, hoverOk = true, msg = '';
 
 const isFurniture = id => POTS[id].slots.length === 0;
 
+// 조각이 차지하는 칸. 한 칸 마름모보다 넓은 조각을 한 칸에 놓으면 옆 칸을
+// 침범해, 그 칸에 다른 것을 놓을 수 없는데도 비어 보입니다.
+// 긴 축은 오른쪽 위로 뻗으므로(-v) 넓은 것은 j 를 하나 더 먹습니다.
+// 누른 칸이 **맨 앞** 칸이고, 나머지는 그 뒤로 뻗습니다.
+const cellsOf = id => POTS[id].cells || [1, 1];
+function covers(i, j, potId) {
+  const [a, b] = cellsOf(potId), out = [];
+  for (let di = 0; di < a; di++) for (let dj = 0; dj < b; dj++)
+    out.push([i - di, j - dj]);
+  return out;
+}
+// 여러 칸에 걸친 조각은 그 칸들의 한가운데에 놓입니다.
+function anchor(i, j, potId) {
+  const cs = covers(i, j, potId), n = cs.length;
+  let x = 0, y = 0;
+  for (const [a, b] of cs) { const c = centre(a, b); x += c[0]; y += c[1]; }
+  return [x / n, y / n];
+}
+// 앞뒤 순서는 그 조각이 덮은 칸 중 **가장 앞** 칸으로 정합니다.
+const frontY = p => Math.max(...covers(p.i, p.j, p.pot).map(c => centre(...c)[1]));
+
 function reset() {
-  plants = START.map(([pot, i, j, fill]) => ({
-    id: nextId++, i, j, pot,
-    slots: POTS[pot].slots.map((s, k) => fill[k] || null),
-  }));
+  plants = [];
+  for (const [pot, i, j, fill] of START) {
+    if (!free(i, j, pot)) continue;      // 시작 배치가 겹치면 조용히 건너뜁니다
+    plants.push({id: nextId++, i, j, pot,
+                 slots: POTS[pot].slots.map((s, k) => fill[k] || null)});
+  }
   sel = null; hover = null; msg = ''; refresh();
 }
-const at = (i, j) => plants.find(p => p.i === i && p.j === j);
-const free = (i, j, skip) =>
-  inGrid([i, j]) && !plants.some(p => p.i === i && p.j === j && p !== skip);
+const at = (i, j) => plants.find(p =>
+  covers(p.i, p.j, p.pot).some(c => c[0] === i && c[1] === j));
+
+// 덮는 칸이 **모두** 격자 안이고 비어 있어야 놓입니다.
+function free(i, j, potId, skip) {
+  const want = covers(i, j, potId);
+  if (!want.every(inGrid)) return false;
+  for (const p of plants) {
+    if (p === skip) continue;
+    const has = covers(p.i, p.j, p.pot);
+    if (want.some(w => has.some(h => h[0] === w[0] && h[1] === w[1])))
+      return false;
+  }
+  return true;
+}
 
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 
@@ -195,7 +231,7 @@ function diamond(i, j) {
 
 // 그릇 그림 안의 좌표를 무대 좌표로. 기준은 닿는 자리입니다.
 function inPot(p, s) {
-  const [cx, cy] = centre(p.i, p.j), pot = POTS[p.pot];
+  const [cx, cy] = anchor(p.i, p.j, p.pot), pot = POTS[p.pot];
   return [cx + (s.x - pot.foot.x) * S, cy + (s.y - pot.foot.y) * S];
 }
 
@@ -208,6 +244,7 @@ function draw() {
     ctx.lineWidth = 1.4;
     for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
       diamond(i, j);
+      // 찬 칸은 칠하지 않습니다 — 두 칸짜리는 두 칸 모두 찬 것으로 보입니다.
       ctx.fillStyle = 'rgba(86,96,82,.07)';
       if (!at(i, j)) ctx.fill();
       ctx.strokeStyle = 'rgba(86,96,82,.45)'; ctx.stroke();
@@ -219,17 +256,21 @@ function draw() {
   const mark = hover || (sel ? [sel.i, sel.j] : null);
   if (mark) {
     const tint = hoverOk ? '78,140,94' : '180,80,63';
-    diamond(mark[0], mark[1]);
-    if (drag) { ctx.fillStyle = `rgba(${tint},.26)`; ctx.fill(); }
-    ctx.strokeStyle = `rgba(${tint},${drag ? .9 : .65})`;
-    ctx.lineWidth = drag ? 2.6 : 2;
-    ctx.stroke();
+    const who = drag ? drag.pot : (hover ? (pickPot || PLANTS[pick].pot)
+                                         : (sel ? sel.pot : null));
+    for (const [i, j] of covers(mark[0], mark[1], who)) {
+      diamond(i, j);
+      if (drag) { ctx.fillStyle = `rgba(${tint},.26)`; ctx.fill(); }
+      ctx.strokeStyle = `rgba(${tint},${drag ? .9 : .65})`;
+      ctx.lineWidth = drag ? 2.6 : 2;
+      ctx.stroke();
+    }
   }
 
   // 앞뒤는 놓인 칸의 화면 높이로 정합니다. 칸 합(i+j)으로 정하면 두 축의
   // 기울기가 다를 때 순서가 흔들립니다.
-  for (const p of [...plants].sort((a, b) => centre(a.i,a.j)[1] - centre(b.i,b.j)[1])) {
-    const [cx, cy] = centre(p.i, p.j), pot = POTS[p.pot];
+  for (const p of [...plants].sort((a, b) => frontY(a) - frontY(b))) {
+    const [cx, cy] = anchor(p.i, p.j, p.pot), pot = POTS[p.pot];
     const sh = pot.shadow;
     ctx.drawImage(bank['sh:' + p.pot], cx - sh.anchorX*S, cy - sh.anchorY*S + (sh.drop||0)*S,
                   sh.w*S, sh.h*S);
@@ -272,19 +313,19 @@ cv.addEventListener('pointerdown', e => {
   const p = at(c[0], c[1]);
   msg = '';
   if (p) { sel = p; drag = p; hover = [p.i, p.j]; hoverOk = true; }
-  else if (inGrid(c)) {
+  else if (free(c[0], c[1], pickPot || PLANTS[pick].pot)) {
     const pot = pickPot || PLANTS[pick].pot;
     plants.push({id: nextId++, i: c[0], j: c[1], pot,
                  slots: POTS[pot].slots.map((s, k) =>
                    (!pickPot && k === 0) ? pick : null)});
     sel = plants[plants.length - 1];
-  } else sel = null;
+  } else { sel = null; msg = inGrid(c) ? '이 조각이 들어갈 자리가 모자랍니다.' : ''; }
   refresh();
 });
 cv.addEventListener('pointermove', e => {
   if (!drag) return;
   const c = cellAt(...scenePos(e));
-  hover = c; hoverOk = free(c[0], c[1], drag);
+  hover = c; hoverOk = free(c[0], c[1], drag.pot, drag);
   if (hoverOk) { drag.i = c[0]; drag.j = c[1]; }
   refresh();
 });
@@ -327,6 +368,7 @@ function say() {
   else if (msg) h.innerHTML = msg;
   else if (sel) h.innerHTML =
     `<b>${NAMES[sel.pot]}</b> — ${sel.i+1}번째 줄 ${sel.j+1}번째 칸 · ` +
+    `${cellsOf(sel.pot).join('×')}칸 · ` +
     (isFurniture(sel.pot) ? '가구'
       : `자리 ${sel.slots.filter(Boolean).length}/${sel.slots.length} 참`);
   else h.innerHTML = pickPot
@@ -384,10 +426,15 @@ document.getElementById('tbl').innerHTML = GRADES.map(k => {
          `<td class="n">${q.w}</td><td>${NAMES[p.pot]}</td></tr>`;
 }).join('');
 
+document.getElementById('cap2').textContent =
+  `그릇과 자리 — 무대 폭이 타일 폭 ${G.tileW}보다 넓으면 두 칸을 차지합니다`;
+
 document.getElementById('tbl2').innerHTML = Object.keys(POTS).map(k => {
   const q = POTS[k], g = q.slots.map(s => NAMES[s.grade]).join(' · ') || '—';
-  return `<tr><td>${NAMES[k]}</td><td class="n">${q.slots.length}</td>` +
-         `<td>${g}</td><td class="n">${q.w}</td></tr>`;
+  const w = Math.round(q.w * S);
+  return `<tr><td>${NAMES[k]}</td><td class="n">${cellsOf(k).join(' × ')}</td>` +
+         `<td class="n">${q.slots.length}</td>` +
+         `<td>${g}</td><td class="n">${w}</td></tr>`;
 }).join('');
 
 reset();

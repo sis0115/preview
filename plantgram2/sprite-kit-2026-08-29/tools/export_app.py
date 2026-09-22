@@ -53,6 +53,19 @@ SLOT_GRADE = {
 }
 
 
+def footprint(stage_w, tile_w):
+    """조각이 몇 칸을 차지하는지. **재서 나오는 값이지 정하는 값이 아닙니다.**
+
+    한 칸 마름모의 가로가 타일 폭입니다. 그보다 넓은 조각을 한 칸에 놓으면
+    옆 칸을 침범해, 그 칸에 다른 것을 놓을 수 없는데도 비어 보입니다.
+
+    긴 조각의 긴 축은 그림에서 오른쪽 위로 뻗습니다(-v 방향). 그래서 넓은
+    것은 j 를 하나 더 먹는 1 x 2 가 됩니다. 2 x 2 가 필요한 조각은 아직
+    없습니다 - 가장 넓은 석재 화분도 1 x 2 안에 들어갑니다.
+    """
+    return [1, 2] if stage_w > tile_w else [1, 1]
+
+
 def slot_grades(pid, n):
     """자리 수와 등급표의 길이가 어긋나도 그림이 정한 자리 수를 따릅니다."""
     g = SLOT_GRADE.get(pid) or ["medium"]
@@ -109,8 +122,9 @@ def main(out="../app-kit/assets"):
               if boxy else shadow(art.width * .8, iso))
         sh.save(f"{out}/shadows/{pid}.png")
         fx, fy = p["foot"]
+        cells = footprint(art.width * to_stage, grid["tileW"])
         cat["pots"][pid] = {
-            "w": art.width, "h": art.height,
+            "w": art.width, "h": art.height, "cells": cells,
             "foot": {"x": round(fx), "y": round(fy)},
             "slots": [{"x": round(x), "y": round(y), "grade": g}
                       for (x, y), g in zip(p["anchor"],
@@ -120,7 +134,8 @@ def main(out="../app-kit/assets"):
                        "drop": round((art.height - fy) * .34) if boxy else 0},
         }
         print(f"{pid:14} {art.width:5} {art.height:5}  닿는자리 ({fx:.0f},{fy:.0f}) "
-              f"· 심는자리 {len(p['anchor'])}곳")
+              f"· 심는자리 {len(p['anchor'])}곳 · {cells[0]}x{cells[1]}칸 "
+              f"(무대 폭 {art.width * to_stage:.0f})")
 
     cat["names"] = NAMES
     json.dump(cat, open(f"{out}/catalog.json", "w"), indent=1, ensure_ascii=False)
