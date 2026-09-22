@@ -159,11 +159,11 @@ const inGrid = ([i, j]) => i >= 0 && j >= 0 && i < N && j < N;
 // i 가 하나 줄어드는 칸을 함께 먹으므로, 격자 가장자리에서는 방향에 따라
 // 놓을 수 없는 자리가 생깁니다.
 const START = [
-  ['shelf_planted', 1, 1, [], 0],                   // 오른쪽 위로 — (1,1)(1,0)
-  ['bench_planted', 1, 4, [], 1],                   // 왼쪽 위로  — (1,4)(0,4)
-  ['bed_long',      4, 4, ['small', 'small'], 0],
-  ['pot_xlarge',    4, 1, ['xlarge'], 0],
-  ['pot_sprout',    3, 2, ['sprout'], 0],
+  ['shelf_planted', 1, 1, [], 0],                   // 그린 대로 2x1 — (1,1)(0,1)
+  ['bench_planted', 4, 2, [], 1],                   // 뒤집어 1x2 — (4,2)(4,1)
+  ['bed_long',      2, 4, ['small', 'small'], 0],   // 1x2 — (2,4)(2,3)
+  ['pot_xlarge',    4, 4, ['xlarge'], 0],
+  ['pot_sprout',    2, 1, ['sprout'], 0],
 ];
 // 자리 없는 그릇 = 가구. 눌러서 놓을 수 있게 따로 모아 둡니다.
 const FURN = Object.keys(POTS).filter(k => POTS[k].slots.length === 0);
@@ -181,7 +181,9 @@ const isFurniture = id => POTS[id].slots.length === 0;
 // 긴 축은 오른쪽 위로 뻗으므로(-v) 넓은 것은 j 를 하나 더 먹습니다.
 // 누른 칸이 **맨 앞** 칸이고, 나머지는 그 뒤로 뻗습니다.
 // 방향이 둘입니다. 길쭉한 조각을 가로로도 세로로도 놓을 수 있어야 벽을
-// 따라 붙일 수 있습니다.
+// 따라 붙일 수 있습니다. 칸 수 [a, b] 는 a = u 쪽(오른쪽 아래), b = v
+// 쪽(오른쪽 위)이고, 그림의 밑면을 재서 나온 값입니다 - 선반은 2x1,
+// 화단은 1x2 로 긴 축이 서로 반대입니다.
 //
 // 등각에서 **좌우로 뒤집는 것이 곧 90도 돌리는 것**입니다. 그림의 긴 축은
 // 오른쪽 위(-v)로 뻗는데, 뒤집으면 왼쪽 위(-u)로 뻗습니다. 그래서 그림을
@@ -396,11 +398,11 @@ function say() {
   else if (sel) h.innerHTML =
     `<b>${NAMES[sel.pot]}</b> — ${sel.i+1}번째 줄 ${sel.j+1}번째 칸 · ` +
     `${cellsOf(sel.pot, sel.rot).join('×')}칸 · ` +
-    `${sel.rot ? '왼쪽 위' : '오른쪽 위'}로 · ` +
+    `${sel.rot ? '좌우 뒤집음' : '그린 대로'} · ` +
     (isFurniture(sel.pot) ? '가구'
       : `자리 ${sel.slots.filter(Boolean).length}/${sel.slots.length} 참`);
   else {
-    const dir = `<b>${rot ? '왼쪽 위' : '오른쪽 위'}</b>로 (R 키로 돌리기)`;
+    const dir = `<b>${rot ? '좌우 뒤집어' : '그린 대로'}</b> (R 키로 돌리기)`;
     h.innerHTML = pickPot
       ? `빈 칸을 누르면 <b>${NAMES[pickPot]}</b>을 ${dir} 놓습니다.`
       : `빈 칸을 누르면 <b>${NAMES[pick]}</b>을 심습니다. 놓인 그릇을 누르면 자리가 뜹니다.`;
@@ -445,7 +447,7 @@ function turn() {
           `${cellsOf(sel.pot, sel.rot).join('×')}칸`;
   } else {
     rot = 1 - rot;
-    msg = `다음에 놓을 방향을 ${rot ? '왼쪽 위' : '오른쪽 위'}로 바꿨습니다.`;
+    msg = `다음에 놓을 방향을 ${rot ? '좌우 뒤집어' : '그린 대로'} 바꿨습니다.`;
   }
   refresh();
 }
@@ -480,7 +482,7 @@ document.getElementById('tbl').innerHTML = GRADES.map(k => {
 }).join('');
 
 document.getElementById('cap2').textContent =
-  `그릇과 자리 — 무대 폭이 타일 폭 ${G.tileW}보다 넓으면 두 칸. 돌리면 1×2 ↔ 2×1`;
+  '그릇과 자리 — 칸 수는 그림의 밑면을 축마다 재서 나온 값입니다. 돌리면 1×2 ↔ 2×1';
 
 document.getElementById('tbl2').innerHTML = Object.keys(POTS).map(k => {
   const q = POTS[k], g = q.slots.map(s => NAMES[s.grade]).join(' · ') || '—';

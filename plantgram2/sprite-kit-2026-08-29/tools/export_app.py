@@ -53,17 +53,29 @@ SLOT_GRADE = {
 }
 
 
-def footprint(stage_w, tile_w):
-    """조각이 몇 칸을 차지하는지. **재서 나오는 값이지 정하는 값이 아닙니다.**
+def footprint(art, to_stage, grid):
+    """조각이 몇 칸을 차지하는지 **밑면을 재서** 구합니다.
 
-    한 칸 마름모의 가로가 타일 폭입니다. 그보다 넓은 조각을 한 칸에 놓으면
-    옆 칸을 침범해, 그 칸에 다른 것을 놓을 수 없는데도 비어 보입니다.
+    폭만 재면 방향을 놓칩니다. 선반은 긴 축이 u 쪽(오른쪽 아래)인데 화단은
+    -v 쪽(오른쪽 위)입니다. 둘 다 가로 235px 로 같아서, 폭으로는 구별되지
+    않습니다. 실제로 폭만 보고 정했다가 선반이 화단처럼 누워 버렸습니다.
 
-    긴 조각의 긴 축은 그림에서 오른쪽 위로 뻗습니다(-v 방향). 그래서 넓은
-    것은 j 를 하나 더 먹는 1 x 2 가 됩니다. 2 x 2 가 필요한 조각은 아직
-    없습니다 - 가장 넓은 석재 화분도 1 x 2 안에 들어갑니다.
+    밑면은 평행사변형입니다. 맨 아래 꼭짓점(앞쪽 모서리)에서
+      · 왼쪽 끝까지 = (u 쪽 칸 수) x |u.x|
+      · 오른쪽 끝까지 = (v 쪽 칸 수) x |v.x|
+    이므로 양쪽을 따로 재면 두 축의 칸 수가 바로 나옵니다.
+
+    한 칸을 조금 넘는 정도(1.25칸)까지는 한 칸으로 봅니다. 특대형 화분은
+    1.00 x 1.02 로 한 칸에 딱 맞고, 선반은 1.45 x 0.60 이라 2 x 1 입니다.
     """
-    return [1, 2] if stage_w > tile_w else [1, 1]
+    a = np.asarray(art.convert("RGBA")).astype(float)[..., 3] / 255
+    ys, xs = np.nonzero(a > .5)
+    near = xs[ys > ys.max() - 3]          # 맨 아래 꼭짓점 = 앞쪽 모서리
+    xb = (near.min() + near.max()) / 2
+    left = (xb - xs.min()) * to_stage / abs(grid["uX"])
+    right = (xs.max() - xb) * to_stage / abs(grid["vX"])
+    step = lambda n: max(1, int(n + .75))
+    return [step(left), step(right)]
 
 
 def slot_grades(pid, n):
@@ -122,7 +134,7 @@ def main(out="../app-kit/assets"):
               if boxy else shadow(art.width * .8, iso))
         sh.save(f"{out}/shadows/{pid}.png")
         fx, fy = p["foot"]
-        cells = footprint(art.width * to_stage, grid["tileW"])
+        cells = footprint(art, to_stage, grid)
         cat["pots"][pid] = {
             "w": art.width, "h": art.height, "cells": cells,
             "foot": {"x": round(fx), "y": round(fy)},
@@ -134,8 +146,7 @@ def main(out="../app-kit/assets"):
                        "drop": round((art.height - fy) * .34) if boxy else 0},
         }
         print(f"{pid:14} {art.width:5} {art.height:5}  닿는자리 ({fx:.0f},{fy:.0f}) "
-              f"· 심는자리 {len(p['anchor'])}곳 · {cells[0]}x{cells[1]}칸 "
-              f"(무대 폭 {art.width * to_stage:.0f})")
+              f"· 심는자리 {len(p['anchor'])}곳 · {cells[0]}x{cells[1]}칸")
 
     cat["names"] = NAMES
     json.dump(cat, open(f"{out}/catalog.json", "w"), indent=1, ensure_ascii=False)

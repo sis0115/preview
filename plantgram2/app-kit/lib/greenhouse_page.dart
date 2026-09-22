@@ -51,14 +51,14 @@ class _GreenhousePageState extends State<GreenhousePage> {
     // 따라 놓을 수 없는 자리가 생깁니다.
     garden
       ..add(null, 'shelf_planted', at: const Cell(1, 1))
-      ..add(null, 'bench_planted', at: const Cell(1, 4), rot: 1)
-      ..add('small', 'bed_long', at: const Cell(4, 4))
-      ..add('xlarge', 'pot_xlarge', at: const Cell(4, 1))
-      ..add('sprout', 'pot_sprout', at: const Cell(3, 2))
+      ..add(null, 'bench_planted', at: const Cell(4, 2), rot: 1)
+      ..add('small', 'bed_long', at: const Cell(2, 4))
+      ..add('xlarge', 'pot_xlarge', at: const Cell(4, 4))
+      ..add('sprout', 'pot_sprout', at: const Cell(2, 1))
       ..select(null);
     // 긴 화단은 자리가 둘입니다. 첫 자리만 채워 두면 반쪽으로 보이므로
     // 시작 화면에서는 둘 다 심어 둡니다.
-    final bed = garden.at(const Cell(4, 4));
+    final bed = garden.at(const Cell(2, 4));
     if (bed != null && bed.slots.length > 1) {
       garden.plantInto(bed, 1, 'small');
     }
