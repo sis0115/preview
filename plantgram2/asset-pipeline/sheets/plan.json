@@ -1,0 +1,71 @@
+[
+ {
+  "id": "furniture_01",
+  "kind": "furniture",
+  "species": "-",
+  "items": [
+   "table_round",
+   "rack_tall",
+   "stool",
+   "cart",
+   "bed_long"
+  ],
+  "anchor": "bed_long"
+ },
+ {
+  "id": "plant_cactus_02",
+  "kind": "plant",
+  "species": "cactus",
+  "items": [
+   "cactus_sprout",
+   "cactus_small",
+   "cactus_medium",
+   "cactus_large",
+   "cactus_xlarge",
+   "bed_long"
+  ],
+  "anchor": "bed_long"
+ },
+ {
+  "id": "plant_fern_03",
+  "kind": "plant",
+  "species": "fern",
+  "items": [
+   "fern_sprout",
+   "fern_small",
+   "fern_medium",
+   "fern_large",
+   "fern_xlarge",
+   "bed_long"
+  ],
+  "anchor": "bed_long"
+ },
+ {
+  "id": "plant_ficus_04",
+  "kind": "plant",
+  "species": "ficus",
+  "items": [
+   "ficus_sprout",
+   "ficus_small",
+   "ficus_medium",
+   "ficus_large",
+   "ficus_xlarge",
+   "bed_long"
+  ],
+  "anchor": "bed_long"
+ },
+ {
+  "id": "plant_monstera_05",
+  "kind": "plant",
+  "species": "monstera",
+  "items": [
+   "monstera_sprout",
+   "monstera_small",
+   "monstera_medium",
+   "monstera_large",
+   "monstera_xlarge",
+   "bed_long"
+  ],
+  "anchor": "bed_long"
+ }
+]

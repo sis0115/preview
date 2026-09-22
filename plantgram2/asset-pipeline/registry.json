@@ -1,0 +1,466 @@
+{
+ "anchor": "bed_long",
+ "note": "만들기로 한 것만 적습니다. 폭·높이·기준점·칸수는 재서 나오는 값이라 measured.json 에 따로 둡니다.",
+ "grades": [
+  "sprout",
+  "small",
+  "medium",
+  "large",
+  "xlarge"
+ ],
+ "items": [
+  {
+   "id": "pot_sprout",
+   "kind": "pot",
+   "name": "새싹 화분",
+   "sheet": "s6_grade",
+   "status": "accepted",
+   "grade": "sprout",
+   "slots": {
+    "where": "soil",
+    "count": 1,
+    "grades": [
+     "sprout"
+    ]
+   }
+  },
+  {
+   "id": "pot_small",
+   "kind": "pot",
+   "name": "소형 화분",
+   "sheet": "s6_grade",
+   "status": "accepted",
+   "grade": "small",
+   "slots": {
+    "where": "soil",
+    "count": 1,
+    "grades": [
+     "small"
+    ]
+   }
+  },
+  {
+   "id": "pot_medium",
+   "kind": "pot",
+   "name": "중형 화분",
+   "sheet": "s6_grade",
+   "status": "accepted",
+   "grade": "medium",
+   "slots": {
+    "where": "soil",
+    "count": 1,
+    "grades": [
+     "medium"
+    ]
+   }
+  },
+  {
+   "id": "pot_large",
+   "kind": "pot",
+   "name": "대형 화분",
+   "sheet": "s6_grade",
+   "status": "accepted",
+   "grade": "large",
+   "slots": {
+    "where": "soil",
+    "count": 1,
+    "grades": [
+     "large"
+    ]
+   }
+  },
+  {
+   "id": "pot_xlarge",
+   "kind": "pot",
+   "name": "특대형 화분",
+   "sheet": "s6_grade",
+   "status": "accepted",
+   "grade": "xlarge",
+   "slots": {
+    "where": "soil",
+    "count": 1,
+    "grades": [
+     "xlarge"
+    ]
+   }
+  },
+  {
+   "id": "bed_long",
+   "kind": "pot",
+   "name": "긴 화단",
+   "sheet": "s6_grade",
+   "status": "accepted",
+   "slots": {
+    "where": "soil",
+    "count": 2,
+    "grades": [
+     "small"
+    ]
+   }
+  },
+  {
+   "id": "shelf",
+   "kind": "furniture",
+   "name": "선반",
+   "sheet": "s4_kit",
+   "status": "accepted",
+   "slots": {
+    "where": "plate",
+    "grades": [
+     "sprout",
+     "small"
+    ]
+   }
+  },
+  {
+   "id": "planter_big",
+   "kind": "pot",
+   "name": "석재 화분",
+   "sheet": "s4_kit",
+   "status": "accepted",
+   "slots": {
+    "where": "soil",
+    "count": 1,
+    "grades": [
+     "xlarge"
+    ]
+   }
+  },
+  {
+   "id": "shelf_two",
+   "kind": "furniture",
+   "name": "2층 선반",
+   "sheet": "f2_furniture",
+   "status": "accepted",
+   "slots": {
+    "where": "plate",
+    "grades": [
+     "sprout",
+     "small"
+    ]
+   }
+  },
+  {
+   "id": "bench",
+   "kind": "furniture",
+   "name": "작업대",
+   "sheet": "f2_furniture",
+   "status": "accepted",
+   "slots": {
+    "where": "plate",
+    "grades": [
+     "sprout",
+     "small"
+    ]
+   }
+  },
+  {
+   "id": "sprout",
+   "kind": "plant",
+   "name": "새싹",
+   "grade": "sprout",
+   "pot": "pot_sprout",
+   "sheet": "s6_grade",
+   "status": "accepted"
+  },
+  {
+   "id": "small",
+   "kind": "plant",
+   "name": "소형",
+   "grade": "small",
+   "pot": "pot_small",
+   "sheet": "s6_grade",
+   "status": "accepted"
+  },
+  {
+   "id": "medium",
+   "kind": "plant",
+   "name": "중형",
+   "grade": "medium",
+   "pot": "pot_medium",
+   "sheet": "s6_grade",
+   "status": "accepted"
+  },
+  {
+   "id": "large",
+   "kind": "plant",
+   "name": "대형",
+   "grade": "large",
+   "pot": "pot_large",
+   "sheet": "s6_grade",
+   "status": "accepted"
+  },
+  {
+   "id": "xlarge",
+   "kind": "plant",
+   "name": "특대형",
+   "grade": "xlarge",
+   "pot": "pot_xlarge",
+   "sheet": "f2_furniture",
+   "status": "accepted"
+  },
+  {
+   "id": "stage",
+   "kind": "stage",
+   "name": "온실 배경",
+   "sheet": "b1_stage",
+   "status": "accepted"
+  },
+  {
+   "id": "monstera_sprout",
+   "kind": "plant",
+   "name": "몬스테라 sprout",
+   "grade": "sprout",
+   "species": "monstera",
+   "pot": "pot_sprout",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "monstera_small",
+   "kind": "plant",
+   "name": "몬스테라 small",
+   "grade": "small",
+   "species": "monstera",
+   "pot": "pot_small",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "monstera_medium",
+   "kind": "plant",
+   "name": "몬스테라 medium",
+   "grade": "medium",
+   "species": "monstera",
+   "pot": "pot_medium",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "monstera_large",
+   "kind": "plant",
+   "name": "몬스테라 large",
+   "grade": "large",
+   "species": "monstera",
+   "pot": "pot_large",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "monstera_xlarge",
+   "kind": "plant",
+   "name": "몬스테라 xlarge",
+   "grade": "xlarge",
+   "species": "monstera",
+   "pot": "pot_xlarge",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "fern_sprout",
+   "kind": "plant",
+   "name": "고사리 sprout",
+   "grade": "sprout",
+   "species": "fern",
+   "pot": "pot_sprout",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "fern_small",
+   "kind": "plant",
+   "name": "고사리 small",
+   "grade": "small",
+   "species": "fern",
+   "pot": "pot_small",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "fern_medium",
+   "kind": "plant",
+   "name": "고사리 medium",
+   "grade": "medium",
+   "species": "fern",
+   "pot": "pot_medium",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "fern_large",
+   "kind": "plant",
+   "name": "고사리 large",
+   "grade": "large",
+   "species": "fern",
+   "pot": "pot_large",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "fern_xlarge",
+   "kind": "plant",
+   "name": "고사리 xlarge",
+   "grade": "xlarge",
+   "species": "fern",
+   "pot": "pot_xlarge",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "cactus_sprout",
+   "kind": "plant",
+   "name": "선인장 sprout",
+   "grade": "sprout",
+   "species": "cactus",
+   "pot": "pot_sprout",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "cactus_small",
+   "kind": "plant",
+   "name": "선인장 small",
+   "grade": "small",
+   "species": "cactus",
+   "pot": "pot_small",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "cactus_medium",
+   "kind": "plant",
+   "name": "선인장 medium",
+   "grade": "medium",
+   "species": "cactus",
+   "pot": "pot_medium",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "cactus_large",
+   "kind": "plant",
+   "name": "선인장 large",
+   "grade": "large",
+   "species": "cactus",
+   "pot": "pot_large",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "cactus_xlarge",
+   "kind": "plant",
+   "name": "선인장 xlarge",
+   "grade": "xlarge",
+   "species": "cactus",
+   "pot": "pot_xlarge",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "ficus_sprout",
+   "kind": "plant",
+   "name": "고무나무 sprout",
+   "grade": "sprout",
+   "species": "ficus",
+   "pot": "pot_sprout",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "ficus_small",
+   "kind": "plant",
+   "name": "고무나무 small",
+   "grade": "small",
+   "species": "ficus",
+   "pot": "pot_small",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "ficus_medium",
+   "kind": "plant",
+   "name": "고무나무 medium",
+   "grade": "medium",
+   "species": "ficus",
+   "pot": "pot_medium",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "ficus_large",
+   "kind": "plant",
+   "name": "고무나무 large",
+   "grade": "large",
+   "species": "ficus",
+   "pot": "pot_large",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "ficus_xlarge",
+   "kind": "plant",
+   "name": "고무나무 xlarge",
+   "grade": "xlarge",
+   "species": "ficus",
+   "pot": "pot_xlarge",
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "table_round",
+   "kind": "furniture",
+   "name": "둥근 탁자",
+   "slots": {
+    "where": "plate",
+    "grades": [
+     "sprout",
+     "small"
+    ]
+   },
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "rack_tall",
+   "kind": "furniture",
+   "name": "높은 선반",
+   "slots": {
+    "where": "plate",
+    "grades": [
+     "sprout",
+     "small"
+    ]
+   },
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "stool",
+   "kind": "furniture",
+   "name": "받침대",
+   "slots": {
+    "where": "plate",
+    "grades": [
+     "sprout",
+     "small"
+    ]
+   },
+   "sheet": null,
+   "status": "wanted"
+  },
+  {
+   "id": "cart",
+   "kind": "furniture",
+   "name": "작업 수레",
+   "slots": {
+    "where": "plate",
+    "grades": [
+     "sprout",
+     "small"
+    ]
+   },
+   "sheet": null,
+   "status": "wanted"
+  }
+ ]
+}
